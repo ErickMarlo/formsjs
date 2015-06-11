@@ -12,6 +12,8 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Tabs']=new forms.controls.TabsControl(this);
 		this.idx['Tab']=new forms.controls.TabControl(this);
 		this.idx['Table']=new forms.controls.TableControl(this);
+		this.idx['Accordion']=new forms.controls.AccordionControl(this);
+		this.idx['AccordionItem']=new forms.controls.AccordionItemControl(this);
 	}
 });
 

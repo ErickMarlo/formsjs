@@ -63,4 +63,21 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		$thead.append($thtr);
 		return $thead;
 	}
+	,renderAccordionRoot : function(fld){
+		return $('<div id="'+fld.id+'"></div>');
+	}
+	,renderAccordionItemRoot: function(fld){
+		return $('<div class="panel panel-default"></div>');
+	}
+	,renderAccordionItemHead: function(fld){
+		return $('<div class="panel-heading"></div>').append(
+						$('<h4 class="panel-title"></h4>')
+						.append('<a data-toggle="collapse" data-parent="#'+fld.parent.id+'" href="#'+fld.id+'" class="collapsed">'+fld.label+'</a>'));
+	}
+	,renderAccordionItemContent: function(fld){
+		return $('<div id="'+fld.id+'" class="panel-collapse collapse" style="height: 0px;">');
+	}
+	,renderAccordionItemBody: function(fld){
+		return $('<div class="panel-body"></div>');
+	}
 });
