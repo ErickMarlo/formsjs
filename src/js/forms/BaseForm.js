@@ -10,6 +10,7 @@ forms.BaseForm=Class.extend({
 	}
 	,init : function(){
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
+		this.preprocess();
 		this.itemsdb=SpahQL.db(this.items);
 	}
 	,render : function(sel){
@@ -20,6 +21,21 @@ forms.BaseForm=Class.extend({
 	,onafterrender : function(it){
 		for(var i=0;i<this.items.length;i++) {
 			this.onafterrenderfield(this.items[i]);
+		}
+	}
+	,preprocess : function(){
+		for(var i=0;i<this.items.length;i++) {
+			this.preprocessfield(this.items[i]);
+		}
+	}
+	,preprocessfield : function(fld,parent){
+		fld.form=this;
+		if(!fld.type) fld.type='Custom';
+		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
+		ci.preprocess(fld,parent);
+		if(!fld.items)return ;
+		for(var i=0;i<fld.items.length;i++) {
+			this.preprocessfield(fld.items[i],fld);
 		}
 	}
 	,onafterrenderfield : function(fld){

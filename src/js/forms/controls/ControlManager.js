@@ -4,6 +4,7 @@ forms.controls.ControlManager=Class.extend({
 	idx:{}
 	,renderer : null
 	,init : function(){
+		this.idx['Custom']=new forms.controls.CustomControl(this);
 		this.idx['Text']=new forms.controls.TextControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
 		this.idx['Column']=new forms.controls.ColumnControl(this);

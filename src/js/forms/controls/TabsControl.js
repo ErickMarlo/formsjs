@@ -22,10 +22,6 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 	}
 	,_addItem : function(fld,tab,$th,$tb,active){
 		var rend=forms.controls.ControlManagerInstance.renderer;
-		this.checkId(tab);
-		tab.parent=fld;
-		this.checkParentPath(tab);
-		tab.form=fld.form;
 		var $tt=rend.renderTabTitle(tab,active);
 		$th.append($tt);
 		var $tc=rend.renderTabContent(tab,active);

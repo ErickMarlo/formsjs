@@ -20,20 +20,20 @@ forms.controls.AccordionControl=forms.controls.BaseContainerControl.extend({
 //		};
 //		return $root;
 	}
-	,_addItem : function(fld,tab,$itroot,active){
-		var rend=forms.controls.ControlManagerInstance.renderer;
-		this.checkId(tab);
-		tab.parent=fld;
-		this.checkParentPath(tab);
-		tab.form=fld.form;
-		var $tabcontent=this._superContentFn(tab,function(){return $tc;});
-		$itroot.append($tabcontent);
-	}
-	,addItem : function(fld,tab,$itroot,active){
-		this._addItem(fld,tab,$itroot,active);
-		if(!fld.items) {
-			fld.items=[];
-		}
-		fld.items.push(tab);
-	}
+//	,_addItem : function(fld,tab,$itroot,active){
+//		var rend=forms.controls.ControlManagerInstance.renderer;
+//		this.checkId(tab);
+//		tab.parent=fld;
+//		this.checkParentPath(tab);
+//		tab.form=fld.form;
+//		var $tabcontent=this._superContentFn(tab,function(){return $tc;});
+//		$itroot.append($tabcontent);
+//	}
+//	,addItem : function(fld,tab,$itroot,active){
+//		this._addItem(fld,tab,$itroot,active);
+//		if(!fld.items) {
+//			fld.items=[];
+//		}
+//		fld.items.push(tab);
+//	}
 });

@@ -8,8 +8,7 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		field.$jq=$cont;
 		for(var i=0;i<field.items.length;i++) {
 			var fld=field.items[i];
-			fld.parent=field;
-			this.checkParentPath(fld);
+			fld.index=i;
 			var $fld=forms.controls.ControlManagerInstance.renderer.renderField(fld);
 			$cont.append($fld);
 		}
@@ -21,9 +20,9 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		return $cont;
 	}
 	,addItem : function(field,it){
-		it.parent=field;
-		this.checkParentPath(it);
-		var $rend=forms.controls.ControlManagerInstance.renderer.renderField(it);
+		var ci=forms.controls.ControlManagerInstance.idx[it.type];
+		ci.preprocess(it,field);
+		var $rend=ci.controlManager.renderer.renderField(it);
 		field.$jq.append($rend);
 		if(!field.items) {
 			field.items=[];

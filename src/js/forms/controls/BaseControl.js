@@ -6,10 +6,16 @@ forms.controls.BaseControl=Class.extend({
 	,init : function(controlManager){
 		this.controlManager=controlManager;
 	}
-	,renderField : function(fld,$fld){
+	,preprocess : function(fld,parent){
+		if(!fld.form) fld.form=parent.form;
 		this.checkId(fld);
-		fld.$jq=$fld;
+		fld.parent=parent;
 		this.checkParentPath(fld);
+		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
+		fld.form.idx.byid[fld.id]=fld;
+	}
+	,renderField : function(fld,$fld){
+		fld.$jq=$fld;
 	}
 	,checkId : function(fld){
 		if(!fld.id) {
@@ -19,7 +25,6 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,checkParentPath : function(fld){
 		if(fld.parent) {
-			fld.form=fld.parent.form;
 			if(fld.parent.path) {
 				fld.parentPath=fld.parent.path;
 			}

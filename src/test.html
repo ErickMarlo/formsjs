@@ -1207,16 +1207,9 @@
     </div>
     <!--END FOOTER -->
 
-    <!-- GLOBAL SCRIPTS -->
-<!--
     <script src="assets/plugins/jquery-2.0.3.min.js"></script>
      <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/plugins/modernizr-2.6.2-respond-1.1.0.min.js"></script>
-    -->
-    <!-- END GLOBAL SCRIPTS -->
-
-    <!-- PAGE LEVEL SCRIPTS -->
-<!--
     <script src="assets/plugins/flot/jquery.flot.js"></script>
     <script src="assets/plugins/flot/jquery.flot.resize.js"></script>
     <script src="assets/plugins/flot/jquery.flot.time.js"></script>
@@ -1224,14 +1217,11 @@
     <script src="assets/js/for_index.js"></script>
     <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
--->   
-    <!-- END PAGE LEVEL SCRIPTS -->
-<!--
-
     <script src="js/core/Clazz.js"></script>
     <script src="js/core/spahql.js"></script>
     <script src="js/forms/controls/BaseControl.js"></script>
     <script src="js/forms/controls/BaseContainerControl.js"></script>
+    <script src="js/forms/controls/CustomControl.js"></script>
     <script src="js/forms/controls/ColumnControl.js"></script>
     <script src="js/forms/controls/RowControl.js"></script>
     <script src="js/forms/controls/BoxControl.js"></script>
@@ -1240,12 +1230,14 @@
     <script src="js/forms/controls/TableControl.js"></script>
     <script src="js/forms/controls/TextControl.js"></script>
     <script src="js/forms/controls/ButtonControl.js"></script>
+    <script src="js/forms/controls/AccordionControl.js"></script>
+    <script src="js/forms/controls/AccordionItemControl.js"></script>
     <script src="js/forms/controls/ControlManager.js"></script>
     <script src="js/forms/renderer/BaseRenderer.js"></script>
     <script src="js/forms/renderer/BootstrapRenderer.js"></script>
     <script src="js/forms/BaseForm.js"></script>
-    -->
-    <script src="../dist/jsforms.js"></script>
+    
+    <!--<script src="../dist/jsforms.js"></script>-->
 		<script>
 			var Testform=forms.BaseForm.extend({
 				renderer : 'Bootstrap'
@@ -1306,6 +1298,42 @@
 																);
 																fld.form.idx.byid.tabTest1.addItem({type:'Tab',label:'Dyna tab'});
 														}}
+												]}
+										]}
+								]}
+						]}
+						,{type : 'Row', items : [
+								{type:'Column',cols:6,items:[
+										{type:'Accordion',items:[
+												{type:'AccordionItem',label:'Item 1',items:[
+														 {type : 'Text', label : 'Accordion child1'}
+														,{type : 'Text', label : 'Accordion child2'}
+														,{type : 'Text', label : 'Accordion child3'}
+														,{type : 'Button', label : 'Add accordion item',click : function(fld){debugger;
+																fld.parent.addItem({
+																	 type : 'AccordionItem'
+																	,label : 'Dyna add accordion item'
+																	,items : [
+																		 {type : 'Text', label : 'Accordion dyna childA'}
+																		,{type : 'Text', label : 'Accordion dyna childB'}																		
+																	]
+																});
+														}}
+												]}
+												,{type:'AccordionItem',label:'Item 2',items:[
+														 {type : 'Text', label : 'Accordion child4'}
+														,{type : 'Text', label : 'Accordion child5'}
+														,{type : 'Text', label : 'Accordion child6'}
+												]}
+												,{type:'AccordionItem',label:'Item 3',items:[
+														 {type : 'Text', label : 'Accordion child7'}
+														,{type : 'Text', label : 'Accordion child8'}
+														,{type : 'Text', label : 'Accordion child9'}
+												]}
+												,{type:'AccordionItem',label:'Item 4',items:[
+														 {type : 'Text', label : 'Accordion childA'}
+														,{type : 'Text', label : 'Accordion childB'}
+														,{type : 'Text', label : 'Accordion childC'}
 												]}
 										]}
 								]}
