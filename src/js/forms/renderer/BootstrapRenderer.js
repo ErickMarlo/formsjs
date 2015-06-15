@@ -80,4 +80,14 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderAccordionItemBody: function(fld){
 		return $('<div class="panel-body"></div>');
 	}
+	,renderBreadcrumbContainer: function(fld){
+		return $('<ul class="breadcrumb"></ul>');
+	}
+	,renderBreadcrumbItem: function(fld,isactive){
+		if(isactive) {
+			return $('<li></li>').append($('<a href="#">'+fld.label+'</a>'));
+		} else {
+			return $('<li class="active">'+fld.label+'</li>');
+		}
+	}
 });
