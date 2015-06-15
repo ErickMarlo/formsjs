@@ -30,13 +30,8 @@ forms.BaseForm=Class.extend({
 	}
 	,preprocessfield : function(fld,parent){
 		fld.form=this;
-		if(!fld.type) fld.type='Custom';
-		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
+		var ci=forms.controls.ControlManagerInstance.idx[fld.type];debugger;
 		ci.preprocess(fld,parent);
-		if(!fld.items)return ;
-		for(var i=0;i<fld.items.length;i++) {
-			this.preprocessfield(fld.items[i],fld);
-		}
 	}
 	,onafterrenderfield : function(fld){
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];

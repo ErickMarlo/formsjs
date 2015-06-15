@@ -19,6 +19,13 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		};
 		return $cont;
 	}
+	,preprocess : function(fld,parent){
+		this._super(fld,parent);
+		if(!fld.items)return;
+		for(var i=0;i<fld.items.length;i++) {
+			this.preprocess(fld.items[i],fld);
+		}
+	}
 	,addItem : function(field,it){
 		var ci=forms.controls.ControlManagerInstance.idx[it.type];
 		ci.preprocess(it,field);

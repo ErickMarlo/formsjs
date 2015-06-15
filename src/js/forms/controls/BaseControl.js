@@ -7,6 +7,8 @@ forms.controls.BaseControl=Class.extend({
 		this.controlManager=controlManager;
 	}
 	,preprocess : function(fld,parent){
+		if(fld.id=='fldAccordionItem0')debugger;
+		if(!fld.type) fld.type='Custom';
 		if(!fld.form) fld.form=parent.form;
 		this.checkId(fld);
 		fld.parent=parent;
