@@ -82,4 +82,11 @@ forms.BaseForm=Class.extend({
 			this.scatterField(fld.items[i]);
 		}
 	}
+	,show: function(visi){
+		if(visi) {
+			this.$jq.show();
+		} else {
+			this.$jq.hide();
+		}
+	}
 });

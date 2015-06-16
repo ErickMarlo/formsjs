@@ -2,6 +2,7 @@ Package.Register('forms');
 
 forms.Application=Class.extend({
 	forms: []
+	,activeform: null
 	,defidx: {}
 	,idx: {}
 	,rootUrl : null
@@ -26,22 +27,35 @@ forms.Application=Class.extend({
 			}
 		});
 	}
-	,showform: function(parent,claz,params){
-		if(typeof claz=='object') {
-			var frm=new (claz)(params);
-			this.defidx[frm.id]=claz;
+	,createform: function(parent,deforclaz,params){
+		if(typeof deforclaz=='object') {
+			var frm=new (deforclaz)(params);
+			this.defidx[frm.id]=deforclaz;
 			frm.render(this.selector);
 			this.forms.push(frm);
 			this.idx[frm.id]=frm;
 			return ;
+		} else if(typeof deforclaz=='string') {
+			throw 'Not implemented yet';
 		}
-		var def=this.defidx[claz];
-		if(!def) {
-			this.loadform(claz,params,function(){
-				def=this.defidx[claz];
-				var frm=new (def)(params);
-				
-			});
+	}
+	,showform: function(formid){
+		this.idx[formid].show(true);
+		this.activeform=formid;
+		this.updatebreadcrumb();
+	}
+	,updatebreadcrumb: function(){
+		var rend=forms.controls.ControlManagerInstance.renderer;
+		var breadcrumb={
+			id: 'appbreadcrumb'
+		};
+		rend.clearBreadcrumb(breadcrumb);
+		if(!$(this.selector).find('#'+breadcrumb.id).length) {
+			$(this.selector).prepend(rend.renderBreadcrumbContainer(breadcrumb));
+		}
+		for(var i=0;i<this.forms.length;i++) {
+			var formid=this.forms[i].formid;
+			$('#'+breadcrumb.id).append(rend.renderBreadcrumbItem({id:formid+'bci'},formid==this.activeform));
 		}
 	}
 });

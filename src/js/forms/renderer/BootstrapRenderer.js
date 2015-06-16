@@ -80,14 +80,17 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderAccordionItemBody: function(fld){
 		return $('<div class="panel-body"></div>');
 	}
+	,clearBreadcrumb: function(fld){
+		$('ul#'+fld.id+'.breadcrumb').html('');
+	}
 	,renderBreadcrumbContainer: function(fld){
-		return $('<ul class="breadcrumb"></ul>');
+		return $('<ul id="'+fld.id+'" class="breadcrumb"></ul>');
 	}
 	,renderBreadcrumbItem: function(fld,isactive){
 		if(isactive) {
-			return $('<li></li>').append($('<a href="#">'+fld.label+'</a>'));
+			return $('<li id="'+fld.id+'"></li>').append($('<a href="#">'+fld.label+'</a>'));
 		} else {
-			return $('<li class="active">'+fld.label+'</li>');
+			return $('<li id="'+fld.id+'" class="active">'+fld.label+'</li>');
 		}
 	}
 });
