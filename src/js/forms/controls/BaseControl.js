@@ -36,12 +36,24 @@ forms.controls.BaseControl=Class.extend({
 		}
 	}
 	,scatter : function(fld){
+		this.onbeforescatter(fld);
 		if(fld.path) {
 			this.scatterPath(fld);
 		} else if(fld.parentPath) {
 			this.scatterParentPath(fld);
 		} else {
 			this.scatterSimple(fld);
+		}
+		this.onafterscatter(fld);
+	}
+	,onafterscatter: function(fld){
+		if(fld.onafterscatter) {
+			fld.onafterscatter();
+		}
+	}
+	,onbeforescatter: function(fld){
+		if(fld.onbeforescatter) {
+			fld.onbeforescatter();
 		}
 	}
 	,gather : function(fld){

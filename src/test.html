@@ -650,6 +650,43 @@
     
     <!--<script src="../dist/jsforms.js"></script>-->
 		<script>
+			var json={
+				 'f7' : 'f7'
+				,'f8' : 'f8'
+				,'f9' : 'f9'
+				,obj : {
+					data : {
+						gr1 : {
+							list : [
+								 {f1:'aaa1'}
+								,{f2:'aaa2'}
+							]
+						}
+						,gr2 : {
+							list : [
+								 {f3:'aaa3'}
+								,{f4:'aaa4'}
+								,{f5:'aaa5'}
+							]
+						}
+						,gr3 : {
+								 f4:'aaa6'
+								,f5:'aaa7'
+								,f6:'aaa8'
+						}
+						,gr4 : {
+								 fa:'aaa6a'
+								,fb:'aaa7b'
+								,fc:'aaa8c'
+						}
+						,testDynaAccordion : [
+							 {t1:'111',t2:'222',t3:'333'}
+							,{t1:'444',t2:'555',t3:'666'}
+							,{t1:'777',t2:'888',t3:'999'}
+						]
+					}
+				}
+			};
 			var app=new forms.Application({
 				selector: '#content .inner'
 			});
@@ -669,7 +706,20 @@
 													 {type: 'Button', label: 'Back', click: function(){
 															 app.back();
 													 }}
+													 ,{type: 'Button', label: 'Scatter accordion',click: function(){
+															 this.form.scatter(json);
+													 }}
 											 ]}
+											 ,{id: 'testAccordionScatter',type: 'Accordion',path: '/obj/data/testDynaAccordion',createItem: function(i,o){
+													 return {
+														 type: 'AccordionItem', label: 'Item:'+i
+														 ,items: [
+															  {type: 'Text', id: 't1', label: 'T1'}
+															 ,{type: 'Text', id: 't2', label: 'T2'}
+															 ,{type: 'Text', id: 't3', label: 'T3'}
+														 ]
+													 };
+											 }}
 										 ]
 									 });
 									 app.showform('testform1');
@@ -788,38 +838,6 @@
 			app.showform('testform');
 //			var frm=new Testform();
 //			var $frm=frm.render('#content .inner');
-			var json={
-				 'f7' : 'f7'
-				,'f8' : 'f8'
-				,'f9' : 'f9'
-				,obj : {
-					data : {
-						gr1 : {
-							list : [
-								 {f1:'aaa1'}
-								,{f2:'aaa2'}
-							]
-						}
-						,gr2 : {
-							list : [
-								 {f3:'aaa3'}
-								,{f4:'aaa4'}
-								,{f5:'aaa5'}
-							]
-						}
-						,gr3 : {
-								 f4:'aaa6'
-								,f5:'aaa7'
-								,f6:'aaa8'
-						}
-						,gr4 : {
-								 fa:'aaa6a'
-								,fb:'aaa7b'
-								,fc:'aaa8c'
-						}
-					}
-				}
-			};
 			app.forms['testform'].scatter(json);
 			
 			
