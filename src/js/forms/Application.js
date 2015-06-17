@@ -1,10 +1,10 @@
 Package.Register('forms');
 
 forms.Application=Class.extend({
-	forms: []
+	navigation: []
 	,activeform: null
-	,defidx: {}
-	,idx: {}
+	,formsdefs: {}
+	,forms: {}
 	,rootUrl : null
 	,selector : null
 	,init: function(params){
@@ -27,21 +27,44 @@ forms.Application=Class.extend({
 			}
 		});
 	}
-	,createform: function(parent,deforclaz,params){
-		if(typeof deforclaz=='object') {
+	,createform: function(deforclaz,params){
+		var ctx=this;
+		var createFn=function(deforclaz){
 			var frm=new (deforclaz)(params);
-			this.defidx[frm.id]=deforclaz;
-			frm.render(this.selector);
-			this.forms.push(frm);
-			this.idx[frm.id]=frm;
+			ctx.formsdefs[frm.id]=deforclaz;
+			frm.render(ctx.selector);
+			ctx.forms[frm.id]=frm;
+		};
+		if(typeof deforclaz=='function') {
+			createFn(deforclaz);
 			return ;
+		} else if(typeof deforclaz=='object') {
+			deforclaz=forms.BaseForm.extend(deforclaz);
+			createFn(deforclaz);
 		} else if(typeof deforclaz=='string') {
 			throw 'Not implemented yet';
 		}
 	}
-	,showform: function(formid){
-		this.idx[formid].show(true);
-		this.activeform=formid;
+	,showform: function(frmid){
+		this.activeform=frmid;
+		if(this.navigation.length>0) {
+			this.navigation[this.navigation.length-1].show(false);
+		}
+		this.navigation.push(this.forms[frmid]);
+		this.navigation[this.navigation.length-1].show(true);
+		this.updatebreadcrumb();
+	}
+	,back: function(){
+		if(this.navigation.length<=1) {
+			return ;
+		}
+		var curr=this.navigation[this.navigation.length-1];
+		var back=this.navigation[this.navigation.length-2];
+		curr.show(false);
+		back.show(true);
+		this.navigation.splice(this.navigation.length-1,1);
+		this.activeform=back.id;
+		
 		this.updatebreadcrumb();
 	}
 	,updatebreadcrumb: function(){
@@ -53,9 +76,14 @@ forms.Application=Class.extend({
 		if(!$(this.selector).find('#'+breadcrumb.id).length) {
 			$(this.selector).prepend(rend.renderBreadcrumbContainer(breadcrumb));
 		}
-		for(var i=0;i<this.forms.length;i++) {
-			var formid=this.forms[i].formid;
-			$('#'+breadcrumb.id).append(rend.renderBreadcrumbItem({id:formid+'bci'},formid==this.activeform));
+		var ctx=this;
+		for(var i=0;i<this.navigation.length;i++) {
+			var frm=this.navigation[i];
+			$('#'+breadcrumb.id).append(rend.renderBreadcrumbItem(frm,frm.id==this.activeform,function(){
+				if(ctx.activeform!==this.id) {
+					ctx.back();
+				}
+			}));
 		}
 	}
 });

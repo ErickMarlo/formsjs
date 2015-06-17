@@ -86,11 +86,15 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderBreadcrumbContainer: function(fld){
 		return $('<ul id="'+fld.id+'" class="breadcrumb"></ul>');
 	}
-	,renderBreadcrumbItem: function(fld,isactive){
+	,renderBreadcrumbItem: function(fld,isactive,click){
 		if(isactive) {
-			return $('<li id="'+fld.id+'"></li>').append($('<a href="#">'+fld.label+'</a>'));
-		} else {
 			return $('<li id="'+fld.id+'" class="active">'+fld.label+'</li>');
+		} else {
+			return $('<li id="'+fld.id+'"></li>').append($('<a href="#">'+fld.label+'</a>').click(function(){
+				if(click) {
+					click.call(fld);
+				}
+			}));
 		}
 	}
 });

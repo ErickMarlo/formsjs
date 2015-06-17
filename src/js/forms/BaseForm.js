@@ -30,7 +30,7 @@ forms.BaseForm=Class.extend({
 	}
 	,preprocessfield : function(fld,parent){
 		fld.form=this;
-		var ci=forms.controls.ControlManagerInstance.idx[fld.type];debugger;
+		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
 		ci.preprocess(fld,parent);
 	}
 	,onafterrenderfield : function(fld){
