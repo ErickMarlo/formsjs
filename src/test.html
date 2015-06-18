@@ -710,6 +710,10 @@
 												 ,{type: 'Button', label: 'Scatter accordion',click: function(){
 															 this.form.scatter(json);
 													 }}
+												 ,{type: 'Button', label: 'Gather accordion',click: function(){
+															 var d=this.form.gather();
+															 console.table(JSON.stringify(this.form.db.value()));
+													 }}
 											 ]}
 											 ,{id: 'testAccordionScatter',type: 'Accordion',path: '/obj/data/testDynaAccordion',createItem: function(i,o){
 													 return {

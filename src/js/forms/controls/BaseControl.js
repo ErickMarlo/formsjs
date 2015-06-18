@@ -97,7 +97,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,gatherParentPath : function(fld){
 		var val=this.getVal(fld);
-		var path=fld.parentPath+'/'+fld.id;
+		var path=fld.parentPath+'/'+fld.id.replace('___','/');
 		var sel=fld.form.db.select(path);
 		if(sel.length==0) throw 'No json path object found for:'+path;
 		sel.replace(val);
