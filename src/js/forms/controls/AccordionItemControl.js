@@ -6,6 +6,6 @@ forms.controls.AccordionItemControl=forms.controls.BaseContainerControl.extend({
 		var $body=this._super(fld,rend.renderAccordionItemBody);
 		var $head=rend.renderAccordionItemHead(fld);
 		var $content=rend.renderAccordionItemContent(fld);
-		return $($('<div></div>').append($head,$content.append($body)).html());
+		return $($('<div></div>').append($head,$content.append($body)).children());
 	}
 });

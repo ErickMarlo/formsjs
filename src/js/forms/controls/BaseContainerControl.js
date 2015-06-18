@@ -44,8 +44,10 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 				for(var i=0;i<val.length;i++) {
 					var it=fld.createItem(i,val[i]);
 					var dbit=SpahQL.db(it);
-					dbit.select('//id').map(function(){
-						this.replace(''+i+'.'+this.value());
+					dbit.select('//items/*').map(function(){
+						this.select('//id').map(function(){
+							this.replace(''+i+'___'+this.value());
+						});
 					});
 					this.addItem(fld,it);
 				}

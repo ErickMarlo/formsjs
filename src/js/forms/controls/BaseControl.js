@@ -7,7 +7,6 @@ forms.controls.BaseControl=Class.extend({
 		this.controlManager=controlManager;
 	}
 	,preprocess : function(fld,parent){
-		if(fld.id=='fldAccordionItem0')debugger;
 		if(!fld.type) fld.type='Custom';
 		if(!fld.form) fld.form=parent.form;
 		this.checkId(fld);
@@ -80,7 +79,18 @@ forms.controls.BaseControl=Class.extend({
 			parent=parent.parent;
 		}
 		var pval=parent.val;
-		this.setVal(fld,pval[fld.id]);
+		var val=this.resolveVal(fld,pval);
+		this.setVal(fld,val);
+	}
+	,resolveVal: function(fld,val){
+		var split=fld.id.split('___');
+		if(split.length==1) {
+			return val[fld.id];
+		} else if(split.length==2) {
+			return val[parseInt(split[0])][split[1]];
+		} else {
+			throw 'Invalid field id: '+fld.id+'. In case of indexed fields it must be in format 0.fieldid.'
+		}
 	}
 	,gatherParentPath : function(fld){
 		var val=this.getVal(fld);
