@@ -19,7 +19,13 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderTextField : function(fld){
 		var $fld=				'<label for="'+fld.id+'" class="control-label">'+fld.label+'</label>'
-						+'<div class="controls"><input type="text" id="'+fld.id+'" placeholder="" class="input-small"></div>';
+						+'<div class="controls"><input type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="input-small"></div>';
+		var $grp=$('<div class="controls '+(fld.parent && fld.parent.inline?'form-inline':'')+'"></div>').append($fld);
+		return $grp;
+	}
+	,renderSelectField : function(fld){
+		var $fld=				'<label for="'+fld.id+'" class="control-label">'+fld.label+'</label>'
+						+'<div class="controls"><select id="'+fld.id+'" class="form-control"></div>';
 		var $grp=$('<div class="controls '+(fld.parent && fld.parent.inline?'form-inline':'')+'"></div>').append($fld);
 		return $grp;
 	}
