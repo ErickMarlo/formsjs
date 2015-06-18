@@ -15,6 +15,9 @@ forms.controls.BaseControl=Class.extend({
 		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
 		fld.form.idx.byid[fld.id]=fld;
 	}
+	,destroy: function(fld){
+		delete fld.form.idx.byid[fld.id];
+	}
 	,renderField : function(fld,$fld){
 		fld.$jq=$fld;
 	}

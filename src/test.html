@@ -705,6 +705,7 @@
 											 {type: 'Box', items: [
 													 {type: 'Button', label: 'Back', click: function(){
 															 app.back();
+															 app.destroyform('testform1');
 													 }}
 												 ,{type: 'Button', label: 'Scatter accordion',click: function(){
 															 this.form.scatter(json);

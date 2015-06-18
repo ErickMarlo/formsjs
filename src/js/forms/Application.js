@@ -45,6 +45,19 @@ forms.Application=Class.extend({
 			throw 'Not implemented yet';
 		}
 	}
+	,destroyform: function(frmid){
+		if(this.activeform==frmid) this.activeform=null;
+		for(var i=0;i<this.navigation.length;i++) {
+			if(this.navigation[i].id==frmid) {
+				this.navigation.splice(i,1);
+				break;
+			}
+		}
+		var frm=this.forms[frmid];
+		frm.destroy();
+		delete this.forms[frmid];
+		delete this.formsdefs[frmid];
+	}
 	,showform: function(frmid){
 		this.activeform=frmid;
 		if(this.navigation.length>0) {

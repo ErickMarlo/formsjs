@@ -26,6 +26,13 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 			this.preprocess(fld.items[i],fld);
 		}
 	}
+	,destroy: function(fld){
+		this._super(fld);
+		if(!fld.items)return ;
+		for(var i=0;i<fld.items.length;i++) {
+			this.destroy(fld.items[i]);
+		}
+	}
 	,addItem : function(field,it){
 		var ci=forms.controls.ControlManagerInstance.idx[it.type];
 		ci.preprocess(it,field);

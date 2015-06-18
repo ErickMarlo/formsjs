@@ -33,6 +33,14 @@ forms.BaseForm=Class.extend({
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
 		ci.preprocess(fld,parent);
 	}
+	,destroy: function(){
+		for(var i=0;i<this.items.length;i++) {
+			var it=this.items[i];
+			var ci=forms.controls.ControlManagerInstance.idx[it.type];
+			ci.destroy(it);
+		}
+		this.$jq.remove();
+	}
 	,onafterrenderfield : function(fld){
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
 		if(!ci)return ;
