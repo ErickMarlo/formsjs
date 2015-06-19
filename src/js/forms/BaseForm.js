@@ -20,7 +20,7 @@ forms.BaseForm=Class.extend({
 	}
 	,onafterrender : function(it){
 		for(var i=0;i<it.items.length;i++) {
-			var fld=this.items[i];
+			var fld=it.items[i];
 			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
 			if(!ci)return ;
 			ci.onafterrender(fld);

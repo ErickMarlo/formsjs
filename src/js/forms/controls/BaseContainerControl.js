@@ -66,6 +66,7 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 	}
 	,gather : function(){}
 	,onafterrender : function(it){
+		this._super(it);
 		if(!it.items)return ;
 		for(var i=0;i<it.items.length;i++) {
 			var fld=it.items[i];

@@ -18,15 +18,18 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 						$('<header></header>').append('<h5>'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+''+(fld.label?fld.label:'')+'</h5>',toolbar));
 	}
 	,renderTextField : function(fld){
-		var $fld=				'<label for="'+fld.id+'" class="control-label">'+fld.label+'</label>'
-						+'<div class="controls"><input type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="input-small" value=""></div>';
-		var $grp=$('<div class="controls '+(fld.parent && fld.parent.inline?'form-inline':'')+'"></div>').append($fld);
+		var $fld=this._getLabel(fld)
+						+'<div class=""><input type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="input-small" value=""></div>';
+		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
+	,_getLabel: function(fld){
+		return '<label for="'+fld.id+'" class="control-label '+(fld.labelCols?'col-lg-'+fld.labelCols:'')+'">'+fld.label+'</label>';
+	}
 	,renderSelectField : function(fld){
-		var $fld=				'<label for="'+fld.id+'" class="control-label">'+fld.label+'</label>'
-						+'<div class="controls"><select id="'+fld.id+'" class="form-control"></div>';
-		var $grp=$('<div class="controls '+(fld.parent && fld.parent.inline?'form-inline':'')+'"></div>').append($fld);
+		var $fld=this._getLabel(fld)
+						+'<div class=""><select id="'+fld.id+'" class="form-control"></div>';
+		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
 	,renderButton : function(fld){

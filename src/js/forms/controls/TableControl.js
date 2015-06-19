@@ -11,7 +11,8 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 		var $table=$tt.append($th,$tf);
 		return $cont.append($table);
 	}
-	,onafterrenderfield : function(fld){
+	,onafterrender : function(fld){debugger;
+		console.log('Table on afterrender:'+fld.id+' '+fld.items);
 		var opt={
 			processing : true
 			,serverSide : true
@@ -32,7 +33,7 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 		opt.columns=cols;
 		opt=$.extend(opt,fld.options);
 		$('#'+fld.id).dataTable(opt);
-		this._super(fld);
+//		this._super(fld);
 	}
 	,scatterField : function(fld,json){}
 });

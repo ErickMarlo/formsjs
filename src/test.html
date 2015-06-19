@@ -748,25 +748,25 @@
 					 ]}
 					,{id: 'btTestBox', type : 'Box', icon: 'th-large', label : 'Boot testing', items :[
 						{type : 'Row', items : [
-							{type : 'Column',label : 'Test title 1', cols : 2, items :[
-									{id : 'f1', type : 'Text', label : 'Test field1', path : '/obj/data/gr1/list/0/f1'}
-									,{id : 'f2',type : 'Text', label : 'Test field2', path : '/obj/data/gr1/list/1/f2'}
-									,{id : 'f3',type : 'Text', label : 'Test field3', path : '/obj/data/gr2/list/0/f3'}
+							{type : 'Column',label : 'Test title 1', cols : 4, items :[
+									{id : 'f1', type : 'Text', label : 'Test field1', path : '/obj/data/gr1/list/0/f1', labelCols: 3}
+									,{id : 'f2',type : 'Text', label : 'Test field2', path : '/obj/data/gr1/list/1/f2', labelCols: 3}
+									,{id : 'f3',type : 'Text', label : 'Test field3', path : '/obj/data/gr2/list/0/f3', labelCols: 3}
 							]}
-							,{type : 'Column',label : 'Test title 2', inline : true, cols : 4, path : '/obj/data/gr3', items :[
-									 {id : 'f4',type : 'Text', label : 'Test field4'}
-									,{id : 'f5',type : 'Text', label : 'Test field5'}
-									,{id : 'f6',type : 'Text', label : 'Test field6'}
+							,{type : 'Column',label : 'Test title 2', cols : 4, path : '/obj/data/gr3', items :[
+									 {id : 'f4',type : 'Text', label : 'Test field4', labelCols: 3}
+									,{id : 'f5',type : 'Text', label : 'Test field5', labelCols: 3}
+									,{id : 'f6',type : 'Text', label : 'Test field6', labelCols: 3}
 							]}
-							,{type : 'Column',label : 'Test title 3', inline : true, cols : 2, items :[
-									 {id : 'f7',type : 'Text', label : 'Test field7'}
-									,{id : 'f8',type : 'Text', label : 'Test field8'}
-									,{id : 'f9',type : 'Text', label : 'Test field9'}
+							,{type : 'Column',label : 'Test title 3', cols : 4, items :[
+									 {id : 'f7',type : 'Text', label : 'Test field7', labelCols: 3}
+									,{id : 'f8',type : 'Text', label : 'Test field8', labelCols: 3}
+									,{id : 'f9',type : 'Text', label : 'Test field9', labelCols: 3}
 							]}
 						]}
 						,{id:'testDynaRow', type : 'Row', path : '/obj/data/gr4', items : [
-							 {id:'testDynaCol', type : 'Column', label : 'Test title 4', inline : true, cols : 2,items:[]}
-							,{type : 'Column', label : 'Test title 5', inline : true, cols : 2, items :[
+							 {id:'testDynaCol', type : 'Column', label : 'Test title 4', cols : 1,items:[]}
+							,{type : 'Column', label : 'Test title 5', cols : 1, items :[
 									 {id : 'fa',type : 'Text', label : 'Test fielda'}
 									,{id : 'fb',type : 'Text', label : 'Test fieldb'}
 									,{id : 'fc',type : 'Text', label : 'Test fieldc'}
