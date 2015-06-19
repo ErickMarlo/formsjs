@@ -71,9 +71,9 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		for(var i=0;i<it.items.length;i++) {
 			var fld=it.items[i];
 			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-			if(!ci)return ;
-			ci.onafterrender(fld);
-			this.onafterrender(fld);
+			if(ci) {
+				ci.onafterrender(fld);
+			}
 		}
 	}
 });
