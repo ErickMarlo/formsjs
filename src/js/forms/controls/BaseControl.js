@@ -2,7 +2,7 @@ Package.Register('forms.controls');
 
 forms.controls.BaseControl=Class.extend({
 	controlManager : null
-	,cnt : 0
+	,indexedseparator : '___'
 	,init : function(controlManager){
 		this.controlManager=controlManager;
 	}
@@ -23,8 +23,9 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,checkId : function(fld){
 		if(!fld.id) {
-			fld.id='fld'+fld.type+this.cnt;
-			this.cnt++;
+			var cnt=this.controlManager.instanceCounter;
+			fld.id='fld'+fld.type+cnt;
+			this.controlManager.instanceCounter++;
 		}
 	}
 	,checkParentPath : function(fld){
@@ -86,7 +87,7 @@ forms.controls.BaseControl=Class.extend({
 		this.setVal(fld,val);
 	}
 	,resolveVal: function(fld,val){
-		var split=fld.id.split('___');
+		var split=fld.id.split(this.indexedseparator);
 		if(split.length==1) {
 			return val[fld.id];
 		} else if(split.length==2) {
@@ -97,7 +98,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,gatherParentPath : function(fld){
 		var val=this.getVal(fld);
-		var path=fld.parentPath+'/'+fld.id.replace('___','/');
+		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
 		if(sel.length==0) throw 'No json path object found for:'+path;
 		sel.replace(val);

@@ -47,13 +47,15 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		if(fld.path) {
 			var val=fld.form.db.select(fld.path).value();
 			fld.val=val;
-			if($.isArray(val) && typeof fld.addItem=='function') {
+			if($.isArray(val) && typeof fld.createItem=='function') {
+				var ctx=this;
 				for(var i=0;i<val.length;i++) {
 					var it=fld.createItem(i,val[i]);
 					var dbit=SpahQL.db(it);
 					dbit.select('//items/*').map(function(){
 						this.select('//id').map(function(){
-							this.replace(''+i+'___'+this.value());
+							if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
+							this.replace(''+i+ctx.indexedseparator+this.value());
 						});
 					});
 					this.addItem(fld,it);

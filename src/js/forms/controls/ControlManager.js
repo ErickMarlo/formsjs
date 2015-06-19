@@ -2,6 +2,7 @@ Package.Register('forms.controls');
 
 forms.controls.ControlManager=Class.extend({
 	idx:{}
+	,instanceCounter : 0
 	,renderer : null
 	,init : function(){
 		this.idx['Custom']=new forms.controls.CustomControl(this);
