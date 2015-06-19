@@ -125,7 +125,7 @@ forms.controls.BaseControl=Class.extend({
 		fld.val=val;
 		return val;
 	}
-	,onafterrenderfield : function(fld){
+	,onafterrender : function(fld){
 		if(fld.onafterrender) {
 			fld.onafterrender(fld);
 		}

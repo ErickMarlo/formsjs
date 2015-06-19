@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="assets/plugins/Font-Awesome/css/font-awesome.css" />
     -->
     <link rel="stylesheet" href="../dist/jsforms.min.css" />
+		<link rel="stylesheet" href="assets/plugins/datepicker/css/datepicker.css" />
     <!--END GLOBAL STYLES -->
 
     <!-- PAGE LEVEL STYLES -->
@@ -625,6 +626,7 @@
     <!--<script src="assets/js/for_index.js"></script>-->
     <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
+    <script src="assets/plugins/datepicker/js/bootstrap-datepicker.js"></script>
     <script src="js/core/Clazz.js"></script>
     <script src="js/core/spahql.js"></script>
     <script src="js/forms/controls/BaseControl.js"></script>
@@ -637,6 +639,7 @@
     <script src="js/forms/controls/TabControl.js"></script>
     <script src="js/forms/controls/TableControl.js"></script>
     <script src="js/forms/controls/TextControl.js"></script>
+    <script src="js/forms/controls/DateControl.js"></script>
     <script src="js/forms/controls/SelectControl.js"></script>
     <script src="js/forms/controls/ButtonControl.js"></script>
     <script src="js/forms/controls/AccordionControl.js"></script>
@@ -681,9 +684,9 @@
 								,fc:'aaa8c'
 						}
 						,testDynaAccordion : [
-							 {t1:'111',t2:'222',t3:'333'}
-							,{t1:'444',t2:'555',t3:'666'}
-							,{t1:'777',t2:'888',t3:'999'}
+							 {t1:'111',t2:'01/01/2015',t3:'333'}
+							,{t1:'444',t2:'06/03/2014',t3:'666'}
+							,{t1:'777',t2:'05/01/2017',t3:'999'}
 						]
 					}
 				}
@@ -723,7 +726,7 @@
 																{type: 'Row',items: [
 																	{type: 'Column', items: [
 																		{type: 'Text', id: 't1', label: 'T1'}
-																	 ,{type: 'Text', id: 't2', label: 'T2'}
+																	 ,{type: 'Date', id: 't2', label: 'T2'}
 																	 ,{type: 'Select', id: 't3', label: 'T3',options: [
 																			  {text: 'Group1', options:[
 																					  {text: 'Items1', value: '333'}

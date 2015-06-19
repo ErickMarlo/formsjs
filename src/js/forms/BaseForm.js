@@ -19,8 +19,11 @@ forms.BaseForm=Class.extend({
 		this.onafterrender(this);
 	}
 	,onafterrender : function(it){
-		for(var i=0;i<this.items.length;i++) {
-			this.onafterrenderfield(this.items[i]);
+		for(var i=0;i<it.items.length;i++) {
+			var fld=this.items[i];
+			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
+			if(!ci)return ;
+			ci.onafterrender(fld);
 		}
 	}
 	,preprocess : function(){
@@ -40,15 +43,6 @@ forms.BaseForm=Class.extend({
 			ci.destroy(it);
 		}
 		this.$jq.remove();
-	}
-	,onafterrenderfield : function(fld){
-		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(!ci)return ;
-		ci.onafterrenderfield(fld);
-		if(!fld.items)return ;
-		for(var i=0;i<fld.items.length;i++) {
-			this.onafterrenderfield(fld.items[i]);
-		}
 	}
 	,initDb : function(json){
 		if(!this.db) {

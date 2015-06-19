@@ -41,7 +41,8 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		if(!field.items) {
 			field.items=[];
 		}
-		field.items.push(it);		
+		field.items.push(it);
+		this.onafterrender(it);
 	}
 	,scatter : function(fld){
 		if(fld.path) {
@@ -64,4 +65,14 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		}
 	}
 	,gather : function(){}
+	,onafterrender : function(it){
+		if(!it.items)return ;
+		for(var i=0;i<it.items.length;i++) {
+			var fld=it.items[i];
+			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
+			if(!ci)return ;
+			ci.onafterrender(fld);
+			this.onafterrender(fld);
+		}
+	}
 });
