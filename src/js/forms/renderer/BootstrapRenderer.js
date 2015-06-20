@@ -19,16 +19,16 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderTextField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlCols?'col-lg-'+fld.controlCols:'')+'"><input type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="form-control" value=""></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="form-control" value=""></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
 	,_getLabel: function(fld){
-		return '<label for="'+fld.id+'" class="control-label '+(fld.labelCols?'col-lg-'+fld.labelCols:'')+'">'+fld.label+'</label>';
+		return '<label for="'+fld.id+'" class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+'</label>';
 	}
 	,renderSelectField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlCols?'col-lg-'+fld.controlCols:'')+'"><select id="'+fld.id+'" class="form-control"></div>';
+						+'<div class="'+(fld.controlCols?'col-lg-'+fld.controlcols:'')+'"><select id="'+fld.id+'" class="form-control"></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
