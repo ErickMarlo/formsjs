@@ -19,7 +19,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderTextField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class=""><input type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="input-small" value=""></div>';
+						+'<div class="'+(fld.controlCols?'col-lg-'+fld.controlCols:'')+'"><input type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="form-control" value=""></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
@@ -28,7 +28,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderSelectField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class=""><select id="'+fld.id+'" class="form-control"></div>';
+						+'<div class="'+(fld.controlCols?'col-lg-'+fld.controlCols:'')+'"><select id="'+fld.id+'" class="form-control"></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
