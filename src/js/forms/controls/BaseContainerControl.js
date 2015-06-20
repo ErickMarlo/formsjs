@@ -48,10 +48,11 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		if(fld.path) {
 			var val=fld.form.db.select(fld.path).value();
 			fld.val=val;
-			if($.isArray(val) && typeof fld.createItem=='function') {
+			if($.isArray(val) && typeof fld.createitem=='function') {
 				var ctx=this;
 				for(var i=0;i<val.length;i++) {
-					var it=fld.createItem(i,val[i]);
+					var it=fld.createitem(i,val[i]);
+					if(!it) continue;
 					var dbit=SpahQL.db(it);
 					dbit.select('//items/*').map(function(){
 						this.select('//id').map(function(){

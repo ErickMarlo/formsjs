@@ -11,7 +11,7 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 		var $table=$tt.append($th,$tf);
 		return $cont.append($table);
 	}
-	,onafterrender : function(fld){debugger;
+	,onafterrender : function(fld){
 		console.log('Table on afterrender:'+fld.id+' '+fld.items);
 		var opt={
 			processing : true

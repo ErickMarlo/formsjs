@@ -719,9 +719,13 @@
 															 console.table(JSON.stringify(this.form.db.value()));
 													 }}
 											 ]}
-											 ,{id: 'testAccordionScatter',type: 'Accordion',path: '/obj/data/testDynaAccordion',createItem: function(i,o){
+											 ,{id: 'testAccordionScatter',type: 'Accordion',path: '/obj/data/testDynaAccordion',createitem: function(i,o){
+													 if(this.form.idx.byid['dynaAccordionItem'+i]) {
+														 return null;//Already exists don't add
+													 }
 													 return {
 														 type: 'AccordionItem', label: 'Item:'+i
+														 ,id: 'dynaAccordionItem'+i
 														 ,items: [
 																{type: 'Row',items: [
 																	{type: 'Column', items: [
