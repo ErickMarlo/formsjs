@@ -91,4 +91,12 @@ forms.BaseForm=Class.extend({
 			this.$jq.hide();
 		}
 	}
+	,validate: function(){
+		var result=[];
+		for(var i=0;i<this.items.length;i++) {
+			var ci=forms.controls.ControlManagerInstance.idx[this.items[i]];
+			ci.validate(result);
+		}
+		return result;
+	}
 });
