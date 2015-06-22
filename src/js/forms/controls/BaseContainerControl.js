@@ -77,4 +77,13 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 			}
 		}
 	}
+	,validate: function(fld,res){
+		fld.validate(res);
+		if(!fld.items) {
+			return ;
+		}
+		for(var i=0;i<fld.length;i++) {
+			this.validate(fld[i],res);
+		}
+	}
 });

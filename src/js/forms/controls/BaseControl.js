@@ -14,6 +14,20 @@ forms.controls.BaseControl=Class.extend({
 		this.checkParentPath(fld);
 		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
 		fld.form.idx.byid[fld.id]=fld;
+		this._setupvalidation(fld);
+	}
+	,_setupvalidation: function(fld){
+		var oldvalidfn=fld.validate;
+		fld.validate=function(result){
+			var res=[];
+			if(oldvalidfn) {
+				res.push(oldvalidfn());
+			}
+			if(fld.required) {
+				res.push({id:fld.id+'Required',source:fld,message:'Field "'+fld.label+'" value is required!'});
+			}
+			result.concat(res);
+		};
 	}
 	,destroy: function(fld){
 		delete fld.form.idx.byid[fld.id];
