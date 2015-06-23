@@ -9,7 +9,7 @@ forms.controls.Validators=Class.extend({
 			}
 			,success: function(fld,vld) {}
 			,isvalid: function(fld,vld){
-				return vld.required===true && !fld.val();
+				return vld.required===true && fld.val();
 			}
 		};
 		this.idx['minlen']={

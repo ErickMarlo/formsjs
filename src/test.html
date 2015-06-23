@@ -754,7 +754,7 @@
 					,{id: 'btTestBox', type : 'Box', icon: 'th-large', label : 'Boot testing', items :[
 						{type : 'Row', items : [
 							{type : 'Column',label : 'Test title 1', cols : 4, validate: function(){
-									if(this.form.idx.byid.f1.$jq.val().length==4 && this.form.idx.byid.f3.$jq.val()!='AZX') {
+									if(this.form.idx.byid.f1.val().length==4 && this.form.idx.byid.f3.val()!='AZX') {
 										return 'In case length of f1 is 4, then f3 must be AZX';
 									}
 							}, items :[
@@ -764,7 +764,7 @@
 										, validate: [{regexp: /^\d{3}[a-z]{3}$/g, message: 'Must be 3 letters and 3 digits.'}]
 										, path : '/obj/data/gr1/list/1/f2'}
 									,{id : 'f3',type : 'Text', label : 'Test field3', validate: function(val){
-											if(val!=='AZX' || val!=='QWX') {
+											if(this.val()!=='AZX' && this.val()!=='QWX') {
 												return 'Value must be AZX or QWX';
 											}
 									}, path : '/obj/data/gr2/list/0/f3'}
