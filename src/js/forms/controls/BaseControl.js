@@ -7,6 +7,7 @@ forms.controls.BaseControl=Class.extend({
 		this.controlManager=controlManager;
 	}
 	,preprocess : function(fld,parent){
+		var ctx=this;
 		if(!fld.type) fld.type='Custom';
 		if(!fld.form) fld.form=parent.form;
 		this.checkId(fld);
@@ -15,19 +16,45 @@ forms.controls.BaseControl=Class.extend({
 		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
 		fld.form.idx.byid[fld.id]=fld;
 		this._setupvalidation(fld);
+		fld.val=function(v) {
+			if(typeof v=='undefined') {
+				return ctx.getval(fld);
+			} else {
+				ctx.setval(fld,v);
+			}
+		};
 	}
 	,_setupvalidation: function(fld){
-		var oldvalidfn=fld.validate;
-		fld.validate=function(result){
+		fld.validatefn=function(){
 			var res=[];
-			if(oldvalidfn) {
-				res.push(oldvalidfn());
+			if(typeof fld.validate=='function') {
+				var fnres=fld.validate();
+				if(fnres) {
+					res.push({id:fld.id+'Function',source:fld,message:fnres,isvalid:false});
+				}
+				return res;
 			}
-			if(fld.required) {
-				res.push({id:fld.id+'Required',source:fld,message:'Field "'+fld.label+'" value is required!'});
+			for(var i=0;fld.validate && i<fld.validate.length;i++) {
+				var vldr=fld.validate[i];
+				for(var vld in vldr) {
+					var vldi=forms.controls.ValidatorsInstance.idx[vld];
+					if(!vldi) continue;
+					var isvalid=vldi.isvalid(fld,vld);
+					if(isvalid) {
+						var msg=vldi.success(fld,vldr);
+					} else {
+						var msg=vldi.error(fld,vldr);
+					}
+					if(msg) {
+						res.push({id:fld.id+vld,source:fld,message:msg,isvalid:isvalid});
+					}
+				}
 			}
-			result.concat(res);
+			return res;
 		};
+	}
+	,validate: function(fld,res) {
+		return fld.validatefn(res);
 	}
 	,destroy: function(fld){
 		delete fld.form.idx.byid[fld.id];
@@ -83,12 +110,12 @@ forms.controls.BaseControl=Class.extend({
 		}
 	}
 	,gatherSimple : function(fld){
-		var val=this.getVal(fld);
+		var val=this.getval(fld);
 		fld.form.db.value()[fld.id]=val;
 	}
 	,scatterSimple : function(fld){
 		var val=fld.form.db.value()[fld.id];
-		this.setVal(fld,val);
+		this.setval(fld,val);
 	}
 	,scatterParentPath : function(fld){
 		var parent=fld.parent;
@@ -98,7 +125,7 @@ forms.controls.BaseControl=Class.extend({
 		}
 		var pval=parent.val;
 		var val=this.resolveVal(fld,pval);
-		this.setVal(fld,val);
+		this.setval(fld,val);
 	}
 	,resolveVal: function(fld,val){
 		var split=fld.id.split(this.indexedseparator);
@@ -111,7 +138,7 @@ forms.controls.BaseControl=Class.extend({
 		}
 	}
 	,gatherParentPath : function(fld){
-		var val=this.getVal(fld);
+		var val=this.getval(fld);
 		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
 		if(sel.length==0) throw 'No json path object found for:'+path;
@@ -119,7 +146,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,scatterPath : function(fld){
 		var val=fld.form.db.select(fld.path).value();
-		this.setVal(fld,val);
+		this.setval(fld,val);
 	}
 	,gatherPath : function(fld){
 		var val=fld.$jq.val();
@@ -130,13 +157,11 @@ forms.controls.BaseControl=Class.extend({
 			throw 'No path in json in:'+fld.path
 		}
 	}
-	,setVal : function(fld,val){
+	,setval : function(fld,val){
 		fld.$jq.val(val);
-		fld.val=val;
 	}
-	,getVal : function(fld){
+	,getval : function(fld){
 		var val=fld.$jq.val();
-		fld.val=val;
 		return val;
 	}
 	,onafterrender : function(fld){

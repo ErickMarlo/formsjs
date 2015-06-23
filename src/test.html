@@ -647,6 +647,7 @@
     <script src="js/forms/controls/BreadcrumbControl.js"></script>
     <script src="js/forms/controls/BreadcrumbItemControl.js"></script>
     <script src="js/forms/controls/ControlManager.js"></script>
+    <script src="js/forms/controls/Validators.js"></script>
     <script src="js/forms/renderer/BaseRenderer.js"></script>
     <script src="js/forms/renderer/BootstrapRenderer.js"></script>
     <script src="js/forms/Application.js"></script>
@@ -757,16 +758,20 @@
 										return 'In case length of f1 is 4, then f3 must be AZX';
 									}
 							}, items :[
-									{id : 'f1', type : 'Text', label : 'Test field1', valid: [
-											 {type:'required', value: true}
-											,{type: 'minlen', value: 3}
-											,{type: 'maxlen', value: 6}], path : '/obj/data/gr1/list/0/f1'}
-									,{id : 'f2',type : 'Text', label : 'Test field2', valid: [{type: 'regexp', value: /^\d{3}[a-z]{3}$/g}],path : '/obj/data/gr1/list/1/f2'}
+									{id : 'f1', type : 'Text', label : 'Test field1', validate: [{required:true},{minlen:3},{maxlen:6}]
+									, path : '/obj/data/gr1/list/0/f1'}
+									,{id : 'f2',type : 'Text', label : 'Test field2'
+										, validate: [{regexp: /^\d{3}[a-z]{3}$/g, message: 'Must be 3 letters and 3 digits.'}]
+										, path : '/obj/data/gr1/list/1/f2'}
 									,{id : 'f3',type : 'Text', label : 'Test field3', validate: function(val){
 											if(val!=='AZX' || val!=='QWX') {
 												return 'Value must be AZX or QWX';
 											}
 									}, path : '/obj/data/gr2/list/0/f3'}
+									,{type: 'Button', label: 'Validate test',click: function(){
+											var valrep=this.form.validate();
+											console.log(valrep);
+									}}
 							]}
 							,{type : 'Column',label : 'Test title 2', cols : 4, path : '/obj/data/gr3', items :[
 									 {id : 'f4',type : 'Text', label : 'Test field4'}

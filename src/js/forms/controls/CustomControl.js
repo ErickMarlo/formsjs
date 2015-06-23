@@ -4,8 +4,8 @@ forms.controls.CustomControl=forms.controls.BaseControl.extend({
 	renderField : function(field) {
 		return this._super(field,$('<div></div>'));
 	}
-	,setVal : function(fld,val){
+	,setval : function(fld,val){
 	}
-	,getVal : function(fld){
+	,getval : function(fld){
 	}
 });

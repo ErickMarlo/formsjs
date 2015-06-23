@@ -94,9 +94,10 @@ forms.BaseForm=Class.extend({
 	,validate: function(){
 		var result=[];
 		for(var i=0;i<this.items.length;i++) {
-			var ci=forms.controls.ControlManagerInstance.idx[this.items[i]];
-			var fldres=ci.validate(this.items[i]);
-			result.push(fldres);
+			var ci=forms.controls.ControlManagerInstance.idx[this.items[i].type];
+			var fld=this.items[i];
+			var res=ci.validate(fld,result);
+			result=result.concat(res);
 		}
 		return result;
 	}
