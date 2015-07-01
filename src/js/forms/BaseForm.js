@@ -14,7 +14,8 @@ forms.BaseForm=Class.extend({
 		this.itemsdb=SpahQL.db(this.items);
 	}
 	,render : function(sel){
-		this.$jq=this.rendererImpl.renderitems(this);
+		var $rnd=this.rendererImpl.renderitems(this);
+		this.$jq=$('<form class="horizontal"></form>').append($rnd);
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
 	}

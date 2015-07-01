@@ -21,6 +21,7 @@
     -->
     <link rel="stylesheet" href="../dist/jsforms.min.css" />
 		<link rel="stylesheet" href="assets/plugins/datepicker/css/datepicker.css" />
+		<link rel="stylesheet" href="assets/plugins/validationengine/css/validationEngine.jquery.css" />
     <!--END GLOBAL STYLES -->
 
     <!-- PAGE LEVEL STYLES -->
@@ -627,6 +628,10 @@
     <script src="assets/plugins/dataTables/jquery.dataTables.js"></script>
     <script src="assets/plugins/dataTables/dataTables.bootstrap.js"></script>
     <script src="assets/plugins/datepicker/js/bootstrap-datepicker.js"></script>
+    <script src="assets/plugins/validationengine/js/jquery.validationEngine.js"></script>
+    <!--<script src="assets/plugins/jquery-validation-1.11.1/dist/jquery.validate.min.js"></script>-->
+    <script src="assets/plugins/validationengine/js/languages/jquery.validationEngine-en.js"></script>
+    <!--<script src="assets/js/validationInit.js"></script>-->
     <script src="js/core/Clazz.js"></script>
     <script src="js/core/spahql.js"></script>
     <script src="js/forms/controls/BaseControl.js"></script>
@@ -770,6 +775,7 @@
 									}, path : '/obj/data/gr2/list/0/f3'}
 									,{type: 'Button', label: 'Validate test',click: function(){
 											var valrep=this.form.validate();
+											this.form.$jq.validationEngine('validate');
 											console.log(valrep);
 									}}
 							]}

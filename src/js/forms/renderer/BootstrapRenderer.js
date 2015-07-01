@@ -17,9 +17,16 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $($box).append(
 						$('<header></header>').append('<h5>'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+''+(fld.label?fld.label:'')+'</h5>',toolbar));
 	}
+	,getValidations: function(fld) {
+		if(!fld.validate)return ;
+		var s='validate[';
+		for(var i=0;i<fld.validate.length;i++) {
+			var v=fld.validate[i];
+		}
+	}
 	,renderTextField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="form-control" value=""></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="validate[required]" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="form-control" value=""></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}

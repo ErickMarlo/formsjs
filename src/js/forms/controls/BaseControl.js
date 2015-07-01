@@ -15,7 +15,6 @@ forms.controls.BaseControl=Class.extend({
 		this.checkParentPath(fld);
 		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
 		fld.form.idx.byid[fld.id]=fld;
-		this._setupvalidation(fld);
 		fld.val=function(v) {
 			if(typeof v=='undefined') {
 				return ctx.getval(fld);
@@ -54,7 +53,7 @@ forms.controls.BaseControl=Class.extend({
 		};
 	}
 	,validate: function(fld,res) {
-		return fld.validatefn(res);
+		if(fld.validatefn) return fld.validatefn(res);
 	}
 	,destroy: function(fld){
 		delete fld.form.idx.byid[fld.id];
@@ -118,14 +117,16 @@ forms.controls.BaseControl=Class.extend({
 		this.setval(fld,val);
 	}
 	,scatterParentPath : function(fld){
-		var parent=fld.parent;
-		while(parent) {
-			if(parent.val) break;
-			parent=parent.parent;
-		}
-		var pval=parent.val;
-		var val=this.resolveVal(fld,pval);
-		this.setval(fld,val);
+//		var parent=fld.parent;
+//		while(parent) {
+//			if(parent.val) break;
+//			parent=parent.parent;
+//		}
+//		var pval=parent.val;
+		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
+		var sel=fld.form.db.select(path);
+//		var val=this.resolveVal(fld,pval);
+		this.setval(fld,sel.value());
 	}
 	,resolveVal: function(fld,val){
 		var split=fld.id.split(this.indexedseparator);
@@ -165,6 +166,7 @@ forms.controls.BaseControl=Class.extend({
 		return val;
 	}
 	,onafterrender : function(fld){
+		this._setupvalidation(fld);
 		if(fld.onafterrender) {
 			fld.onafterrender(fld);
 		}
