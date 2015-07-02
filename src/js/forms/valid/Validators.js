@@ -36,7 +36,7 @@ forms.valid.Validators=Class.extend({
 			}
 			,success: function(fld,vld) {}
 			,isvalid: function(fld,vld){
-				return fld.val().match(vld.regexp);
+				return vld.regexp.test(fld.val());
 			}
 		};
 	}
