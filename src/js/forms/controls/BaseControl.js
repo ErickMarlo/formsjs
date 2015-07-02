@@ -52,8 +52,9 @@ forms.controls.BaseControl=Class.extend({
 			return res;
 		};
 	}
-	,validate: function(fld,res) {
-		if(fld.validatefn) return fld.validatefn(res);
+	,validate: function(fld) {
+		if(fld.validatefn) return fld.validatefn();
+		return [];
 	}
 	,destroy: function(fld){
 		delete fld.form.idx.byid[fld.id];

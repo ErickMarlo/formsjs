@@ -97,7 +97,7 @@ forms.BaseForm=Class.extend({
 		for(var i=0;i<this.items.length;i++) {
 			var ci=forms.controls.ControlManagerInstance.idx[this.items[i].type];
 			var fld=this.items[i];
-			var res=ci.validate(fld,result);
+			var res=ci.validate(fld);
 			result=result.concat(res);
 		}
 		return result;
