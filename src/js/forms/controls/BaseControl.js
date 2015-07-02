@@ -36,7 +36,7 @@ forms.controls.BaseControl=Class.extend({
 			for(var i=0;fld.validate && i<fld.validate.length;i++) {
 				var vldr=fld.validate[i];
 				for(var vld in vldr) {
-					var vldi=forms.controls.ValidatorsInstance.idx[vld];
+					var vldi=forms.valid.ValidatorsInstance.idx[vld];
 					if(!vldi) continue;
 					var isvalid=vldi.isvalid(fld,vldr);
 					if(isvalid) {

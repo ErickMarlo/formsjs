@@ -1,6 +1,6 @@
-Package.Register('forms.controls');
+Package.Register('forms.valid');
 
-forms.controls.Validators=Class.extend({
+forms.valid.Validators=Class.extend({
 	 idx: {}
 	,init: function() {
 		this.idx['required']={
@@ -42,4 +42,4 @@ forms.controls.Validators=Class.extend({
 	}
 });
 
-forms.controls.ValidatorsInstance=new forms.controls.Validators();
+forms.valid.ValidatorsInstance=new forms.valid.Validators();
