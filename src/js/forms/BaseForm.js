@@ -4,12 +4,14 @@ forms.BaseForm=Class.extend({
 	items : null
 	,db : null
 	,rendererImpl : null
+	,validationViewer: null
 	,$jq : null
 	,idx : {
 		byid : {}
 	}
 	,init : function(){
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
+		this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
 		this.preprocess();
 		this.itemsdb=SpahQL.db(this.items);
 	}
@@ -100,6 +102,9 @@ forms.BaseForm=Class.extend({
 			var res=ci.validate(fld);
 			result=result.concat(res);
 		}
-		return result;
+		var ctx=this;
+		return {result:result,show: function(){
+				ctx.validationViewer.show(result);
+		}};
 	}
 });

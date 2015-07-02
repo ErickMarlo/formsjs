@@ -653,6 +653,7 @@
     <script src="js/forms/controls/BreadcrumbItemControl.js"></script>
     <script src="js/forms/controls/ControlManager.js"></script>
     <script src="js/forms/valid/Validators.js"></script>
+    <script src="js/forms/valid/ValidationEngineView.js"></script>
     <script src="js/forms/renderer/BaseRenderer.js"></script>
     <script src="js/forms/renderer/BootstrapRenderer.js"></script>
     <script src="js/forms/Application.js"></script>
@@ -703,6 +704,7 @@
 			var Testform=forms.BaseForm.extend({
 				 id: 'testform'
 				,renderer : 'Bootstrap'
+				,validationViewer: 'ValidationEngine'
 				,label: 'Test Form 1'
 				,items : [
 					 {type: 'Box', icon:'gears',items:[
@@ -774,9 +776,9 @@
 											}
 									}, path : '/obj/data/gr2/list/0/f3'}
 									,{type: 'Button', label: 'Validate test',click: function(){
-											var valrep=this.form.validate();
-											this.form.$jq.validationEngine('validate');
-											console.log(valrep);
+											var valid=this.form.validate();
+											valid.show();
+											console.log(valid);
 									}}
 							]}
 							,{type : 'Column',label : 'Test title 2', cols : 4, path : '/obj/data/gr3', items :[
