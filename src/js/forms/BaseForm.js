@@ -11,7 +11,7 @@ forms.BaseForm=Class.extend({
 	}
 	,init : function(){
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
-		this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
+		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
 		this.preprocess();
 		this.itemsdb=SpahQL.db(this.items);
 	}
