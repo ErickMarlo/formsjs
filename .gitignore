@@ -2236,3 +2236,5 @@
 /node_modules/grunt/README.md
 /node_modules/grunt-contrib-clean/node_modules/rimraf/*
 /font
+!/dist/
+!/font/
