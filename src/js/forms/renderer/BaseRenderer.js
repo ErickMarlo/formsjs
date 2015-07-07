@@ -15,7 +15,9 @@ forms.renderer.BaseRenderer=Class.extend({
 		return $root.append($obj);
 	}
 	,renderField : function(field){
-		var res=forms.controls.ControlManagerInstance.idx[field.type].renderField(field);
+		var rend=forms.controls.ControlManagerInstance.idx[field.type];
+		if(!rend) throw 'No renderer for field type:'+field.type;
+		var res=rend.renderField(field);
 		return res;
 	}
 });
