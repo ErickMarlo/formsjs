@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="UTF-8" />
+    <title></title>
+     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+     <!--[if IE]>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <![endif]-->
+    <!-- GLOBAL STYLES -->
+    <link rel="stylesheet" href="../dist/jsforms.min.css" />
+    <!--[if lt IE 9]>
+      <script src="../dist/jsformsIE.js"></script>
+    <![endif]-->
+</head>
+<body class="padTop53 " >
+    <div id="wrap" >
+        <div id="content">
+            <div class="inner" style="min-height: 200px;"></div>
+        </div>
+    </div>
+    <script src="../dist/dependencies.js"></script>
+    <script src="../dist/jsforms.js"></script>
+		<script>
+var app=new forms.Application({
+	selector: '#content .inner'
+});
+var mfrm=forms.BaseForm.extend({
+	 id: 'minimalisticform'
+	,renderer : 'Bootstrap'
+	,label: 'Minimalistic form example'
+	,items : [
+		{type: 'Row', items: [
+				{type: 'Column', items: [
+						{type: 'Text', label: 'Test textbox'}
+						,{type: 'Select', label: 'Test select', options:[
+								{text: 'Items1', value: 'val1'}
+						]}
+						,{type: 'Button', label: 'Test button'}
+				]}
+		]}
+	]
+});
+
+app.createform(mfrm);
+app.showform('mfrm');
+		</script>
+</body>
+
+    <!-- END BODY -->
+</html>
