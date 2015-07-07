@@ -14,6 +14,7 @@ forms.controls.SelectControl=forms.controls.BaseControl.extend({
 	}
 	,load: function(lopt,$jq){
 		if(!$jq) $jq=this.$jq;
+		if(!lopt)return;
 		for(var i=0;i<lopt.length;i++) {
 			var opt=lopt[i];
 			if(opt.options) {
