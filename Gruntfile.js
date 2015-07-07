@@ -1,6 +1,5 @@
 module.exports = function(grunt) {
 
-  // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     uglify: {
@@ -8,10 +7,12 @@ module.exports = function(grunt) {
          banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
 				,compress : true
       },
-      my_target: {
-				 src:['dist/<%= pkg.name %>.js']
-				,dest : 'dist/<%= pkg.name %>.min.js'
-      }
+			my_target: {
+			files: [
+				 {'dist/dependencies.min.js': ['dist/dependencies.js']}
+				,{'dist/jsforms.min.js': ['dist/jsforms.js']}
+				,{'dist/jsformsIE.min.js': ['dist/jsformsIE.js']}
+			]}
     }
 		,concat : {
 			options: {
@@ -19,37 +20,43 @@ module.exports = function(grunt) {
 			}
       ,basic_and_extras : {
         files : {
-          'dist/<%= pkg.name %>.js' : [
+          'dist/dependencies.js' : [
              'src/assets/plugins/jquery-2.0.3.min.js'
             ,'src/assets/plugins/bootstrap/js/bootstrap.min.js'
             ,'src/assets/plugins/modernizr-2.6.2-respond-1.1.0.min.js'
-            ,'src/assets/plugins/flot/jquery.flot.js'
-            ,'src/assets/plugins/flot/jquery.flot.resize.js'
-            ,'src/assets/plugins/flot/jquery.flot.time.js'
-            ,'src/assets/plugins/flot/jquery.flot.stack.js'
-            ,'src/assets/js/for_index.js'
             ,'src/assets/plugins/dataTables/jquery.dataTables.js'
             ,'src/assets/plugins/dataTables/dataTables.bootstrap.js'
-		  	  	,'src/js/core/Clazz.js'
+            ,'src/assets/plugins/datepicker/js/bootstrap-datepicker.js'
+            ,'src/assets/plugins/validationengine/js/jquery.validationEngine.js'
+            ,'src/assets/plugins/validationengine/js/languages/jquery.validationEngine-en.js'
 	  				,'src/js/core/spahql.js'
-  					,'src/js/forms/BaseForm.js'
-  					,'src/js/forms/controls/BaseControl.js'
-  					,'src/js/forms/controls/BaseContainerControl.js'
-						//Controls
-  					,'src/js/forms/controls/AccordionControl.js'
-  					,'src/js/forms/controls/AccordionItemControl.js'
-  					,'src/js/forms/controls/BoxControl.js'
-  					,'src/js/forms/controls/ButtonControl.js'
-  					,'src/js/forms/controls/ColumnControl.js'
-  					,'src/js/forms/controls/RowControl.js'
-  					,'src/js/forms/controls/TabControl.js'
-  					,'src/js/forms/controls/TableControl.js'
-  					,'src/js/forms/controls/TabsControl.js'
-  					,'src/js/forms/controls/TextControl.js'
-  					,'src/js/forms/renderer/BaseRenderer.js'
-  					,'src/js/forms/renderer/BootstrapRenderer.js'
-						//End of Controls
-  					,'src/js/forms/controls/ControlManager.js'
+		  	  	,'src/js/core/Clazz.js'
+				  ]
+          ,'dist/<%= pkg.name %>.js' : [
+						"src/js/forms/controls/BaseControl.js"
+						,"src/js/forms/controls/BaseContainerControl.js"
+						,"src/js/forms/controls/CustomControl.js"
+						,"src/js/forms/controls/ColumnControl.js"
+						,"src/js/forms/controls/RowControl.js"
+						,"src/js/forms/controls/BoxControl.js"
+						,"src/js/forms/controls/TabsControl.js"
+						,"src/js/forms/controls/TabControl.js"
+						,"src/js/forms/controls/TableControl.js"
+						,"src/js/forms/controls/TextControl.js"
+						,"src/js/forms/controls/DateControl.js"
+						,"src/js/forms/controls/SelectControl.js"
+						,"src/js/forms/controls/ButtonControl.js"
+						,"src/js/forms/controls/AccordionControl.js"
+						,"src/js/forms/controls/AccordionItemControl.js"
+						,"src/js/forms/controls/BreadcrumbControl.js"
+						,"src/js/forms/controls/BreadcrumbItemControl.js"
+						,"src/js/forms/controls/ControlManager.js"
+						,"src/js/forms/valid/Validators.js"
+						,"src/js/forms/valid/ValidationEngineView.js"
+						,"src/js/forms/renderer/BaseRenderer.js"
+						,"src/js/forms/renderer/BootstrapRenderer.js"
+						,"src/js/forms/Application.js"
+						,"src/js/forms/BaseForm.js"
 				  ]
           ,'dist/<%= pkg.name %>IE.js' : [
 		  			 'src/assets/js/html5shiv.js'
@@ -72,6 +79,8 @@ module.exports = function(grunt) {
                 ,'src/assets/plugins/flot/examples/examples.css'
                 ,'src/assets/plugins/timeline/timeline.css'
                 ,'src/assets/plugins/dataTables/dataTables.bootstrap.css'
+                ,'src/assets/plugins/datepicker/css/datepicker.css'
+                ,'src/assets/plugins/validationengine/css/validationEngine.jquery.css'
               ]
           }
       
@@ -94,5 +103,5 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 
-	grunt.registerTask('build', ['concat','uglify','cssmin','copy']);
+	grunt.registerTask('default', ['concat','uglify','cssmin','copy']);
 };
