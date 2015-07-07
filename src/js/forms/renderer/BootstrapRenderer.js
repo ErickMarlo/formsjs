@@ -35,7 +35,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderSelectField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlCols?'col-lg-'+fld.controlcols:'')+'"><select id="'+fld.id+'" class="form-control"></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><select id="'+fld.id+'" class="form-control"></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
