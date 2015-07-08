@@ -1,6 +1,8 @@
 JSForms is javascript forms engine, to make forms creation fun and easy.
 ##### Minimalistic form example
 
+http://jsfiddle.net/alberlau/hpuo3sx3/2/
+
     var app=new forms.Application({
       selector: '#content .inner'
     });
