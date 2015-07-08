@@ -293,8 +293,11 @@ forms.controls.RowControl=forms.controls.BaseContainerControl.extend({
 ;Package.Register('forms.controls');
 
 forms.controls.BoxControl=forms.controls.BaseContainerControl.extend({
-	renderField : function(field) {
-		return this._super(field,forms.controls.ControlManagerInstance.renderer.renderBox);
+	renderField : function(fld) {
+		var rend=forms.controls.ControlManagerInstance.renderer;
+		var $boxcontent=this._super(fld,rend.renderBoxContent);
+		var $box=rend.renderBox(fld);
+		return $box.append($boxcontent);
 	}
 });
 ;Package.Register('forms.controls');
@@ -655,13 +658,18 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderBox : function(fld){
 		var $tb=$('<div class="toolbar"></div>');
-		var $tbul=$('<ul class="nav pull-right"></ul>');
-		var $lnk1=$('<li><a class="accordion-toggle minimize-box" data-toggle="collapse" href="#'+fld.id+' div">'
+		var $tbul=$('<ul class="nav"></ul>');
+		var $lnk1=$('<li><a class="accordion-toggle minimize-box" data-toggle="collapse" href="#'+fld.id+'Body">'
 						+(fld.icon?'<i class="icon-chevron-up"></i>':'')+'</a></li>');
 		var toolbar=$tb.append($tbul.append($lnk1));
-		var $box=$('<div class="box" id="'+fld.id+'"></div>');
+		var $box=$('<div class="box dark" id="'+fld.id+'"></div>');
 		return $($box).append(
-						$('<header></header>').append('<h5>'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+''+(fld.label?fld.label:'')+'</h5>',toolbar));
+						$('<header></header>').append('<h5>'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+''+(fld.label?fld.label:'')+'</h5>',toolbar)
+						);
+	}
+	,renderBoxContent : function(fld){
+		var $body=$('<div id="'+fld.id+'Body" class="accordion-body collapse in body"></div>');
+		return $body;
 	}
 	,getValidations: function(fld) {
 		if(!fld.validate)return ;
