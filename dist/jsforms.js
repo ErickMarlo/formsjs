@@ -678,7 +678,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderInfoField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><span class="form-control info" id="'+fld.id+'" ></span></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" id="'+fld.id+'" disabled="disabled"></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
