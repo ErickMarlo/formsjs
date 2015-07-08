@@ -26,7 +26,13 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderTextField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="form-control" value=""></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $grp=$('<div class=""></div>').append($fld);
+		return $grp;
+	}
+	,renderInfoField : function(fld){
+		var $fld=this._getLabel(fld)
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><span class="form-control info" id="'+fld.id+'" ></span></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
