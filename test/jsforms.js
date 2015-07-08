@@ -392,6 +392,22 @@ forms.controls.TextControl=forms.controls.BaseControl.extend({
 });
 ;Package.Register('forms.controls');
 
+forms.controls.InfoControl=forms.controls.BaseControl.extend({
+	renderField : function(field) {
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderInfoField(field);
+		this._super(field,$($fld).find('.info'));
+		return $fld;
+	}
+	,setval : function(fld,val){
+		fld.$jq.html(val);
+	}
+	,getval : function(fld){
+		var val=fld.$jq.html();
+		return val;
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.DateControl=forms.controls.TextControl.extend({
 	renderField : function(fld) {
 		var $inp=$($fld).find('input');
@@ -523,6 +539,7 @@ forms.controls.ControlManager=Class.extend({
 	,init : function(){
 		this.idx['Custom']=new forms.controls.CustomControl(this);
 		this.idx['Text']=new forms.controls.TextControl(this);
+		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
@@ -655,7 +672,13 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderTextField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' class="form-control" value=""></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $grp=$('<div class=""></div>').append($fld);
+		return $grp;
+	}
+	,renderInfoField : function(fld){
+		var $fld=this._getLabel(fld)
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><span class="form-control info" id="'+fld.id+'" ></span></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
