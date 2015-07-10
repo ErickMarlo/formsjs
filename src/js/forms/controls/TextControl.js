@@ -6,4 +6,10 @@ forms.controls.TextControl=forms.controls.BaseControl.extend({
 		this._super(field,$($fld).find('input'));
 		return $fld;
 	}
+	,setupvaluechange: function(fld){
+		fld.$jq.on('keypress change',function(ev){debugger;
+			if(fld.change) fld.change(ev);
+			fld.form.change(fld,ev);
+		});
+	}
 });

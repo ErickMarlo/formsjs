@@ -9,6 +9,7 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 		var $root=rend.renderTabsRoot(fld);
 		var $th=rend.renderTabsHead(fld);
 		var $tb=rend.renderTabsBody(fld);
+		fld.$jq=$tb;
 		for(var i=0;i<fld.items.length;i++) {
 			var tab=fld.items[i];
 			this._addItem(fld,tab,$th,$tb,i==0);

@@ -22,6 +22,19 @@ forms.controls.BaseControl=Class.extend({
 				ctx.setval(fld,v);
 			}
 		};
+		this._setuprefnotifications(fld);
+	}
+	,_setuprefnotifications: function(fld){
+		if(fld.ref) {
+			var rm=fld.form.refmap;
+			if(rm[fld.ref]) {
+				var lst=rm[fld.ref];
+			} else {
+				var lst=[];
+				rm[fld.ref]=lst;
+			}
+			lst.push(fld);
+		}
 	}
 	,_setupvalidation: function(fld){
 		fld.validatefn=function(){
@@ -171,7 +184,9 @@ forms.controls.BaseControl=Class.extend({
 		if(fld.onafterrender) {
 			fld.onafterrender(fld);
 		}
+		this.setupvaluechange(fld);
 	}
+	,setupvaluechange: function(fld){}
 });
 ;Package.Register('forms.controls');
 
@@ -194,6 +209,7 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		}
 		return $cont;
 	}
+	,setupvaluechange: function(fld){}
 	,preprocess : function(fld,parent){
 		this._super(fld,parent);
 		if(!fld.items)return;
@@ -311,6 +327,7 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 		var $root=rend.renderTabsRoot(fld);
 		var $th=rend.renderTabsHead(fld);
 		var $tb=rend.renderTabsBody(fld);
+		fld.$jq=$tb;
 		for(var i=0;i<fld.items.length;i++) {
 			var tab=fld.items[i];
 			this._addItem(fld,tab,$th,$tb,i==0);
@@ -392,6 +409,12 @@ forms.controls.TextControl=forms.controls.BaseControl.extend({
 		this._super(field,$($fld).find('input'));
 		return $fld;
 	}
+	,setupvaluechange: function(fld){
+		fld.$jq.on('keypress change',function(ev){debugger;
+			if(fld.change) fld.change(ev);
+			fld.form.change(fld,ev);
+		});
+	}
 });
 ;Package.Register('forms.controls');
 
@@ -453,6 +476,12 @@ forms.controls.SelectControl=forms.controls.BaseControl.extend({
 				$jq.append($opt);
 			}
 		}
+	}
+	,setupvaluechange: function(fld){
+		fld.$jq.on('change',function(ev){
+			if(fld.change) fld.change(ev);
+			fld.form.change(fld,ev);
+		});
 	}
 });
 ;Package.Register('forms.controls');
@@ -888,6 +917,7 @@ forms.BaseForm=Class.extend({
 	,idx : {
 		byid : {}
 	}
+	,refmap: {}
 	,init : function(){
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
 		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
@@ -899,6 +929,16 @@ forms.BaseForm=Class.extend({
 		this.$jq=$('<form class="horizontal"></form>').append($rnd);
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
+	}
+	,change: function(fld,ev){
+		this.notifyrefs(fld);
+	}
+	,notifyrefs: function(fld){debugger;
+		var lst=this.refmap[fld.id];
+		for(var i=0;i<lst.length;i++) {
+			var dst=lst[i];
+			dst.val(fld.val());
+		}
 	}
 	,onafterrender : function(it){
 		for(var i=0;i<it.items.length;i++) {

@@ -29,4 +29,10 @@ forms.controls.SelectControl=forms.controls.BaseControl.extend({
 			}
 		}
 	}
+	,setupvaluechange: function(fld){
+		fld.$jq.on('change',function(ev){
+			if(fld.change) fld.change(ev);
+			fld.form.change(fld,ev);
+		});
+	}
 });

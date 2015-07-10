@@ -9,6 +9,7 @@ forms.BaseForm=Class.extend({
 	,idx : {
 		byid : {}
 	}
+	,refmap: {}
 	,init : function(){
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
 		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
@@ -20,6 +21,16 @@ forms.BaseForm=Class.extend({
 		this.$jq=$('<form class="horizontal"></form>').append($rnd);
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
+	}
+	,change: function(fld,ev){
+		this.notifyrefs(fld);
+	}
+	,notifyrefs: function(fld){debugger;
+		var lst=this.refmap[fld.id];
+		for(var i=0;i<lst.length;i++) {
+			var dst=lst[i];
+			dst.val(fld.val());
+		}
 	}
 	,onafterrender : function(it){
 		for(var i=0;i<it.items.length;i++) {

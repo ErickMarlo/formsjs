@@ -22,6 +22,19 @@ forms.controls.BaseControl=Class.extend({
 				ctx.setval(fld,v);
 			}
 		};
+		this._setuprefnotifications(fld);
+	}
+	,_setuprefnotifications: function(fld){
+		if(fld.ref) {
+			var rm=fld.form.refmap;
+			if(rm[fld.ref]) {
+				var lst=rm[fld.ref];
+			} else {
+				var lst=[];
+				rm[fld.ref]=lst;
+			}
+			lst.push(fld);
+		}
 	}
 	,_setupvalidation: function(fld){
 		fld.validatefn=function(){
@@ -171,5 +184,7 @@ forms.controls.BaseControl=Class.extend({
 		if(fld.onafterrender) {
 			fld.onafterrender(fld);
 		}
+		this.setupvaluechange(fld);
 	}
+	,setupvaluechange: function(fld){}
 });
