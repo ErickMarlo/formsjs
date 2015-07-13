@@ -59,6 +59,7 @@ You can call these methods or override any of them. For example:
 * gather - fill form db property with fields values
 * show(visibility) - show or hide this form
 * validate - get validation report of the form. To show validation call: form.validate().show()
+* change  called when forms field is changed via UI or programmatically.
 
 ##### Field level properties
 
@@ -103,11 +104,12 @@ the following methods are supported:
 
 ###### Simple fields
 
-Currently are supported the following simple fields: Text,Date,Select,Button,Table. The following properties are supported:
+Currently are supported the following simple fields: Text,Info,Date,Select,Button,Table. The following properties are supported:
 
 * id
 * type
 * label
+* ref : field value is automatically updated from referenced field value
 * path : field binding path into json. This overrides container path.For ex.:path:'/obj/data/gr3'
 * validate : validation rules. For ex.: validate: [{required:true},{minlen:3},{maxlen:6}].Validate can be function also.
 * labelcols : grid system cols label occupies
