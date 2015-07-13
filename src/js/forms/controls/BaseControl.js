@@ -131,15 +131,8 @@ forms.controls.BaseControl=Class.extend({
 		this.setval(fld,val);
 	}
 	,scatterParentPath : function(fld){
-//		var parent=fld.parent;
-//		while(parent) {
-//			if(parent.val) break;
-//			parent=parent.parent;
-//		}
-//		var pval=parent.val;
 		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
-//		var val=this.resolveVal(fld,pval);
 		this.setval(fld,sel.value());
 	}
 	,resolveVal: function(fld,val){
