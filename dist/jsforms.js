@@ -174,6 +174,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,setval : function(fld,val){
 		fld.$jq.val(val);
+		fld.form.change(fld);
 	}
 	,getval : function(fld){
 		var val=fld.$jq.val();
@@ -209,7 +210,6 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		}
 		return $cont;
 	}
-	,setupvaluechange: function(fld){}
 	,preprocess : function(fld,parent){
 		this._super(fld,parent);
 		if(!fld.items)return;
@@ -410,7 +410,7 @@ forms.controls.TextControl=forms.controls.BaseControl.extend({
 		return $fld;
 	}
 	,setupvaluechange: function(fld){
-		fld.$jq.on('keypress change',function(ev){debugger;
+		fld.$jq.on('keypress blur',function(ev){
 			if(fld.change) fld.change(ev);
 			fld.form.change(fld,ev);
 		});
@@ -715,7 +715,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderInfoField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" id="'+fld.id+'" disabled="disabled"></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control info" id="'+fld.id+'" disabled="disabled"></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
@@ -931,13 +931,16 @@ forms.BaseForm=Class.extend({
 		this.onafterrender(this);
 	}
 	,change: function(fld,ev){
-		this.notifyrefs(fld);
+		this.notifyrefs(fld,ev);
 	}
-	,notifyrefs: function(fld){debugger;
+	,notifyrefs: function(fld,ev){
 		var lst=this.refmap[fld.id];
+		if(!lst) return ;
 		for(var i=0;i<lst.length;i++) {
 			var dst=lst[i];
-			dst.val(fld.val());
+			var v=fld.val();
+			if(ev && ev.type=='keypress') v+=String.fromCharCode(ev.charCode);
+			dst.val(v);
 		}
 	}
 	,onafterrender : function(it){

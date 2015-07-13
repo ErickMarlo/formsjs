@@ -174,6 +174,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,setval : function(fld,val){
 		fld.$jq.val(val);
+		fld.form.change(fld);
 	}
 	,getval : function(fld){
 		var val=fld.$jq.val();

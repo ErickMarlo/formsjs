@@ -23,13 +23,16 @@ forms.BaseForm=Class.extend({
 		this.onafterrender(this);
 	}
 	,change: function(fld,ev){
-		this.notifyrefs(fld);
+		this.notifyrefs(fld,ev);
 	}
-	,notifyrefs: function(fld){debugger;
+	,notifyrefs: function(fld,ev){
 		var lst=this.refmap[fld.id];
+		if(!lst) return ;
 		for(var i=0;i<lst.length;i++) {
 			var dst=lst[i];
-			dst.val(fld.val());
+			var v=fld.val();
+			if(ev && ev.type=='keypress') v+=String.fromCharCode(ev.charCode);
+			dst.val(v);
 		}
 	}
 	,onafterrender : function(it){

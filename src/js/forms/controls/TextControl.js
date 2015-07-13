@@ -7,7 +7,7 @@ forms.controls.TextControl=forms.controls.BaseControl.extend({
 		return $fld;
 	}
 	,setupvaluechange: function(fld){
-		fld.$jq.on('keypress change',function(ev){debugger;
+		fld.$jq.on('keypress blur',function(ev){
 			if(fld.change) fld.change(ev);
 			fld.form.change(fld,ev);
 		});
