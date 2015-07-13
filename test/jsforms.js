@@ -22,6 +22,19 @@ forms.controls.BaseControl=Class.extend({
 				ctx.setval(fld,v);
 			}
 		};
+		this._setuprefnotifications(fld);
+	}
+	,_setuprefnotifications: function(fld){
+		if(fld.ref) {
+			var rm=fld.form.refmap;
+			if(rm[fld.ref]) {
+				var lst=rm[fld.ref];
+			} else {
+				var lst=[];
+				rm[fld.ref]=lst;
+			}
+			lst.push(fld);
+		}
 	}
 	,_setupvalidation: function(fld){
 		fld.validatefn=function(){
@@ -161,6 +174,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,setval : function(fld,val){
 		fld.$jq.val(val);
+		fld.form.change(fld);
 	}
 	,getval : function(fld){
 		var val=fld.$jq.val();
@@ -171,7 +185,9 @@ forms.controls.BaseControl=Class.extend({
 		if(fld.onafterrender) {
 			fld.onafterrender(fld);
 		}
+		this.setupvaluechange(fld);
 	}
+	,setupvaluechange: function(fld){}
 });
 ;Package.Register('forms.controls');
 
@@ -311,6 +327,7 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 		var $root=rend.renderTabsRoot(fld);
 		var $th=rend.renderTabsHead(fld);
 		var $tb=rend.renderTabsBody(fld);
+		fld.$jq=$tb;
 		for(var i=0;i<fld.items.length;i++) {
 			var tab=fld.items[i];
 			this._addItem(fld,tab,$th,$tb,i==0);
@@ -392,6 +409,12 @@ forms.controls.TextControl=forms.controls.BaseControl.extend({
 		this._super(field,$($fld).find('input'));
 		return $fld;
 	}
+	,setupvaluechange: function(fld){
+		fld.$jq.on('keypress blur',function(ev){
+			if(fld.change) fld.change(ev);
+			fld.form.change(fld,ev);
+		});
+	}
 });
 ;Package.Register('forms.controls');
 
@@ -453,6 +476,12 @@ forms.controls.SelectControl=forms.controls.BaseControl.extend({
 				$jq.append($opt);
 			}
 		}
+	}
+	,setupvaluechange: function(fld){
+		fld.$jq.on('change',function(ev){
+			if(fld.change) fld.change(ev);
+			fld.form.change(fld,ev);
+		});
 	}
 });
 ;Package.Register('forms.controls');
@@ -686,7 +715,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderInfoField : function(fld){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" id="'+fld.id+'" disabled="disabled"></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control info" id="'+fld.id+'" disabled="disabled"></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
@@ -888,6 +917,7 @@ forms.BaseForm=Class.extend({
 	,idx : {
 		byid : {}
 	}
+	,refmap: {}
 	,init : function(){
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
 		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
@@ -899,6 +929,19 @@ forms.BaseForm=Class.extend({
 		this.$jq=$('<form class="horizontal"></form>').append($rnd);
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
+	}
+	,change: function(fld,ev){
+		this.notifyrefs(fld,ev);
+	}
+	,notifyrefs: function(fld,ev){
+		var lst=this.refmap[fld.id];
+		if(!lst) return ;
+		for(var i=0;i<lst.length;i++) {
+			var dst=lst[i];
+			var v=fld.val();
+			if(ev && ev.type=='keypress') v+=String.fromCharCode(ev.charCode);
+			dst.val(v);
+		}
 	}
 	,onafterrender : function(it){
 		for(var i=0;i<it.items.length;i++) {
