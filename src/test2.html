@@ -42,6 +42,7 @@
 						<script src="js/forms/controls/AccordionItemControl.js"></script>
 						<script src="js/forms/controls/BreadcrumbControl.js"></script>
 						<script src="js/forms/controls/BreadcrumbItemControl.js"></script>
+						<script src="js/forms/controls/MessageControl.js"></script>
 						<script src="js/forms/controls/ControlManager.js"></script>
 						<script src="js/forms/valid/Validators.js"></script>
 						<script src="js/forms/valid/ValidationEngineView.js"></script>
@@ -86,7 +87,8 @@ var empfrm=forms.BaseForm.extend({
 			{type: 'Column', cols: 12, items: [
 				{type: 'Tabs', items:[
 					{type: 'Tab', label: 'General data', path: '/main', items:[
-						{type: 'Row', items: [
+						{id: 'gddatamsg', type: 'Message'}
+						,{type: 'Row', items: [
 							{type: 'Column', cols: 6, items: [
 								{type: 'Select', label: 'Branch', options:[
 								 {text: 'Vilnius', value: '0'}
@@ -103,6 +105,9 @@ var empfrm=forms.BaseForm.extend({
 						,{type: 'Row', items:[
 							{type: 'Column', items: [
 								{type: 'Button', label: 'Save', click: function(b){
+									var msg=b.form.idx.byid.gddatamsg;
+									msg.clear();
+									msg.show('warning',['Test msg']);
 								}}
 							]}
 						]}

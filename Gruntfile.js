@@ -51,6 +51,7 @@ module.exports = function(grunt) {
 						,"src/js/forms/controls/AccordionItemControl.js"
 						,"src/js/forms/controls/BreadcrumbControl.js"
 						,"src/js/forms/controls/BreadcrumbItemControl.js"
+						,"src/js/forms/controls/MessageControl.js"
 						,"src/js/forms/controls/ControlManager.js"
 						,"src/js/forms/valid/Validators.js"
 						,"src/js/forms/valid/ValidationEngineView.js"

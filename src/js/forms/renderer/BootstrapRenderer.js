@@ -127,4 +127,14 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 			}));
 		}
 	}
+	,renderMessage : function (fld) {
+		var $msgdiv=$('<div class="alert alert-success alert-dismissable"></div>');
+		var $dismissbtn=$('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>');
+		$msgdiv.append($dismissbtn);
+		return $msgdiv;
+	}
+	,changeAlertType : function(fld,type) {
+		fld.$jq.removeClass('alert-success alert-info alert-warning alert-danger');
+		fld.$jq.addClass('alert-'+type);
+	}
 });
