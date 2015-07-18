@@ -1,7 +1,10 @@
 Package.Register('forms.renderer');
 
 forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
-	renderColumn : function(fld){
+	renderForm : function (frm) {
+		return $('<form class="horizontal"></form>');
+	}
+	,renderColumn : function(fld){
 		return $('<div id="'+fld.id+'" class="control-group col-lg-'+(fld.cols?fld.cols:'2')+'">');
 	}
 	,renderRow : function(fld){
