@@ -18,7 +18,9 @@ forms.BaseForm=Class.extend({
 	}
 	,render : function(sel){
 		var $rnd=this.rendererImpl.renderitems(this);
-		this.$jq=$('<form class="horizontal"></form>').append($rnd);
+		var $frm=$('<form class="horizontal"></form>');
+		$frm.hide();
+		this.$jq=$frm.append($rnd);
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
 	}
