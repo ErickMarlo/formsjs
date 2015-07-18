@@ -66,59 +66,63 @@ var testdata={
 }
 
 var empfrm=forms.BaseForm.extend({
-	 id: 'empfrm'
+	 id: 'empfrmid'
 	,renderer : 'Bootstrap'
 	,label: 'Employee data'
 	,items : [
 		{type: 'Box', label: '&nbsp;Employee data', icon: 'user', items: [
 			{type: 'Row', items: [
-							{type: 'Column', cols: 6, items: [
-									{type: 'Info', label: 'First name', ref: 'firstname'}
-									,{type: 'Info', label: 'Date of birth', ref: 'dateofbirth'}
+				{type: 'Column', cols: 6, items: [
+					{type: 'Info', label: 'First name', ref: 'firstname'}
+					,{type: 'Info', label: 'Date of birth', ref: 'dateofbirth'}
 				]}
-							,{type: 'Column', cols: 6, items:[
-									{type: 'Info', label: 'Last name', ref: 'lastname'}
-									,{type: 'Info', label: 'Employment date', ref: 'employmentdate'}
-							]}
+				,{type: 'Column', cols: 6, items:[
+					{type: 'Info', label: 'Last name', ref: 'lastname'}
+					,{type: 'Info', label: 'Employment date', ref: 'employmentdate'}
+				]}
 			]}
 		]}
 		,{type:'Row', items: [
-				{type: 'Column', cols: 12, items: [
-						{type: 'Tabs', items:[
-								{type: 'Tab', label: 'General data', items:[
-										{type: 'Row', items: [
-												{type: 'Column', cols: 6, items: [
-														{type: 'Select', label: 'Branch', options:[
-																 {text: 'Vilnius', value: '0'}
-																,{text: 'Kaunas' , value: '1'}
-														]}
-														,{id:'firstname', type: 'Text', label: 'First name'}
-										,{id: 'dateofbirth', type: 'Date', label: 'Date of birth'}
-									]}
-									,{type: 'Column', cols: 6, items:[
-										{id: 'lastname', type: 'Text', label: 'Last name'}
-										,{id: 'employmentdate',type: 'Date', label: 'Employment date'}
-									]}
-										]}
-										,{type: 'Row', items:[
-												{type: 'Column', items: [
-														{type: 'Button', label: 'Save', click: function(b){
-														}}
-												]}
-										]}
+			{type: 'Column', cols: 12, items: [
+				{type: 'Tabs', items:[
+					{type: 'Tab', label: 'General data', path: '/main', items:[
+						{type: 'Row', items: [
+							{type: 'Column', cols: 6, items: [
+								{type: 'Select', label: 'Branch', options:[
+								 {text: 'Vilnius', value: '0'}
+								,{text: 'Kaunas' , value: '1'}
 								]}
-								,{type: 'Tab', label: 'Position data', items:[
-								]}
-								,{type: 'Tab', label: 'Salary', items:[
-								]}
+								,{id:'firstname', type: 'Text', label: 'First name'}
+								,{id: 'dateofbirth', type: 'Date', label: 'Date of birth'}
+							]}
+							,{type: 'Column', cols: 6, items:[
+								{id: 'lastname', type: 'Text', label: 'Last name'}
+								,{id: 'employmentdate',type: 'Date', label: 'Employment date'}
+							]}
 						]}
+						,{type: 'Row', items:[
+							{type: 'Column', items: [
+								{type: 'Button', label: 'Save', click: function(b){
+								}}
+							]}
+						]}
+					]}
+					,{type: 'Tab', label: 'Position data', items:[
+//						{type: 'Accordion', items: ''}
+					]}
+					,{type: 'Tab', label: 'Salary', items:[
+					]}
 				]}
+			]}
 		]}
 	]
+	,onafterrender: function() {
+		this.scatter(testdata);
+	}
 });
 
 app.createform(empfrm);
-app.showform('empfrm');
+app.showform('empfrmid');
 		</script>
 </body>
 
