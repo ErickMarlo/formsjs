@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!--> <html lang="en"> <!--<![endif]-->
+<!-- BEGIN HEAD -->
+<head>
+    <meta charset="UTF-8" />
+    <title></title>
+     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+	<meta content="" name="description" />
+	<meta content="" name="author" />
+     <!--[if IE]>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <![endif]-->
+    <!-- GLOBAL STYLES -->
+    <link rel="stylesheet" href="../dist/jsforms.min.css" />
+    <!--[if lt IE 9]>
+      <script src="../dist/jsformsIE.js"></script>
+    <![endif]-->
+</head>
+<body>
+	<div id="jsforms" >
+	</div>
+    <script src="../dist/dependencies.js"></script>
+		
+		
+		<script src="js/forms/controls/BaseControl.js"></script>
+						<script src="js/forms/controls/BaseContainerControl.js"></script>
+						<script src="js/forms/controls/CustomControl.js"></script>
+						<script src="js/forms/controls/ColumnControl.js"></script>
+						<script src="js/forms/controls/RowControl.js"></script>
+						<script src="js/forms/controls/BoxControl.js"></script>
+						<script src="js/forms/controls/TabsControl.js"></script>
+						<script src="js/forms/controls/TabControl.js"></script>
+						<script src="js/forms/controls/TableControl.js"></script>
+						<script src="js/forms/controls/TextControl.js"></script>
+						<script src="js/forms/controls/InfoControl.js"></script>
+						<script src="js/forms/controls/DateControl.js"></script>
+						<script src="js/forms/controls/SelectControl.js"></script>
+						<script src="js/forms/controls/ButtonControl.js"></script>
+						<script src="js/forms/controls/AccordionControl.js"></script>
+						<script src="js/forms/controls/AccordionItemControl.js"></script>
+						<script src="js/forms/controls/BreadcrumbControl.js"></script>
+						<script src="js/forms/controls/BreadcrumbItemControl.js"></script>
+						<script src="js/forms/controls/ControlManager.js"></script>
+						<script src="js/forms/valid/Validators.js"></script>
+						<script src="js/forms/valid/ValidationEngineView.js"></script>
+						<script src="js/forms/renderer/BaseRenderer.js"></script>
+						<script src="js/forms/renderer/BootstrapRenderer.js"></script>
+						<script src="js/forms/Application.js"></script>
+						<script src="js/forms/BaseForm.js"></script>
+		
+		
+    <!--<script src="../dist/jsforms.js"></script>-->
+		<script>
+var app=new forms.Application({
+	selector: '#jsforms'
+});
+
+var testdata={
+    main: {
+        firstname: 'Vardenis'
+        ,lastname: 'Pavardenis'
+        ,branch: 1
+    }
+}
+
+var empfrm=forms.BaseForm.extend({
+	 id: 'empfrm'
+	,renderer : 'Bootstrap'
+	,label: 'Employee data'
+	,items : [
+		{type: 'Box', label: '&nbsp;Employee data', icon: 'user', items: [
+			{type: 'Row', items: [
+							{type: 'Column', cols: 6, items: [
+									{type: 'Info', label: 'First name', ref: 'firstname'}
+									,{type: 'Info', label: 'Date of birth', ref: 'dateofbirth'}
+				]}
+							,{type: 'Column', cols: 6, items:[
+									{type: 'Info', label: 'Last name', ref: 'lastname'}
+									,{type: 'Info', label: 'Employment date', ref: 'employmentdate'}
+							]}
+			]}
+		]}
+		,{type:'Row', items: [
+				{type: 'Column', cols: 12, items: [
+						{type: 'Tabs', items:[
+								{type: 'Tab', label: 'General data', items:[
+										{type: 'Row', items: [
+												{type: 'Column', cols: 6, items: [
+														{type: 'Select', label: 'Branch', options:[
+																 {text: 'Vilnius', value: '0'}
+																,{text: 'Kaunas' , value: '1'}
+														]}
+														,{id:'firstname', type: 'Text', label: 'First name'}
+										,{id: 'dateofbirth', type: 'Date', label: 'Date of birth'}
+									]}
+									,{type: 'Column', cols: 6, items:[
+										{id: 'lastname', type: 'Text', label: 'Last name'}
+										,{id: 'employmentdate',type: 'Date', label: 'Employment date'}
+									]}
+										]}
+										,{type: 'Row', items:[
+												{type: 'Column', items: [
+														{type: 'Button', label: 'Save', click: function(b){
+														}}
+												]}
+										]}
+								]}
+								,{type: 'Tab', label: 'Position data', items:[
+								]}
+								,{type: 'Tab', label: 'Salary', items:[
+								]}
+						]}
+				]}
+		]}
+	]
+});
+
+app.createform(empfrm);
+app.showform('empfrm');
+		</script>
+</body>
+
+    <!-- END BODY -->
+</html>
