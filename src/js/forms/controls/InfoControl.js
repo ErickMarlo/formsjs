@@ -10,7 +10,5 @@ forms.controls.InfoControl=forms.controls.BaseControl.extend({
 		fld.$jq.html(val);
 	}
 	,getval : function(fld){
-		var val=fld.$jq.html();
-		return val;
 	}
 });

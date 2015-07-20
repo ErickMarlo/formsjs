@@ -31,8 +31,11 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 		}
 		fld.$jq.show();
 	}
+	
 	,setval : function(fld,val){
 	}
 	,getval : function(fld){
 	}
+	,scatter: function(fld){}
+	,gather: function(fld){}
 });

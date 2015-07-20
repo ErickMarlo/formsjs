@@ -63,6 +63,8 @@ var testdata={
         firstname: 'Vardenis'
         ,lastname: 'Pavardenis'
         ,branch: 1
+				,dateofbirth: '01/01/1970'
+				,employmentdate : '06/05/1996'
     }
 }
 
@@ -90,7 +92,7 @@ var empfrm=forms.BaseForm.extend({
 						{id: 'gddatamsg', type: 'Message'}
 						,{type: 'Row', items: [
 							{type: 'Column', cols: 6, items: [
-								{type: 'Select', label: 'Branch', options:[
+								{id: 'branch', type: 'Select', label: 'Branch', options:[
 								 {text: 'Vilnius', value: '0'}
 								,{text: 'Kaunas' , value: '1'}
 								]}
@@ -105,9 +107,11 @@ var empfrm=forms.BaseForm.extend({
 						,{type: 'Row', items:[
 							{type: 'Column', items: [
 								{type: 'Button', label: 'Save', click: function(b){
+									this.form.gather();
+									console.log(JSON.stringify(this.form.db.value()));
 									var msg=b.form.idx.byid.gddatamsg;
 									msg.clear();
-									msg.show('warning',['Test msg']);
+									msg.show('success',['The form data was gathered to json object and dumped into console. You can use this object to post it to server.']);
 								}}
 							]}
 						]}
@@ -121,7 +125,8 @@ var empfrm=forms.BaseForm.extend({
 			]}
 		]}
 	]
-	,onafterrender: function() {
+	,onafterrender: function(f) {
+		this._super(f);
 		this.scatter(testdata);
 	}
 });
