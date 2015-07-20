@@ -66,6 +66,23 @@ var testdata={
 				,dateofbirth: '01/01/1970'
 				,employmentdate : '06/05/1996'
     }
+		,position: [
+			{start : '06/05/1996'
+				,end : '25/08/1998'
+				,position : 'JUNIOR'
+				,notes : ''
+			}
+			,{start : '25/08/1998'
+				,end : '03/11/2000'
+				,position : 'PROGRAMMER'
+				,notes : ''
+			}
+			,{start : '03/11/2000'
+				,end : '06/01/2005'
+				,position : 'SENIOR'
+				,notes : ''
+			}
+		]
 }
 
 var empfrm=forms.BaseForm.extend({
@@ -117,7 +134,30 @@ var empfrm=forms.BaseForm.extend({
 						]}
 					]}
 					,{type: 'Tab', label: 'Position data', items:[
-//						{type: 'Accordion', items: ''}
+						{type: 'Accordion', path: '/position', createitem: function(i,o){
+							return {
+								type: 'AccordionItem'
+								,id: 'positionAccordionItem'+i
+								,label : i+'. Postion data from: '+o.start+' to '+o.end
+								,items : [
+									{type : 'Row', items: [
+										{type : 'Column' , items: [
+											{id : 'start', type: 'Date', label: 'Start date'}
+										]}
+										,{type : 'Column' , items: [
+											{id : 'end', type: 'Date', label: 'End date'}
+										]}
+										,{type : 'Column' , items: [
+											{id : 'position', type: 'Select', label: 'Position', options: [
+												{text: 'Junior programmer', value: 'JUNIOR'}
+												,{text: 'Programmer', value: 'PROGRAMMER'}
+												,{text: 'Senior programmer', value: 'SENIOR'}
+											]}
+										]}
+									]}
+								]
+							};
+						}}
 					]}
 					,{type: 'Tab', label: 'Salary', items:[
 					]}
