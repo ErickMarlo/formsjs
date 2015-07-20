@@ -131,41 +131,13 @@ var empfrm=forms.BaseForm.extend({
 						]}
 					]}
 					,{type: 'Tab', label: 'Position data', items:[
-						{type: 'Accordion', path: '/position', createitem: function(i,o){
-							return {
-								type: 'AccordionItem'
-								,id: 'positionAccordionItem'+(i+1)
-								,label : (i+1)+'. Postion data from: '+o.start+' to '+o.end
-								,items : [
-									{type : 'Row', items: [
-										{type : 'Column', cols:2 , items: [
-											{id : 'start', type: 'Date', label: 'Start date'}
-										]}
-										,{type : 'Column', cols:2 , items: [
-											{id : 'end', type: 'Date', label: 'End date'}
-										]}
-										,{type : 'Column', cols:2 , items: [
-											{id : 'position', type: 'Select', label: 'Position', options: [
-												{text: 'Junior programmer', value: 'JUNIOR'}
-												,{text: 'Programmer', value: 'PROGRAMMER'}
-												,{text: 'Senior programmer', value: 'SENIOR'}
-											]}
-										]}
-									]}
-									,{type: 'Row', items: [
-										{type : 'Column', cols: 12 , items: [
-											{type: 'Textarea', id: 'notes', label: 'Notes'}
-										]}
-									]}
-									,{type: 'Row', items: [
-										{type : 'Column', items: [
-											{type: 'Button', label: 'Save', click: function(){
-												this.form.save();
-											}}
-										]}
-									]}
-								]
-							};
+						{type: 'Button', label: 'Add', click: function(){
+							testdata.position.push({});
+							var aci=this.form.createPositionAccordionItem(testdata.position.length,{});
+							this.form.idx.byid.positionAccordion.addItem(aci);
+						}}
+						,{type: 'Accordion', id: 'positionAccordion', path: '/position', createitem: function(i,o){
+							return this.form.createPositionAccordionItem(i,o);
 						}}
 					]}
 					,{type: 'Tab', label: 'Salary', items:[
@@ -174,6 +146,42 @@ var empfrm=forms.BaseForm.extend({
 			]}
 		]}
 	]
+	,createPositionAccordionItem : function(i,o) {
+		return {
+			type: 'AccordionItem'
+			,id: 'positionAccordionItem'+(i+1)
+			,label : (i+1)+'. Postion data from: '+o.start+' to '+o.end
+			,items : [
+				{type : 'Row', items: [
+					{type : 'Column', cols:2 , items: [
+						{id : 'start', type: 'Date', label: 'Start date'}
+					]}
+					,{type : 'Column', cols:2 , items: [
+						{id : 'end', type: 'Date', label: 'End date'}
+					]}
+					,{type : 'Column', cols:2 , items: [
+						{id : 'position', type: 'Select', label: 'Position', options: [
+							{text: 'Junior programmer', value: 'JUNIOR'}
+							,{text: 'Programmer', value: 'PROGRAMMER'}
+							,{text: 'Senior programmer', value: 'SENIOR'}
+						]}
+					]}
+				]}
+				,{type: 'Row', items: [
+					{type : 'Column', cols: 12 , items: [
+						{type: 'Textarea', id: 'notes', label: 'Notes'}
+					]}
+				]}
+				,{type: 'Row', items: [
+					{type : 'Column', items: [
+						{type: 'Button', label: 'Save', click: function(){
+							this.form.save();
+						}}
+					]}
+				]}
+			]
+		}  
+	}
 	,onafterrender: function(f) {
 		this._super(f);
 		this.scatter(testdata);
