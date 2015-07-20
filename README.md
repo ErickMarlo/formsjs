@@ -119,3 +119,11 @@ The following methods are supported:
 
 * click : beeing invoked when Button is clicked
 * validate : perform field validation and return custom error message
+
+###### Special fields
+
+The special kind of control Message, supports the following methods:
+
+* show : function(type, messages) , where type is message type, one of:success,info,warning,danger, messages is array of messages to be shown
+* clear : clears already shown messages from control
+* hide : hides control
