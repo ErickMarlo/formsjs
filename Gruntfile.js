@@ -29,6 +29,7 @@ module.exports = function(grunt) {
             ,'src/assets/plugins/datepicker/js/bootstrap-datepicker.js'
             ,'src/assets/plugins/validationengine/js/jquery.validationEngine.js'
             ,'src/assets/plugins/validationengine/js/languages/jquery.validationEngine-en.js'
+            ,'src/assets/plugins/autosize/jquery.autosize.min.js'
 	  				,'src/js/core/spahql.js'
 		  	  	,'src/js/core/Clazz.js'
 				  ]

@@ -131,15 +131,8 @@ forms.controls.BaseControl=Class.extend({
 		this.setval(fld,val);
 	}
 	,scatterParentPath : function(fld){
-//		var parent=fld.parent;
-//		while(parent) {
-//			if(parent.val) break;
-//			parent=parent.parent;
-//		}
-//		var pval=parent.val;
 		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
-//		var val=this.resolveVal(fld,pval);
 		this.setval(fld,sel.value());
 	}
 	,resolveVal: function(fld,val){
@@ -428,22 +421,22 @@ forms.controls.InfoControl=forms.controls.BaseControl.extend({
 		fld.$jq.html(val);
 	}
 	,getval : function(fld){
-		var val=fld.$jq.html();
-		return val;
 	}
 });
 ;Package.Register('forms.controls');
 
 forms.controls.DateControl=forms.controls.TextControl.extend({
-	renderField : function(fld) {
-		var $inp=$($fld).find('input');
-		var $fld=this._super(fld,$inp);
-		return $fld;
-	}
-	,onafterrender : function(fld){
+	onafterrender : function(fld){
 		this._super(fld);
 		var $inp=fld.$jq;
 		$inp.datepicker({format:'dd/mm/yyyy'});
+	}
+	,setupvaluechange: function(fld){
+		this._super(fld);
+		fld.$jq.on('changeDate',function(ev){
+			if(fld.change) fld.change(ev);
+			fld.form.change(fld,ev);
+		});
 	}
 });
 ;Package.Register('forms.controls');
@@ -564,6 +557,47 @@ forms.controls.BreadcrumbItemControl=forms.controls.BaseContainerControl.extend(
 });
 ;Package.Register('forms.controls');
 
+forms.controls.MessageControl=forms.controls.BaseControl.extend({
+	renderField : function(field) {
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderMessage(field);
+		$fld.hide();
+		this._super(field,$fld);
+		var ctx=this;
+		field.show=function(type,messages) {
+			ctx.show(field,type,messages);
+		};
+		field.hide=function(){
+			ctx.hide(field);
+		};
+		field.clear=function(){
+			ctx.clear(field);
+		};
+		return $fld;
+	}
+	,hide : function(fld) {
+		fld.$jq.hide();
+	}
+	,clear : function(fld) {
+		fld.$jq.find('div').remove();
+	}
+	,show : function(fld,type,msgs) {
+		forms.controls.ControlManagerInstance.renderer.changeAlertType(fld,type);
+		for (var i = 0, max = msgs.length; i < max; i++) {
+			var msg=$('<div></div>').html(msgs[i]);//<a href="#" class="alert-link">Alert Link</a>
+			fld.$jq.append(msg);
+		}
+		fld.$jq.show();
+	}
+	
+	,setval : function(fld,val){
+	}
+	,getval : function(fld){
+	}
+	,scatter: function(fld){}
+	,gather: function(fld){}
+});
+;Package.Register('forms.controls');
+
 forms.controls.ControlManager=Class.extend({
 	idx:{}
 	,instanceCounter : 0
@@ -578,6 +612,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Column']=new forms.controls.ColumnControl(this);
 		this.idx['Row']=new forms.controls.RowControl(this);
 		this.idx['Box']=new forms.controls.BoxControl(this);
+		this.idx['Message']=new forms.controls.MessageControl(this);
 		this.idx['Tabs']=new forms.controls.TabsControl(this);
 		this.idx['Tab']=new forms.controls.TabControl(this);
 		this.idx['Table']=new forms.controls.TableControl(this);
@@ -679,7 +714,10 @@ forms.renderer.BaseRenderer=Class.extend({
 ;Package.Register('forms.renderer');
 
 forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
-	renderColumn : function(fld){
+	renderForm : function (frm) {
+		return $('<form class="horizontal"></form>');
+	}
+	,renderColumn : function(fld){
 		return $('<div id="'+fld.id+'" class="control-group col-lg-'+(fld.cols?fld.cols:'2')+'">');
 	}
 	,renderRow : function(fld){
@@ -801,6 +839,16 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 				}
 			}));
 		}
+	}
+	,renderMessage : function (fld) {
+		var $msgdiv=$('<div class="alert alert-success alert-dismissable"></div>');
+		var $dismissbtn=$('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>');
+		$msgdiv.append($dismissbtn);
+		return $msgdiv;
+	}
+	,changeAlertType : function(fld,type) {
+		fld.$jq.removeClass('alert-success alert-info alert-warning alert-danger');
+		fld.$jq.addClass('alert-'+type);
 	}
 });
 
@@ -925,8 +973,11 @@ forms.BaseForm=Class.extend({
 		this.itemsdb=SpahQL.db(this.items);
 	}
 	,render : function(sel){
-		var $rnd=this.rendererImpl.renderitems(this);
-		this.$jq=$('<form class="horizontal"></form>').append($rnd);
+		var rimp=this.rendererImpl;
+		var $rnd=rimp.renderitems(this);
+		var $frm=rimp.renderForm(this);
+		$frm.hide();
+		this.$jq=$frm.append($rnd);
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
 	}
