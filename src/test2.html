@@ -34,6 +34,7 @@
 						<script src="js/forms/controls/TabControl.js"></script>
 						<script src="js/forms/controls/TableControl.js"></script>
 						<script src="js/forms/controls/TextControl.js"></script>
+						<script src="js/forms/controls/TextareaControl.js"></script>
 						<script src="js/forms/controls/InfoControl.js"></script>
 						<script src="js/forms/controls/DateControl.js"></script>
 						<script src="js/forms/controls/SelectControl.js"></script>
@@ -124,11 +125,7 @@ var empfrm=forms.BaseForm.extend({
 						,{type: 'Row', items:[
 							{type: 'Column', items: [
 								{type: 'Button', label: 'Save', click: function(b){
-									this.form.gather();
-									console.log(JSON.stringify(this.form.db.value()));
-									var msg=b.form.idx.byid.gddatamsg;
-									msg.clear();
-									msg.show('success',['The form data was gathered to json object and dumped into console. You can use this object to post it to server.']);
+									this.form.save();
 								}}
 							]}
 						]}
@@ -137,22 +134,34 @@ var empfrm=forms.BaseForm.extend({
 						{type: 'Accordion', path: '/position', createitem: function(i,o){
 							return {
 								type: 'AccordionItem'
-								,id: 'positionAccordionItem'+i
-								,label : i+'. Postion data from: '+o.start+' to '+o.end
+								,id: 'positionAccordionItem'+(i+1)
+								,label : (i+1)+'. Postion data from: '+o.start+' to '+o.end
 								,items : [
 									{type : 'Row', items: [
-										{type : 'Column' , items: [
+										{type : 'Column', cols:2 , items: [
 											{id : 'start', type: 'Date', label: 'Start date'}
 										]}
-										,{type : 'Column' , items: [
+										,{type : 'Column', cols:2 , items: [
 											{id : 'end', type: 'Date', label: 'End date'}
 										]}
-										,{type : 'Column' , items: [
+										,{type : 'Column', cols:2 , items: [
 											{id : 'position', type: 'Select', label: 'Position', options: [
 												{text: 'Junior programmer', value: 'JUNIOR'}
 												,{text: 'Programmer', value: 'PROGRAMMER'}
 												,{text: 'Senior programmer', value: 'SENIOR'}
 											]}
+										]}
+									]}
+									,{type: 'Row', items: [
+										{type : 'Column', cols: 12 , items: [
+											{type: 'Textarea', id: 'notes', label: 'Notes'}
+										]}
+									]}
+									,{type: 'Row', items: [
+										{type : 'Column', items: [
+											{type: 'Button', label: 'Save', click: function(){
+												this.form.save();
+											}}
 										]}
 									]}
 								]
@@ -168,6 +177,13 @@ var empfrm=forms.BaseForm.extend({
 	,onafterrender: function(f) {
 		this._super(f);
 		this.scatter(testdata);
+	}
+	,save : function() {
+		this.gather();
+		console.log(JSON.stringify(this.db.value()));
+		var msg=this.idx.byid.gddatamsg;
+		msg.clear();
+		msg.show('success',['The form data was gathered to json object and dumped into console. You can use this object to post it to server.']);
 	}
 });
 

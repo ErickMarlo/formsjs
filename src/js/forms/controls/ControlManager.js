@@ -7,6 +7,7 @@ forms.controls.ControlManager=Class.extend({
 	,init : function(){
 		this.idx['Custom']=new forms.controls.CustomControl(this);
 		this.idx['Text']=new forms.controls.TextControl(this);
+		this.idx['Textarea']=new forms.controls.TextareaControl(this);
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);

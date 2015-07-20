@@ -147,6 +147,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,gatherParentPath : function(fld){
 		var val=this.getval(fld);
+		if(val==undefined)return;
 		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
 		if(sel.length==0) throw 'No json path object found for:'+path;
@@ -411,6 +412,21 @@ forms.controls.TextControl=forms.controls.BaseControl.extend({
 });
 ;Package.Register('forms.controls');
 
+forms.controls.TextareaControl=forms.controls.BaseControl.extend({
+	renderField : function(field) {
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextareaField(field);
+		this._super(field,$($fld).find('textarea'));
+		return $fld;
+	}
+	,setupvaluechange: function(fld){
+		fld.$jq.on('keypress blur',function(ev){
+			if(fld.change) fld.change(ev);
+			fld.form.change(fld,ev);
+		});
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.InfoControl=forms.controls.BaseControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderInfoField(field);
@@ -605,6 +621,7 @@ forms.controls.ControlManager=Class.extend({
 	,init : function(){
 		this.idx['Custom']=new forms.controls.CustomControl(this);
 		this.idx['Text']=new forms.controls.TextControl(this);
+		this.idx['Textarea']=new forms.controls.TextareaControl(this);
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
@@ -718,7 +735,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $('<form class="horizontal"></form>');
 	}
 	,renderColumn : function(fld){
-		return $('<div id="'+fld.id+'" class="control-group col-lg-'+(fld.cols?fld.cols:'2')+'">');
+		return $('<div id="'+fld.id+'" class="control-group'+(fld.cols?' col-lg-'+fld.cols:'')+'">');
 	}
 	,renderRow : function(fld){
 		return $('<div id="'+fld.id+'" class="row"></div>');
@@ -748,6 +765,12 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderTextField : function(fld){
 		var $fld=this._getLabel(fld)
 						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $grp=$('<div class=""></div>').append($fld);
+		return $grp;
+	}
+	,renderTextareaField : function(fld){
+		var $fld=this._getLabel(fld)
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><textarea class="form-control" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+'></textarea></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}

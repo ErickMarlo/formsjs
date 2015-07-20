@@ -5,7 +5,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $('<form class="horizontal"></form>');
 	}
 	,renderColumn : function(fld){
-		return $('<div id="'+fld.id+'" class="control-group col-lg-'+(fld.cols?fld.cols:'2')+'">');
+		return $('<div id="'+fld.id+'" class="control-group'+(fld.cols?' col-lg-'+fld.cols:'')+'">');
 	}
 	,renderRow : function(fld){
 		return $('<div id="'+fld.id+'" class="row"></div>');
@@ -35,6 +35,12 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderTextField : function(fld){
 		var $fld=this._getLabel(fld)
 						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $grp=$('<div class=""></div>').append($fld);
+		return $grp;
+	}
+	,renderTextareaField : function(fld){
+		var $fld=this._getLabel(fld)
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><textarea class="form-control" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+'></textarea></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
