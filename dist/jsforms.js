@@ -219,14 +219,22 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		}
 	}
 	,addItem : function(field,it){
-		var ci=forms.controls.ControlManagerInstance.idx[it.type];
-		ci.preprocess(it,field);
-		var $rend=ci.controlManager.renderer.renderField(it);
-		field.$jq.append($rend);
+		var ctx=this;
 		if(!field.items) {
 			field.items=[];
 		}
 		field.items.push(it);
+		var dbit=SpahQL.db(it);
+		dbit.select('//items/*').map(function(){//Select before preprocess, otherwise will get endless loop
+			this.select('//id').map(function(){
+				if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
+				this.replace(''+(field.items.length-1)+ctx.indexedseparator+this.value());
+			});
+		});
+		var ci=forms.controls.ControlManagerInstance.idx[it.type];
+		ci.preprocess(it,field);
+		var $rend=ci.controlManager.renderer.renderField(it);
+		field.$jq.append($rend);
 		this.onafterrender(it);
 	}
 	,scatter : function(fld){
@@ -234,17 +242,9 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 			var val=fld.form.db.select(fld.path).value();
 			fld.val=val;
 			if($.isArray(val) && typeof fld.createitem=='function') {
-				var ctx=this;
 				for(var i=0;i<val.length;i++) {
 					var it=fld.createitem(i,val[i]);
 					if(!it) continue;
-					var dbit=SpahQL.db(it);
-					dbit.select('//items/*').map(function(){
-						this.select('//id').map(function(){
-							if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
-							this.replace(''+i+ctx.indexedseparator+this.value());
-						});
-					});
 					this.addItem(fld,it);
 				}
 			}

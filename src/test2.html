@@ -133,7 +133,7 @@ var empfrm=forms.BaseForm.extend({
 					,{type: 'Tab', label: 'Position data', items:[
 						{type: 'Button', label: 'Add', click: function(){
 							testdata.position.push({});
-							var aci=this.form.createPositionAccordionItem(testdata.position.length,{});
+							var aci=this.form.createPositionAccordionItem(testdata.position.length-1,{});
 							this.form.idx.byid.positionAccordion.addItem(aci);
 						}}
 						,{type: 'Accordion', id: 'positionAccordion', path: '/position', createitem: function(i,o){
