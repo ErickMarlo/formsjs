@@ -131,14 +131,16 @@ var empfrm=forms.BaseForm.extend({
 						]}
 					]}
 					,{type: 'Tab', label: 'Position data', items:[
-						{type: 'Button', label: 'Add', click: function(){
+						{type: 'Box', icon: 'film', label: '&nbsp;Position data historical records', toolbar: [{icon: 'plus', label: '&nbsp;Add', click: function(){
 							testdata.position.push({});
 							var aci=this.form.createPositionAccordionItem(testdata.position.length-1,{});
 							this.form.idx.byid.positionAccordion.addItem(aci);
-						}}
-						,{type: 'Accordion', id: 'positionAccordion', path: '/position', createitem: function(i,o){
-							return this.form.createPositionAccordionItem(i,o);
-						}}
+							return false;
+						}}], items: [
+								{type: 'Accordion', id: 'positionAccordion', path: '/position', createitem: function(i,o){
+									return this.form.createPositionAccordionItem(i,o);
+								}}
+							]}
 					]}
 					,{type: 'Tab', label: 'Salary', items:[
 					]}
