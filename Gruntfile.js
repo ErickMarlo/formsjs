@@ -37,6 +37,7 @@ module.exports = function(grunt) {
 						"src/js/forms/controls/BaseControl.js"
 						,"src/js/forms/controls/BaseContainerControl.js"
 						,"src/js/forms/controls/CustomControl.js"
+						,"src/js/forms/controls/ValueControl.js"
 						,"src/js/forms/controls/ColumnControl.js"
 						,"src/js/forms/controls/RowControl.js"
 						,"src/js/forms/controls/BoxControl.js"

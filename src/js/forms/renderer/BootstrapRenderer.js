@@ -106,8 +106,8 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderTableHeadFoot : function(fld,type){
 		var $thead=$('<'+type+'></'+type+'>');
 		var $thtr=$('<tr></tr>');
-		for(var i=0;i<fld.items.length;i++) {
-			$thtr.append($('<th></th>').html(fld.items[i].label));
+		for(var i=0;i<fld.columns.length;i++) {
+			$thtr.append($('<th></th>').html(fld.columns[i].label));
 		}
 		$thead.append($thtr);
 		return $thead;

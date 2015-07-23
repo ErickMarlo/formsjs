@@ -12,7 +12,6 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 		return $cont.append($table);
 	}
 	,onafterrender : function(fld){
-		console.log('Table on afterrender:'+fld.id+' '+fld.items);
 		var opt={
 			processing : true
 			,serverSide : true
@@ -27,13 +26,11 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 			};
 		};
 		var cols=[];
-		for(var i=0;i<fld.items.length;i++) {
-			cols.push({data:fld.items[i].id});
+		for(var i=0;i<fld.columns.length;i++) {
+			cols.push({data:fld.columns[i].id});
 		}
 		opt.columns=cols;
 		opt=$.extend(opt,fld.options);
 		$('#'+fld.id).dataTable(opt);
-//		this._super(fld);
 	}
-	,scatterField : function(fld,json){}
 });

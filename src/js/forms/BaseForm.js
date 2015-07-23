@@ -84,8 +84,9 @@ forms.BaseForm=Class.extend({
 	}
 	,gatherField : function(fld){
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(!ci)return ;
-		ci.gather(fld);
+		if(ci.gather) {
+			ci.gather(fld);
+		}
 		if(!fld.items) {
 			return ;
 		}
@@ -95,8 +96,9 @@ forms.BaseForm=Class.extend({
 	}
 	,scatterField : function(fld){
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(!ci)return ;
-		ci.scatter(fld);
+		if(ci.scatter) {
+			ci.scatter(fld);
+		}
 		if(!fld.items) {
 			return ;
 		}

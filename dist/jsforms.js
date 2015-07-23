@@ -7,21 +7,12 @@ forms.controls.BaseControl=Class.extend({
 		this.controlManager=controlManager;
 	}
 	,preprocess : function(fld,parent){
-		var ctx=this;
-		if(!fld.type) fld.type='Custom';
 		if(!fld.form) fld.form=parent.form;
 		this.checkId(fld);
 		fld.parent=parent;
 		this.checkParentPath(fld);
 		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
 		fld.form.idx.byid[fld.id]=fld;
-		fld.val=function(v) {
-			if(typeof v=='undefined') {
-				return ctx.getval(fld);
-			} else {
-				ctx.setval(fld,v);
-			}
-		};
 		this._setuprefnotifications(fld);
 	}
 	,_setuprefnotifications: function(fld){
@@ -91,6 +82,127 @@ forms.controls.BaseControl=Class.extend({
 				fld.parentPath=fld.parent.parentPath;
 			}
 		}
+	}
+	,onafterrender : function(fld){
+		this._setupvalidation(fld);
+		if(fld.onafterrender) {
+			fld.onafterrender(fld);
+		}
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
+	renderField : function(field,rendfn) {
+		var ctx=this;
+		this.checkId(field);
+		this.checkParentPath(field);
+		var $cont=rendfn(field);
+		field.$jq=$cont;
+		field.addItem = function(it){
+			ctx.addItem(field,it);
+		};
+		if(!field.items) return $cont;
+		for(var i=0;i<field.items.length;i++) {
+			var fld=field.items[i];
+			fld.index=i;
+			var $fld=forms.controls.ControlManagerInstance.renderer.renderField(fld);
+			$cont.append($fld);
+		}
+		return $cont;
+	}
+	,preprocess : function(fld,parent){
+		this._super(fld,parent);
+		if(!fld.items) return ;
+		for(var i=0;i<fld.items.length;i++) {
+			var ci=forms.controls.ControlManagerInstance.idx[fld.items[i].type];
+			ci.preprocess(fld.items[i],fld);
+		}
+	}
+	,destroy: function(fld){
+		this._super(fld);
+		if(!fld.items)return ;
+		for(var i=0;i<fld.items.length;i++) {
+			this.destroy(fld.items[i]);
+		}
+	}
+	,addItem : function(field,it){
+		var ctx=this;
+		if(!field.items) {
+			field.items=[];
+		}
+		field.items.push(it);
+		var dbit=SpahQL.db(it);
+		dbit.select('//items/*').map(function(){//Select before preprocess, otherwise will get endless loop
+			this.select('//id').map(function(){
+				if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
+				this.replace(''+(field.items.length-1)+ctx.indexedseparator+this.value());
+			});
+		});
+		var ci=forms.controls.ControlManagerInstance.idx[it.type];
+		ci.preprocess(it,field);
+		var $rend=ci.controlManager.renderer.renderField(it);
+		field.$jq.append($rend);
+		this.onafterrender(it);
+	}
+	,scatter : function(fld){
+		if(fld.path) {
+			var val=fld.form.db.select(fld.path).value();
+			fld.val=val;
+			if($.isArray(val) && typeof fld.createitem=='function') {
+				for(var i=0;i<val.length;i++) {
+					var it=fld.createitem(i,val[i]);
+					if(!it) continue;
+					this.addItem(fld,it);
+				}
+			}
+		}
+	}
+	,gather : function(){}
+	,onafterrender : function(it){
+		this._super(it);
+		if(!it.items)return ;
+		for(var i=0;i<it.items.length;i++) {
+			var fld=it.items[i];
+			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
+			if(ci) {
+				ci.onafterrender(fld);
+			}
+		}
+	}
+	,validate: function(fld){
+		var res=this._super(fld);
+		if(!fld.items) {
+			return res;
+		}
+		var res=[];
+		for(var i=0;i<fld.items.length;i++) {
+			var res1=this.validate(fld.items[i],res);
+			res=res.concat(res1);
+		}
+		return res;
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.CustomControl=forms.controls.BaseControl.extend({
+	renderField : function(field) {
+		return this._super(field,$('<div></div>'));
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.ValueControl=forms.controls.BaseControl.extend({
+	preprocess : function(fld,parent){
+		var ctx=this;
+		fld.val=function(v) {
+			if(typeof v=='undefined') {
+				return ctx.getval(fld);
+			} else {
+				ctx.setval(fld,v);
+			}
+		};
+		this._super(fld,parent);
 	}
 	,scatter : function(fld){
 		this.onbeforescatter(fld);
@@ -175,116 +287,10 @@ forms.controls.BaseControl=Class.extend({
 		return val;
 	}
 	,onafterrender : function(fld){
-		this._setupvalidation(fld);
-		if(fld.onafterrender) {
-			fld.onafterrender(fld);
-		}
+		this._super(fld);
 		this.setupvaluechange(fld);
 	}
 	,setupvaluechange: function(fld){}
-});
-;Package.Register('forms.controls');
-
-forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
-	renderField : function(field,rendfn) {
-		var ctx=this;
-		this.checkId(field);
-		this.checkParentPath(field);
-		var $cont=rendfn(field);
-		field.$jq=$cont;
-		field.addItem = function(it){
-			ctx.addItem(field,it);
-		};
-		if(!field.items) return $cont;
-		for(var i=0;i<field.items.length;i++) {
-			var fld=field.items[i];
-			fld.index=i;
-			var $fld=forms.controls.ControlManagerInstance.renderer.renderField(fld);
-			$cont.append($fld);
-		}
-		return $cont;
-	}
-	,preprocess : function(fld,parent){
-		this._super(fld,parent);
-		if(!fld.items)return;
-		for(var i=0;i<fld.items.length;i++) {
-			this.preprocess(fld.items[i],fld);
-		}
-	}
-	,destroy: function(fld){
-		this._super(fld);
-		if(!fld.items)return ;
-		for(var i=0;i<fld.items.length;i++) {
-			this.destroy(fld.items[i]);
-		}
-	}
-	,addItem : function(field,it){
-		var ctx=this;
-		if(!field.items) {
-			field.items=[];
-		}
-		field.items.push(it);
-		var dbit=SpahQL.db(it);
-		dbit.select('//items/*').map(function(){//Select before preprocess, otherwise will get endless loop
-			this.select('//id').map(function(){
-				if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
-				this.replace(''+(field.items.length-1)+ctx.indexedseparator+this.value());
-			});
-		});
-		var ci=forms.controls.ControlManagerInstance.idx[it.type];
-		ci.preprocess(it,field);
-		var $rend=ci.controlManager.renderer.renderField(it);
-		field.$jq.append($rend);
-		this.onafterrender(it);
-	}
-	,scatter : function(fld){
-		if(fld.path) {
-			var val=fld.form.db.select(fld.path).value();
-			fld.val=val;
-			if($.isArray(val) && typeof fld.createitem=='function') {
-				for(var i=0;i<val.length;i++) {
-					var it=fld.createitem(i,val[i]);
-					if(!it) continue;
-					this.addItem(fld,it);
-				}
-			}
-		}
-	}
-	,gather : function(){}
-	,onafterrender : function(it){
-		this._super(it);
-		if(!it.items)return ;
-		for(var i=0;i<it.items.length;i++) {
-			var fld=it.items[i];
-			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-			if(ci) {
-				ci.onafterrender(fld);
-			}
-		}
-	}
-	,validate: function(fld){
-		var res=this._super(fld);
-		if(!fld.items) {
-			return res;
-		}
-		var res=[];
-		for(var i=0;i<fld.items.length;i++) {
-			var res1=this.validate(fld.items[i],res);
-			res=res.concat(res1);
-		}
-		return res;
-	}
-});
-;Package.Register('forms.controls');
-
-forms.controls.CustomControl=forms.controls.BaseControl.extend({
-	renderField : function(field) {
-		return this._super(field,$('<div></div>'));
-	}
-	,setval : function(fld,val){
-	}
-	,getval : function(fld){
-	}
 });
 ;Package.Register('forms.controls');
 
@@ -370,7 +376,6 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 		return $cont.append($table);
 	}
 	,onafterrender : function(fld){
-		console.log('Table on afterrender:'+fld.id+' '+fld.items);
 		var opt={
 			processing : true
 			,serverSide : true
@@ -385,19 +390,18 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 			};
 		};
 		var cols=[];
-		for(var i=0;i<fld.items.length;i++) {
-			cols.push({data:fld.items[i].id});
+		for(var i=0;i<fld.columns.length;i++) {
+			cols.push({data:fld.columns[i].id});
 		}
 		opt.columns=cols;
 		opt=$.extend(opt,fld.options);
 		$('#'+fld.id).dataTable(opt);
-//		this._super(fld);
 	}
-	,scatterField : function(fld,json){}
 });
+
 ;Package.Register('forms.controls');
 
-forms.controls.TextControl=forms.controls.BaseControl.extend({
+forms.controls.TextControl=forms.controls.ValueControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextField(field);
 		this._super(field,$($fld).find('input'));
@@ -412,7 +416,7 @@ forms.controls.TextControl=forms.controls.BaseControl.extend({
 });
 ;Package.Register('forms.controls');
 
-forms.controls.TextareaControl=forms.controls.BaseControl.extend({
+forms.controls.TextareaControl=forms.controls.ValueControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextareaField(field);
 		this._super(field,$($fld).find('textarea'));
@@ -427,14 +431,14 @@ forms.controls.TextareaControl=forms.controls.BaseControl.extend({
 });
 ;Package.Register('forms.controls');
 
-forms.controls.InfoControl=forms.controls.BaseControl.extend({
+forms.controls.InfoControl=forms.controls.ValueControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderInfoField(field);
 		this._super(field,$($fld).find('.info'));
 		return $fld;
 	}
 	,setval : function(fld,val){
-		fld.$jq.html(val);
+		fld.$jq.val(val);
 	}
 	,getval : function(fld){
 	}
@@ -457,7 +461,7 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 });
 ;Package.Register('forms.controls');
 
-forms.controls.SelectControl=forms.controls.BaseControl.extend({
+forms.controls.SelectControl=forms.controls.ValueControl.extend({
 	renderField : function(fld) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
 		var select=$($fld).find('select');
@@ -500,7 +504,9 @@ forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderButton(fld);
 		this._super(fld,$($fld).find('a'));
 		$('body').on('click','#'+fld.id,function(e){
-			return fld.click(fld);
+			if(fld.click) {
+				return fld.click(fld);
+			}
 		});
 		return $fld;
 	}
@@ -743,9 +749,22 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderBox : function(fld){
 		var $tb=$('<div class="toolbar"></div>');
 		var $tbul=$('<ul class="nav"></ul>');
-		var $lnk1=$('<li><a class="accordion-toggle minimize-box" data-toggle="collapse" href="#'+fld.id+'Body">'
-						+(fld.icon?'<i class="icon-chevron-up"></i>':'')+'</a></li>');
-		var toolbar=$tb.append($tbul.append($lnk1));
+		if(fld.toolbar) {
+			for (var i = 0, max = fld.toolbar.length; i < max; i++) {
+				var ft=fld.toolbar[i];
+				var $a=$('<a href="#">'+(ft.icon?'<i class="icon-'+ft.icon+'"></i>':'')+(ft.label?ft.label:'')+'</a>');
+				if(ft.click) {
+					$a.bind('click',function(){
+						return ft.click.call(fld);
+					});
+				}
+				var $ft=$('<li></li>').append($a);
+				$tbul.append($ft);
+			}
+		}
+		var $collapselnk=$('<li><a class="accordion-toggle minimize-box" data-toggle="collapse" href="#'+fld.id+'Body">'
+						+'<i class="icon-chevron-up"></i>'+'</a></li>');
+		var toolbar=$tb.append($tbul.append($collapselnk));
 		var $box=$('<div class="box dark" id="'+fld.id+'"></div>');
 		return $($box).append(
 						$('<header></header>').append('<h5>'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+''+(fld.label?fld.label:'')+'</h5>',toolbar)
@@ -823,8 +842,8 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderTableHeadFoot : function(fld,type){
 		var $thead=$('<'+type+'></'+type+'>');
 		var $thtr=$('<tr></tr>');
-		for(var i=0;i<fld.items.length;i++) {
-			$thtr.append($('<th></th>').html(fld.items[i].label));
+		for(var i=0;i<fld.columns.length;i++) {
+			$thtr.append($('<th></th>').html(fld.columns[i].label));
 		}
 		$thead.append($thtr);
 		return $thead;
@@ -858,7 +877,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		} else {
 			return $('<li id="'+fld.id+'"></li>').append($('<a href="#">'+fld.label+'</a>').click(function(){
 				if(click) {
-					click.call(fld);
+					return click.call(fld);
 				}
 			}));
 		}
@@ -1063,8 +1082,9 @@ forms.BaseForm=Class.extend({
 	}
 	,gatherField : function(fld){
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(!ci)return ;
-		ci.gather(fld);
+		if(ci.gather) {
+			ci.gather(fld);
+		}
 		if(!fld.items) {
 			return ;
 		}
@@ -1074,8 +1094,9 @@ forms.BaseForm=Class.extend({
 	}
 	,scatterField : function(fld){
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(!ci)return ;
-		ci.scatter(fld);
+		if(ci.scatter) {
+			ci.scatter(fld);
+		}
 		if(!fld.items) {
 			return ;
 		}

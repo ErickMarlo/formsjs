@@ -1,6 +1,6 @@
 Package.Register('forms.controls');
 
-forms.controls.TextareaControl=forms.controls.BaseControl.extend({
+forms.controls.TextareaControl=forms.controls.ValueControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextareaField(field);
 		this._super(field,$($fld).find('textarea'));

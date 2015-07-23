@@ -1,13 +1,13 @@
 Package.Register('forms.controls');
 
-forms.controls.InfoControl=forms.controls.BaseControl.extend({
+forms.controls.InfoControl=forms.controls.ValueControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderInfoField(field);
 		this._super(field,$($fld).find('.info'));
 		return $fld;
 	}
 	,setval : function(fld,val){
-		fld.$jq.html(val);
+		fld.$jq.val(val);
 	}
 	,getval : function(fld){
 	}
