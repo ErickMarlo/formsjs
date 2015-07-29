@@ -30,9 +30,9 @@ forms.controls.SelectControl=forms.controls.ValueControl.extend({
 		}
 	}
 	,setupvaluechange: function(fld){
+		var ctx=this;
 		fld.$jq.on('change',function(ev){
-			if(fld.onchange) fld.onchange(ev);
-			fld.form.onchange(fld,ev);
+			ctx.onchange(fld,ev);
 		});
 	}
 });

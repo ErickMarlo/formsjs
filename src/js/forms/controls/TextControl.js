@@ -7,9 +7,9 @@ forms.controls.TextControl=forms.controls.ValueControl.extend({
 		return $fld;
 	}
 	,setupvaluechange: function(fld){
+		var ctx=this;
 		fld.$jq.on('keyup blur',function(ev){
-			if(fld.onchange) fld.onchange(ev);
-			fld.form.onchange(fld,ev);
+			ctx.onchange(fld,ev);
 		});
 	}
 });
