@@ -2,8 +2,8 @@ Package.Register('forms.controls');
 
 forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 	renderField : function(fld) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderButton(fld);
-		this._super(fld,$($fld).find('a'));
+		var $fld=this.getRenderFn()(fld);
+		this._super(fld,$fld);
 		$('body').on('click','#'+fld.id,function(e){
 			if(fld.click) {
 				return fld.click(fld);
@@ -11,6 +11,7 @@ forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 		});
 		return $fld;
 	}
-	,gather : function(){}
-	,scatter : function(){}
+	,getRenderFn : function() {
+		return forms.controls.ControlManagerInstance.renderer.renderButton;
+	}
 });

@@ -15,7 +15,11 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 			var fld=field.items[i];
 			fld.index=i;
 			var $fld=forms.controls.ControlManagerInstance.renderer.renderField(fld);
-			$cont.append($fld);
+			if(fld.target=='body') {
+				$cont.append($fld);
+			} else {
+				$cont.find('[_target="'+fld.target+'"]').append($fld);
+			}
 		}
 		return $cont;
 	}

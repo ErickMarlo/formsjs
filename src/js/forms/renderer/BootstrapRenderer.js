@@ -12,19 +12,18 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderBox : function(fld){
 		var $tb=$('<div class="toolbar"></div>');
-		var $tbul=$('<ul class="nav"></ul>');
-		if(fld.toolbar) {
-			for (var i = 0, max = fld.toolbar.length; i < max; i++) {
-				var ft=fld.toolbar[i];
-				var $a=$('<a href="#">'+(ft.icon?'<i class="icon-'+ft.icon+'"></i>':'')+(ft.label?ft.label:'')+'</a>');
-				if(ft.click) {
-					$a.bind('click',function(){
-						return ft.click.call(fld);
-					});
-				}
-				var $ft=$('<li></li>').append($a);
-				$tbul.append($ft);
-			}
+		var $tbul=$('<ul class="nav" _target="toolbar"></ul>');
+		for (var i = 0, max = fld.items.length; i < max; i++) {
+			var ft=fld.items[i];
+			if(ft.target!=='toolbar') continue;
+			var $a=$('<a id="'+ft.id+'" href="#">'+(ft.icon?'<i class="icon-'+ft.icon+'"></i>':'')+(ft.label?ft.label:'')+'</a>');
+//			if(ft.click) {
+//				$a.bind('click',function(){
+//					return ft.click.call(fld);
+//				});
+//			}
+			var $ft=$('<li></li>').append($a);
+			$tbul.append($ft);
 		}
 		var $collapselnk=$('<li><a class="accordion-toggle minimize-box" data-toggle="collapse" href="#'+fld.id+'Body">'
 						+'<i class="icon-chevron-up"></i>'+'</a></li>');
@@ -32,7 +31,11 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		var $box=$('<div class="box dark" id="'+fld.id+'"></div>');
 		return $($box).append(
 						$('<header></header>').append('<h5>'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+''+(fld.label?fld.label:'')+'</h5>',toolbar)
-						);
+					);
+	}
+	,renderToolbarButton: function(fld) {
+		var $a=$('<a id="'+fld.id+'" href="#">'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+(fld.label?fld.label:'')+'</a>');
+		return $a;
 	}
 	,renderBoxContent : function(fld){
 		var $body=$('<div id="'+fld.id+'Body" class="accordion-body collapse in body"></div>');

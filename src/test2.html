@@ -40,6 +40,7 @@
 						<script src="js/forms/controls/DateControl.js"></script>
 						<script src="js/forms/controls/SelectControl.js"></script>
 						<script src="js/forms/controls/ButtonControl.js"></script>
+						<script src="js/forms/controls/ToolbarButtonControl.js"></script>
 						<script src="js/forms/controls/AccordionControl.js"></script>
 						<script src="js/forms/controls/AccordionItemControl.js"></script>
 						<script src="js/forms/controls/BreadcrumbControl.js"></script>
@@ -132,16 +133,17 @@ var empfrm=forms.BaseForm.extend({
 						]}
 					]}
 					,{type: 'Tab', label: 'Position data', items:[
-						{type: 'Box', icon: 'film', label: '&nbsp;Position data historical records', toolbar: [{icon: 'plus', label: '&nbsp;Add', click: function(){
-							testdata.position.push({});
-							var aci=this.form.createPositionAccordionItem(testdata.position.length-1,{});
-							this.form.idx.byid.positionAccordion.addItem(aci);
-							return false;
-						}}], items: [
-								{type: 'Accordion', id: 'positionAccordion', path: '/position', createitem: function(i,o){
-									return this.form.createPositionAccordionItem(i,o);
-								}}
-							]}
+						{type: 'Box', icon: 'film', label: '&nbsp;Position data historical records', items: [
+							{type: 'ToolbarButton', target: 'toolbar', icon: 'plus', label: '&nbsp;Add', click: function(){
+								testdata.position.push({});
+								var aci=this.form.createPositionAccordionItem(testdata.position.length-1,{});
+								this.form.idx.byid.positionAccordion.addItem(aci);
+								return false;
+							}}
+							,{type: 'Accordion', id: 'positionAccordion', path: '/position', createitem: function(i,o){
+								return this.form.createPositionAccordionItem(i,o);
+							}}
+						]}
 					]}
 					,{type: 'Tab', label: 'Salary', items:[
 					]}
@@ -153,7 +155,7 @@ var empfrm=forms.BaseForm.extend({
 		return {
 			type: 'AccordionItem'
 			,id: 'positionAccordionItem'+(i+1)
-			,label : (i+1)+'. Postion data from: '+o.start+' to '+o.end
+			,label : (i+1)+'. Postion data from: '+(o.start?o.start:'-')+' to '+(o.end?o.end:'-')
 			,items : [
 				{type : 'Row', items: [
 					{type : 'Column', cols:2 , items: [

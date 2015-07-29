@@ -12,6 +12,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Date']=new forms.controls.DateControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
+		this.idx['ToolbarButton']=new forms.controls.ToolbarButtonControl(this);
 		this.idx['Column']=new forms.controls.ColumnControl(this);
 		this.idx['Row']=new forms.controls.RowControl(this);
 		this.idx['Box']=new forms.controls.BoxControl(this);

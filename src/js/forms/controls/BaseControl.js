@@ -8,6 +8,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,preprocess : function(fld,parent){
 		if(!fld.form) fld.form=parent.form;
+		if(!fld.target) fld.target='body';
 		this.checkId(fld);
 		fld.parent=parent;
 		this.checkParentPath(fld);
