@@ -9,8 +9,8 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 	,setupvaluechange: function(fld){
 		this._super(fld);
 		fld.$jq.on('changeDate',function(ev){
-			if(fld.change) fld.change(ev);
-			fld.form.change(fld,ev);
+			if(fld.onchange) fld.onchange(ev);
+			fld.form.onchange(fld,ev);
 		});
 	}
 });

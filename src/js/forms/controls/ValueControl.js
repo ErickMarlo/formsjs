@@ -88,7 +88,7 @@ forms.controls.ValueControl=forms.controls.BaseControl.extend({
 	}
 	,setval : function(fld,val){
 		fld.$jq.val(val);
-		fld.form.change(fld);
+		fld.form.onchange(fld);
 	}
 	,getval : function(fld){
 		var val=fld.$jq.val();

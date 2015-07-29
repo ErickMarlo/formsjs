@@ -25,7 +25,7 @@ forms.BaseForm=Class.extend({
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
 	}
-	,change: function(fld,ev){
+	,onchange: function(fld,ev){
 		this.notifyrefs(fld,ev);
 	}
 	,notifyrefs: function(fld,ev){
