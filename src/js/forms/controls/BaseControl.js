@@ -15,6 +15,9 @@ forms.controls.BaseControl=Class.extend({
 		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
 		fld.form.idx.byid[fld.id]=fld;
 		this._setuprefnotifications(fld);
+		fld.updatelabel=function(label) {
+			fld.$jq.find('[_target="label"]').html(label);
+		};
 	}
 	,_setuprefnotifications: function(fld){
 		if(fld.ref) {
@@ -89,5 +92,16 @@ forms.controls.BaseControl=Class.extend({
 		if(fld.onafterrender) {
 			fld.onafterrender(fld);
 		}
+	}
+	,onchange : function(fld,ev) {
+		if(fld.onchange) fld.onchange(ev);
+		var parent=fld.parent;
+		while(parent) {
+			if(parent.onchange) {
+				parent.onchange(fld,ev);
+			}
+			parent=parent.parent;
+		}
+		fld.form.onchange(fld,ev);
 	}
 });

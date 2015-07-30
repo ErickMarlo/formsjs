@@ -124,7 +124,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderAccordionItemHead: function(fld){
 		return $('<div class="panel-heading"></div>').append(
 						$('<h4 class="panel-title"></h4>')
-						.append('<a data-toggle="collapse" data-parent="#'+fld.parent.id+'" href="#'+fld.id+'">'+fld.label+'</a>'));
+						.append('<a _target="label" data-toggle="collapse" data-parent="#'+fld.parent.id+'" href="#'+fld.id+'">'+fld.label+'</a>'));
 	}
 	,renderAccordionItemContent: function(fld){
 		return $('<div id="'+fld.id+'" class="panel-collapse collapse'+(fld.index===0?' in':'')+'">');

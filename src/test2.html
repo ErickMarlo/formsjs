@@ -155,7 +155,12 @@ var empfrm=forms.BaseForm.extend({
 		return {
 			type: 'AccordionItem'
 			,id: 'positionAccordionItem'+(i+1)
-			,label : (i+1)+'. Postion data from: '+(o.start?o.start:'-')+' to '+(o.end?o.end:'-')
+			,label : (i+1)+'. Position data from: '+(o.start?o.start:'-')+' to '+(o.end?o.end:'-')
+			,onchange : function(fld,ev) {
+				var start=this.find('start').val();
+				var end=this.find('end').val();
+				this.updatelabel((this.index+1)+'. Position data from: '+(start?start:'-')+' to '+(end?end:'-'));
+			}
 			,items : [
 				{type : 'Row', items: [
 					{type : 'Column', cols:2 , items: [

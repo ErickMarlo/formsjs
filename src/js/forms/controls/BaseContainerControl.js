@@ -10,10 +10,25 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		field.addItem = function(it){
 			ctx.addItem(field,it);
 		};
+		field.find=function(id) {
+			var fnditem=null;
+			var fndfn=function(items){
+				if(!items || fnditem) return ;
+				for(var i=0;i<items.length;i++) {
+					var fid=items[i].id;
+					if(fid==id || fid.indexOf(ctx.indexedseparator+id)>-1) {
+						fnditem=items[i];
+					} else {
+						fndfn(items[i].items);
+					}
+				}
+			};
+			fndfn(field.items);
+			return fnditem;
+		};
 		if(!field.items) return $cont;
 		for(var i=0;i<field.items.length;i++) {
 			var fld=field.items[i];
-			fld.index=i;
 			var $fld=forms.controls.ControlManagerInstance.renderer.renderField(fld);
 			if(fld.target=='body') {
 				$cont.append($fld);
@@ -38,23 +53,24 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 			this.destroy(fld.items[i]);
 		}
 	}
-	,addItem : function(field,it){
+	,addItem : function(fld,it){
 		var ctx=this;
-		if(!field.items) {
-			field.items=[];
+		if(!fld.items) {
+			fld.items=[];
 		}
-		field.items.push(it);
+		it.index=fld.items.length;
+		fld.items.push(it);
 		var dbit=SpahQL.db(it);
 		dbit.select('//items/*').map(function(){//Select before preprocess, otherwise will get endless loop
 			this.select('//id').map(function(){
 				if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
-				this.replace(''+(field.items.length-1)+ctx.indexedseparator+this.value());
+				this.replace(''+(fld.items.length-1)+ctx.indexedseparator+this.value());
 			});
 		});
 		var ci=forms.controls.ControlManagerInstance.idx[it.type];
-		ci.preprocess(it,field);
+		ci.preprocess(it,fld);
 		var $rend=ci.controlManager.renderer.renderField(it);
-		field.$jq.append($rend);
+		fld.$jq.append($rend);
 		this.onafterrender(it);
 	}
 	,scatter : function(fld){

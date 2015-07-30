@@ -99,8 +99,4 @@ forms.controls.ValueControl=forms.controls.BaseControl.extend({
 		this.setupvaluechange(fld);
 	}
 	,setupvaluechange: function(fld){}
-	,onchange : function(fld,ev) {
-		if(fld.onchange) fld.onchange(ev);
-		fld.form.onchange(fld,ev);
-	}
 });
