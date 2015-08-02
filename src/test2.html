@@ -135,7 +135,12 @@ var empfrm=forms.BaseForm.extend({
 					,{type: 'Tab', label: 'Position data', items:[
 						{type: 'Box', icon: 'film', label: '&nbsp;Position data historical records', items: [
 							{type: 'ToolbarButton', target: 'toolbar', icon: 'plus', label: '&nbsp;Add', click: function(){
-								testdata.position.push({});
+								this.form.db.value().position.push({
+									start : ''
+									,end : ''
+									,position : ''
+									,notes : ''
+								});
 								var aci=this.form.createPositionAccordionItem(testdata.position.length-1,{});
 								this.form.idx.byid.positionAccordion.addItem(aci);
 								return false;
