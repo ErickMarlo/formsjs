@@ -551,6 +551,13 @@ forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 });
 ;Package.Register('forms.controls');
 
+forms.controls.ToolbarButtonControl=forms.controls.ButtonControl.extend({
+	getRenderFn : function() {
+		return forms.controls.ControlManagerInstance.renderer.renderToolbarButton;
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.AccordionControl=forms.controls.BaseContainerControl.extend({
 //	_superContentFn : null
 	renderField : function(fld) {
