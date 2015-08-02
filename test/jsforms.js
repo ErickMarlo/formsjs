@@ -7,22 +7,17 @@ forms.controls.BaseControl=Class.extend({
 		this.controlManager=controlManager;
 	}
 	,preprocess : function(fld,parent){
-		var ctx=this;
-		if(!fld.type) fld.type='Custom';
 		if(!fld.form) fld.form=parent.form;
+		if(!fld.target) fld.target='body';
 		this.checkId(fld);
 		fld.parent=parent;
 		this.checkParentPath(fld);
 		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
 		fld.form.idx.byid[fld.id]=fld;
-		fld.val=function(v) {
-			if(typeof v=='undefined') {
-				return ctx.getval(fld);
-			} else {
-				ctx.setval(fld,v);
-			}
-		};
 		this._setuprefnotifications(fld);
+		fld.updatelabel=function(label) {
+			fld.$jq.find('[_target="label"]').html(label);
+		};
 	}
 	,_setuprefnotifications: function(fld){
 		if(fld.ref) {
@@ -92,6 +87,158 @@ forms.controls.BaseControl=Class.extend({
 			}
 		}
 	}
+	,onafterrender : function(fld){
+		this._setupvalidation(fld);
+		if(fld.onafterrender) {
+			fld.onafterrender(fld);
+		}
+	}
+	,onchange : function(fld,ev) {
+		if(fld.onchange) fld.onchange(ev);
+		var parent=fld.parent;
+		while(parent) {
+			if(parent.onchange) {
+				parent.onchange(fld,ev);
+			}
+			parent=parent.parent;
+		}
+		fld.form.onchange(fld,ev);
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
+	renderField : function(field,rendfn) {
+		var ctx=this;
+		this.checkId(field);
+		this.checkParentPath(field);
+		var $cont=rendfn(field);
+		field.$jq=$cont;
+		field.addItem = function(it){
+			ctx.addItem(field,it);
+		};
+		field.find=function(id) {
+			var fnditem=null;
+			var fndfn=function(items){
+				if(!items || fnditem) return ;
+				for(var i=0;i<items.length;i++) {
+					var fid=items[i].id;
+					if(fid==id || fid.indexOf(ctx.indexedseparator+id)>-1) {
+						fnditem=items[i];
+					} else {
+						fndfn(items[i].items);
+					}
+				}
+			};
+			fndfn(field.items);
+			return fnditem;
+		};
+		if(!field.items) return $cont;
+		for(var i=0;i<field.items.length;i++) {
+			var fld=field.items[i];
+			var $fld=forms.controls.ControlManagerInstance.renderer.renderField(fld);
+			if(fld.target=='body') {
+				$cont.append($fld);
+			} else {
+				$cont.find('[_target="'+fld.target+'"]').append($fld);
+			}
+		}
+		return $cont;
+	}
+	,preprocess : function(fld,parent){
+		this._super(fld,parent);
+		if(!fld.items) return ;
+		for(var i=0;i<fld.items.length;i++) {
+			var ci=forms.controls.ControlManagerInstance.idx[fld.items[i].type];
+			ci.preprocess(fld.items[i],fld);
+		}
+	}
+	,destroy: function(fld){
+		this._super(fld);
+		if(!fld.items)return ;
+		for(var i=0;i<fld.items.length;i++) {
+			this.destroy(fld.items[i]);
+		}
+	}
+	,addItem : function(fld,it){
+		var ctx=this;
+		if(!fld.items) {
+			fld.items=[];
+		}
+		it.index=fld.items.length;
+		fld.items.push(it);
+		var dbit=SpahQL.db(it);
+		dbit.select('//items/*').map(function(){//Select before preprocess, otherwise will get endless loop
+			this.select('//id').map(function(){
+				if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
+				this.replace(''+(fld.items.length-1)+ctx.indexedseparator+this.value());
+			});
+		});
+		var ci=forms.controls.ControlManagerInstance.idx[it.type];
+		ci.preprocess(it,fld);
+		var $rend=ci.controlManager.renderer.renderField(it);
+		fld.$jq.append($rend);
+		this.onafterrender(it);
+	}
+	,scatter : function(fld){
+		if(fld.path) {
+			var val=fld.form.db.select(fld.path).value();
+			fld.val=val;
+			if($.isArray(val) && typeof fld.createitem=='function') {
+				for(var i=0;i<val.length;i++) {
+					var it=fld.createitem(i,val[i]);
+					if(!it) continue;
+					this.addItem(fld,it);
+				}
+			}
+		}
+	}
+	,gather : function(){}
+	,onafterrender : function(it){
+		this._super(it);
+		if(!it.items)return ;
+		for(var i=0;i<it.items.length;i++) {
+			var fld=it.items[i];
+			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
+			if(ci) {
+				ci.onafterrender(fld);
+			}
+		}
+	}
+	,validate: function(fld){
+		var res=this._super(fld);
+		if(!fld.items) {
+			return res;
+		}
+		var res=[];
+		for(var i=0;i<fld.items.length;i++) {
+			var res1=this.validate(fld.items[i],res);
+			res=res.concat(res1);
+		}
+		return res;
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.CustomControl=forms.controls.BaseControl.extend({
+	renderField : function(field) {
+		return this._super(field,$('<div></div>'));
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.ValueControl=forms.controls.BaseControl.extend({
+	preprocess : function(fld,parent){
+		var ctx=this;
+		fld.val=function(v) {
+			if(typeof v=='undefined') {
+				return ctx.getval(fld);
+			} else {
+				ctx.setval(fld,v);
+			}
+		};
+		this._super(fld,parent);
+	}
 	,scatter : function(fld){
 		this.onbeforescatter(fld);
 		if(fld.path) {
@@ -131,15 +278,8 @@ forms.controls.BaseControl=Class.extend({
 		this.setval(fld,val);
 	}
 	,scatterParentPath : function(fld){
-//		var parent=fld.parent;
-//		while(parent) {
-//			if(parent.val) break;
-//			parent=parent.parent;
-//		}
-//		var pval=parent.val;
 		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
-//		var val=this.resolveVal(fld,pval);
 		this.setval(fld,sel.value());
 	}
 	,resolveVal: function(fld,val){
@@ -154,6 +294,7 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,gatherParentPath : function(fld){
 		var val=this.getval(fld);
+		if(val==undefined)return;
 		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
 		if(sel.length==0) throw 'No json path object found for:'+path;
@@ -174,123 +315,17 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,setval : function(fld,val){
 		fld.$jq.val(val);
-		fld.form.change(fld);
+		fld.form.onchange(fld);
 	}
 	,getval : function(fld){
 		var val=fld.$jq.val();
 		return val;
 	}
 	,onafterrender : function(fld){
-		this._setupvalidation(fld);
-		if(fld.onafterrender) {
-			fld.onafterrender(fld);
-		}
+		this._super(fld);
 		this.setupvaluechange(fld);
 	}
 	,setupvaluechange: function(fld){}
-});
-;Package.Register('forms.controls');
-
-forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
-	renderField : function(field,rendfn) {
-		var ctx=this;
-		this.checkId(field);
-		this.checkParentPath(field);
-		var $cont=rendfn(field);
-		field.$jq=$cont;
-		field.addItem = function(it){
-			ctx.addItem(field,it);
-		};
-		if(!field.items) return $cont;
-		for(var i=0;i<field.items.length;i++) {
-			var fld=field.items[i];
-			fld.index=i;
-			var $fld=forms.controls.ControlManagerInstance.renderer.renderField(fld);
-			$cont.append($fld);
-		}
-		return $cont;
-	}
-	,preprocess : function(fld,parent){
-		this._super(fld,parent);
-		if(!fld.items)return;
-		for(var i=0;i<fld.items.length;i++) {
-			this.preprocess(fld.items[i],fld);
-		}
-	}
-	,destroy: function(fld){
-		this._super(fld);
-		if(!fld.items)return ;
-		for(var i=0;i<fld.items.length;i++) {
-			this.destroy(fld.items[i]);
-		}
-	}
-	,addItem : function(field,it){
-		var ci=forms.controls.ControlManagerInstance.idx[it.type];
-		ci.preprocess(it,field);
-		var $rend=ci.controlManager.renderer.renderField(it);
-		field.$jq.append($rend);
-		if(!field.items) {
-			field.items=[];
-		}
-		field.items.push(it);
-		this.onafterrender(it);
-	}
-	,scatter : function(fld){
-		if(fld.path) {
-			var val=fld.form.db.select(fld.path).value();
-			fld.val=val;
-			if($.isArray(val) && typeof fld.createitem=='function') {
-				var ctx=this;
-				for(var i=0;i<val.length;i++) {
-					var it=fld.createitem(i,val[i]);
-					if(!it) continue;
-					var dbit=SpahQL.db(it);
-					dbit.select('//items/*').map(function(){
-						this.select('//id').map(function(){
-							if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
-							this.replace(''+i+ctx.indexedseparator+this.value());
-						});
-					});
-					this.addItem(fld,it);
-				}
-			}
-		}
-	}
-	,gather : function(){}
-	,onafterrender : function(it){
-		this._super(it);
-		if(!it.items)return ;
-		for(var i=0;i<it.items.length;i++) {
-			var fld=it.items[i];
-			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-			if(ci) {
-				ci.onafterrender(fld);
-			}
-		}
-	}
-	,validate: function(fld){
-		var res=this._super(fld);
-		if(!fld.items) {
-			return res;
-		}
-		var res=[];
-		for(var i=0;i<fld.items.length;i++) {
-			var res1=this.validate(fld.items[i],res);
-			res=res.concat(res1);
-		}
-		return res;
-	}
-});
-;Package.Register('forms.controls');
-
-forms.controls.CustomControl=forms.controls.BaseControl.extend({
-	renderField : function(field) {
-		return this._super(field,$('<div></div>'));
-	}
-	,setval : function(fld,val){
-	}
-	,getval : function(fld){
-	}
 });
 ;Package.Register('forms.controls');
 
@@ -376,7 +411,6 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 		return $cont.append($table);
 	}
 	,onafterrender : function(fld){
-		console.log('Table on afterrender:'+fld.id+' '+fld.items);
 		var opt={
 			processing : true
 			,serverSide : true
@@ -391,64 +425,78 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 			};
 		};
 		var cols=[];
-		for(var i=0;i<fld.items.length;i++) {
-			cols.push({data:fld.items[i].id});
+		for(var i=0;i<fld.columns.length;i++) {
+			cols.push({data:fld.columns[i].id});
 		}
 		opt.columns=cols;
 		opt=$.extend(opt,fld.options);
 		$('#'+fld.id).dataTable(opt);
-//		this._super(fld);
 	}
-	,scatterField : function(fld,json){}
 });
+
 ;Package.Register('forms.controls');
 
-forms.controls.TextControl=forms.controls.BaseControl.extend({
+forms.controls.TextControl=forms.controls.ValueControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextField(field);
 		this._super(field,$($fld).find('input'));
 		return $fld;
 	}
 	,setupvaluechange: function(fld){
-		fld.$jq.on('keypress blur',function(ev){
-			if(fld.change) fld.change(ev);
-			fld.form.change(fld,ev);
+		var ctx=this;
+		fld.$jq.on('keyup blur',function(ev){
+			ctx.onchange(fld,ev);
 		});
 	}
 });
 ;Package.Register('forms.controls');
 
-forms.controls.InfoControl=forms.controls.BaseControl.extend({
+forms.controls.TextareaControl=forms.controls.ValueControl.extend({
+	renderField : function(field) {
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextareaField(field);
+		this._super(field,$($fld).find('textarea'));
+		return $fld;
+	}
+	,setupvaluechange: function(fld){
+		var ctx=this;
+		fld.$jq.on('keyup blur',function(ev){
+			ctx.onchange(fld,ev);
+		});
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.InfoControl=forms.controls.ValueControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderInfoField(field);
 		this._super(field,$($fld).find('.info'));
 		return $fld;
 	}
 	,setval : function(fld,val){
-		fld.$jq.html(val);
+		fld.$jq.val(val);
 	}
 	,getval : function(fld){
-		var val=fld.$jq.html();
-		return val;
 	}
 });
 ;Package.Register('forms.controls');
 
 forms.controls.DateControl=forms.controls.TextControl.extend({
-	renderField : function(fld) {
-		var $inp=$($fld).find('input');
-		var $fld=this._super(fld,$inp);
-		return $fld;
-	}
-	,onafterrender : function(fld){
+	onafterrender : function(fld){
 		this._super(fld);
 		var $inp=fld.$jq;
 		$inp.datepicker({format:'dd/mm/yyyy'});
 	}
+	,setupvaluechange: function(fld){
+		this._super(fld);
+		var ctx=this;
+		fld.$jq.on('changeDate',function(ev){
+			ctx.onchange(fld,ev);
+		});
+	}
 });
 ;Package.Register('forms.controls');
 
-forms.controls.SelectControl=forms.controls.BaseControl.extend({
+forms.controls.SelectControl=forms.controls.ValueControl.extend({
 	renderField : function(fld) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
 		var select=$($fld).find('select');
@@ -478,9 +526,9 @@ forms.controls.SelectControl=forms.controls.BaseControl.extend({
 		}
 	}
 	,setupvaluechange: function(fld){
+		var ctx=this;
 		fld.$jq.on('change',function(ev){
-			if(fld.change) fld.change(ev);
-			fld.form.change(fld,ev);
+			ctx.onchange(fld,ev);
 		});
 	}
 });
@@ -488,15 +536,18 @@ forms.controls.SelectControl=forms.controls.BaseControl.extend({
 
 forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 	renderField : function(fld) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderButton(fld);
-		this._super(fld,$($fld).find('a'));
+		var $fld=this.getRenderFn()(fld);
+		this._super(fld,$fld);
 		$('body').on('click','#'+fld.id,function(e){
-			return fld.click(fld);
+			if(fld.click) {
+				return fld.click(fld);
+			}
 		});
 		return $fld;
 	}
-	,gather : function(){}
-	,scatter : function(){}
+	,getRenderFn : function() {
+		return forms.controls.ControlManagerInstance.renderer.renderButton;
+	}
 });
 ;Package.Register('forms.controls');
 
@@ -545,6 +596,9 @@ forms.controls.AccordionItemControl=forms.controls.BaseContainerControl.extend({
 		var $body=this._super(fld,rend.renderAccordionItemBody);
 		var $head=rend.renderAccordionItemHead(fld);
 		var $content=rend.renderAccordionItemContent(fld);
+		fld.updatelabel=function(label) {
+			$head.find('[_target="label"]').html(label);
+		};
 		return $($('<div></div>').append($head,$content.append($body)).children());
 	}
 });
@@ -564,6 +618,40 @@ forms.controls.BreadcrumbItemControl=forms.controls.BaseContainerControl.extend(
 });
 ;Package.Register('forms.controls');
 
+forms.controls.MessageControl=forms.controls.BaseControl.extend({
+	renderField : function(field) {
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderMessage(field);
+		$fld.hide();
+		this._super(field,$fld);
+		var ctx=this;
+		field.show=function(type,messages) {
+			ctx.show(field,type,messages);
+		};
+		field.hide=function(){
+			ctx.hide(field);
+		};
+		field.clear=function(){
+			ctx.clear(field);
+		};
+		return $fld;
+	}
+	,hide : function(fld) {
+		fld.$jq.hide();
+	}
+	,clear : function(fld) {
+		fld.$jq.find('div').remove();
+	}
+	,show : function(fld,type,msgs) {
+		forms.controls.ControlManagerInstance.renderer.changeAlertType(fld,type);
+		for (var i = 0, max = msgs.length; i < max; i++) {
+			var msg=$('<div></div>').html(msgs[i]);//<a href="#" class="alert-link">Alert Link</a>
+			fld.$jq.append(msg);
+		}
+		fld.$jq.show();
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.ControlManager=Class.extend({
 	idx:{}
 	,instanceCounter : 0
@@ -571,13 +659,16 @@ forms.controls.ControlManager=Class.extend({
 	,init : function(){
 		this.idx['Custom']=new forms.controls.CustomControl(this);
 		this.idx['Text']=new forms.controls.TextControl(this);
+		this.idx['Textarea']=new forms.controls.TextareaControl(this);
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
+		this.idx['ToolbarButton']=new forms.controls.ToolbarButtonControl(this);
 		this.idx['Column']=new forms.controls.ColumnControl(this);
 		this.idx['Row']=new forms.controls.RowControl(this);
 		this.idx['Box']=new forms.controls.BoxControl(this);
+		this.idx['Message']=new forms.controls.MessageControl(this);
 		this.idx['Tabs']=new forms.controls.TabsControl(this);
 		this.idx['Tab']=new forms.controls.TabControl(this);
 		this.idx['Table']=new forms.controls.TableControl(this);
@@ -679,22 +770,41 @@ forms.renderer.BaseRenderer=Class.extend({
 ;Package.Register('forms.renderer');
 
 forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
-	renderColumn : function(fld){
-		return $('<div id="'+fld.id+'" class="control-group col-lg-'+(fld.cols?fld.cols:'2')+'">');
+	renderForm : function (frm) {
+		return $('<form class="horizontal"></form>');
+	}
+	,renderColumn : function(fld){
+		return $('<div id="'+fld.id+'" class="control-group'+(fld.cols?' col-lg-'+fld.cols:'')+'">');
 	}
 	,renderRow : function(fld){
 		return $('<div id="'+fld.id+'" class="row"></div>');
 	}
 	,renderBox : function(fld){
 		var $tb=$('<div class="toolbar"></div>');
-		var $tbul=$('<ul class="nav"></ul>');
-		var $lnk1=$('<li><a class="accordion-toggle minimize-box" data-toggle="collapse" href="#'+fld.id+'Body">'
-						+(fld.icon?'<i class="icon-chevron-up"></i>':'')+'</a></li>');
-		var toolbar=$tb.append($tbul.append($lnk1));
+		var $tbul=$('<ul class="nav" _target="toolbar"></ul>');
+		for (var i = 0, max = fld.items.length; i < max; i++) {
+			var ft=fld.items[i];
+			if(ft.target!=='toolbar') continue;
+			var $a=$('<a id="'+ft.id+'" href="#">'+(ft.icon?'<i class="icon-'+ft.icon+'"></i>':'')+(ft.label?ft.label:'')+'</a>');
+//			if(ft.click) {
+//				$a.bind('click',function(){
+//					return ft.click.call(fld);
+//				});
+//			}
+			var $ft=$('<li></li>').append($a);
+			$tbul.append($ft);
+		}
+		var $collapselnk=$('<li><a class="accordion-toggle minimize-box" data-toggle="collapse" href="#'+fld.id+'Body">'
+						+'<i class="icon-chevron-up"></i>'+'</a></li>');
+		var toolbar=$tb.append($tbul.append($collapselnk));
 		var $box=$('<div class="box dark" id="'+fld.id+'"></div>');
 		return $($box).append(
 						$('<header></header>').append('<h5>'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+''+(fld.label?fld.label:'')+'</h5>',toolbar)
-						);
+					);
+	}
+	,renderToolbarButton: function(fld) {
+		var $a=$('<a id="'+fld.id+'" href="#">'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+(fld.label?fld.label:'')+'</a>');
+		return $a;
 	}
 	,renderBoxContent : function(fld){
 		var $body=$('<div id="'+fld.id+'Body" class="accordion-body collapse in body"></div>');
@@ -710,6 +820,12 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderTextField : function(fld){
 		var $fld=this._getLabel(fld)
 						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $grp=$('<div class=""></div>').append($fld);
+		return $grp;
+	}
+	,renderTextareaField : function(fld){
+		var $fld=this._getLabel(fld)
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><textarea class="form-control" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+'></textarea></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
@@ -762,8 +878,8 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderTableHeadFoot : function(fld,type){
 		var $thead=$('<'+type+'></'+type+'>');
 		var $thtr=$('<tr></tr>');
-		for(var i=0;i<fld.items.length;i++) {
-			$thtr.append($('<th></th>').html(fld.items[i].label));
+		for(var i=0;i<fld.columns.length;i++) {
+			$thtr.append($('<th></th>').html(fld.columns[i].label));
 		}
 		$thead.append($thtr);
 		return $thead;
@@ -777,7 +893,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderAccordionItemHead: function(fld){
 		return $('<div class="panel-heading"></div>').append(
 						$('<h4 class="panel-title"></h4>')
-						.append('<a data-toggle="collapse" data-parent="#'+fld.parent.id+'" href="#'+fld.id+'">'+fld.label+'</a>'));
+						.append('<a _target="label" data-toggle="collapse" data-parent="#'+fld.parent.id+'" href="#'+fld.id+'">'+fld.label+'</a>'));
 	}
 	,renderAccordionItemContent: function(fld){
 		return $('<div id="'+fld.id+'" class="panel-collapse collapse'+(fld.index===0?' in':'')+'">');
@@ -797,10 +913,20 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		} else {
 			return $('<li id="'+fld.id+'"></li>').append($('<a href="#">'+fld.label+'</a>').click(function(){
 				if(click) {
-					click.call(fld);
+					return click.call(fld);
 				}
 			}));
 		}
+	}
+	,renderMessage : function (fld) {
+		var $msgdiv=$('<div class="alert alert-success alert-dismissable"></div>');
+		var $dismissbtn=$('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>');
+		$msgdiv.append($dismissbtn);
+		return $msgdiv;
+	}
+	,changeAlertType : function(fld,type) {
+		fld.$jq.removeClass('alert-success alert-info alert-warning alert-danger');
+		fld.$jq.addClass('alert-'+type);
 	}
 });
 
@@ -925,12 +1051,15 @@ forms.BaseForm=Class.extend({
 		this.itemsdb=SpahQL.db(this.items);
 	}
 	,render : function(sel){
-		var $rnd=this.rendererImpl.renderitems(this);
-		this.$jq=$('<form class="horizontal"></form>').append($rnd);
+		var rimp=this.rendererImpl;
+		var $rnd=rimp.renderitems(this);
+		var $frm=rimp.renderForm(this);
+		$frm.hide();
+		this.$jq=$frm.append($rnd);
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
 	}
-	,change: function(fld,ev){
+	,onchange: function(fld,ev){
 		this.notifyrefs(fld,ev);
 	}
 	,notifyrefs: function(fld,ev){
@@ -989,8 +1118,9 @@ forms.BaseForm=Class.extend({
 	}
 	,gatherField : function(fld){
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(!ci)return ;
-		ci.gather(fld);
+		if(ci.gather) {
+			ci.gather(fld);
+		}
 		if(!fld.items) {
 			return ;
 		}
@@ -1000,8 +1130,9 @@ forms.BaseForm=Class.extend({
 	}
 	,scatterField : function(fld){
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(!ci)return ;
-		ci.scatter(fld);
+		if(ci.scatter) {
+			ci.scatter(fld);
+		}
 		if(!fld.items) {
 			return ;
 		}
