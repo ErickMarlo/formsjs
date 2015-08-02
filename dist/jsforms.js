@@ -8,12 +8,16 @@ forms.controls.BaseControl=Class.extend({
 	}
 	,preprocess : function(fld,parent){
 		if(!fld.form) fld.form=parent.form;
+		if(!fld.target) fld.target='body';
 		this.checkId(fld);
 		fld.parent=parent;
 		this.checkParentPath(fld);
 		if(fld.form.idx.byid[fld.id])throw 'Field with id="'+fld.id+'" already exists in idx.';
 		fld.form.idx.byid[fld.id]=fld;
 		this._setuprefnotifications(fld);
+		fld.updatelabel=function(label) {
+			fld.$jq.find('[_target="label"]').html(label);
+		};
 	}
 	,_setuprefnotifications: function(fld){
 		if(fld.ref) {
@@ -89,6 +93,17 @@ forms.controls.BaseControl=Class.extend({
 			fld.onafterrender(fld);
 		}
 	}
+	,onchange : function(fld,ev) {
+		if(fld.onchange) fld.onchange(ev);
+		var parent=fld.parent;
+		while(parent) {
+			if(parent.onchange) {
+				parent.onchange(fld,ev);
+			}
+			parent=parent.parent;
+		}
+		fld.form.onchange(fld,ev);
+	}
 });
 ;Package.Register('forms.controls');
 
@@ -102,12 +117,31 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		field.addItem = function(it){
 			ctx.addItem(field,it);
 		};
+		field.find=function(id) {
+			var fnditem=null;
+			var fndfn=function(items){
+				if(!items || fnditem) return ;
+				for(var i=0;i<items.length;i++) {
+					var fid=items[i].id;
+					if(fid==id || fid.indexOf(ctx.indexedseparator+id)>-1) {
+						fnditem=items[i];
+					} else {
+						fndfn(items[i].items);
+					}
+				}
+			};
+			fndfn(field.items);
+			return fnditem;
+		};
 		if(!field.items) return $cont;
 		for(var i=0;i<field.items.length;i++) {
 			var fld=field.items[i];
-			fld.index=i;
 			var $fld=forms.controls.ControlManagerInstance.renderer.renderField(fld);
-			$cont.append($fld);
+			if(fld.target=='body') {
+				$cont.append($fld);
+			} else {
+				$cont.find('[_target="'+fld.target+'"]').append($fld);
+			}
 		}
 		return $cont;
 	}
@@ -126,23 +160,24 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 			this.destroy(fld.items[i]);
 		}
 	}
-	,addItem : function(field,it){
+	,addItem : function(fld,it){
 		var ctx=this;
-		if(!field.items) {
-			field.items=[];
+		if(!fld.items) {
+			fld.items=[];
 		}
-		field.items.push(it);
+		it.index=fld.items.length;
+		fld.items.push(it);
 		var dbit=SpahQL.db(it);
 		dbit.select('//items/*').map(function(){//Select before preprocess, otherwise will get endless loop
 			this.select('//id').map(function(){
 				if(this.value().indexOf(ctx.indexedseparator)>-1) return ;
-				this.replace(''+(field.items.length-1)+ctx.indexedseparator+this.value());
+				this.replace(''+(fld.items.length-1)+ctx.indexedseparator+this.value());
 			});
 		});
 		var ci=forms.controls.ControlManagerInstance.idx[it.type];
-		ci.preprocess(it,field);
+		ci.preprocess(it,fld);
 		var $rend=ci.controlManager.renderer.renderField(it);
-		field.$jq.append($rend);
+		fld.$jq.append($rend);
 		this.onafterrender(it);
 	}
 	,scatter : function(fld){
@@ -280,7 +315,7 @@ forms.controls.ValueControl=forms.controls.BaseControl.extend({
 	}
 	,setval : function(fld,val){
 		fld.$jq.val(val);
-		fld.form.change(fld);
+		fld.form.onchange(fld);
 	}
 	,getval : function(fld){
 		var val=fld.$jq.val();
@@ -408,9 +443,9 @@ forms.controls.TextControl=forms.controls.ValueControl.extend({
 		return $fld;
 	}
 	,setupvaluechange: function(fld){
-		fld.$jq.on('keypress blur',function(ev){
-			if(fld.change) fld.change(ev);
-			fld.form.change(fld,ev);
+		var ctx=this;
+		fld.$jq.on('keyup blur',function(ev){
+			ctx.onchange(fld,ev);
 		});
 	}
 });
@@ -423,9 +458,9 @@ forms.controls.TextareaControl=forms.controls.ValueControl.extend({
 		return $fld;
 	}
 	,setupvaluechange: function(fld){
-		fld.$jq.on('keypress blur',function(ev){
-			if(fld.change) fld.change(ev);
-			fld.form.change(fld,ev);
+		var ctx=this;
+		fld.$jq.on('keyup blur',function(ev){
+			ctx.onchange(fld,ev);
 		});
 	}
 });
@@ -453,9 +488,9 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 	}
 	,setupvaluechange: function(fld){
 		this._super(fld);
+		var ctx=this;
 		fld.$jq.on('changeDate',function(ev){
-			if(fld.change) fld.change(ev);
-			fld.form.change(fld,ev);
+			ctx.onchange(fld,ev);
 		});
 	}
 });
@@ -491,9 +526,9 @@ forms.controls.SelectControl=forms.controls.ValueControl.extend({
 		}
 	}
 	,setupvaluechange: function(fld){
+		var ctx=this;
 		fld.$jq.on('change',function(ev){
-			if(fld.change) fld.change(ev);
-			fld.form.change(fld,ev);
+			ctx.onchange(fld,ev);
 		});
 	}
 });
@@ -501,8 +536,8 @@ forms.controls.SelectControl=forms.controls.ValueControl.extend({
 
 forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 	renderField : function(fld) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderButton(fld);
-		this._super(fld,$($fld).find('a'));
+		var $fld=this.getRenderFn()(fld);
+		this._super(fld,$fld);
 		$('body').on('click','#'+fld.id,function(e){
 			if(fld.click) {
 				return fld.click(fld);
@@ -510,8 +545,9 @@ forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 		});
 		return $fld;
 	}
-	,gather : function(){}
-	,scatter : function(){}
+	,getRenderFn : function() {
+		return forms.controls.ControlManagerInstance.renderer.renderButton;
+	}
 });
 ;Package.Register('forms.controls');
 
@@ -560,6 +596,9 @@ forms.controls.AccordionItemControl=forms.controls.BaseContainerControl.extend({
 		var $body=this._super(fld,rend.renderAccordionItemBody);
 		var $head=rend.renderAccordionItemHead(fld);
 		var $content=rend.renderAccordionItemContent(fld);
+		fld.updatelabel=function(label) {
+			$head.find('[_target="label"]').html(label);
+		};
 		return $($('<div></div>').append($head,$content.append($body)).children());
 	}
 });
@@ -610,13 +649,6 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 		}
 		fld.$jq.show();
 	}
-	
-	,setval : function(fld,val){
-	}
-	,getval : function(fld){
-	}
-	,scatter: function(fld){}
-	,gather: function(fld){}
 });
 ;Package.Register('forms.controls');
 
@@ -632,6 +664,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Date']=new forms.controls.DateControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
+		this.idx['ToolbarButton']=new forms.controls.ToolbarButtonControl(this);
 		this.idx['Column']=new forms.controls.ColumnControl(this);
 		this.idx['Row']=new forms.controls.RowControl(this);
 		this.idx['Box']=new forms.controls.BoxControl(this);
@@ -748,19 +781,18 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	}
 	,renderBox : function(fld){
 		var $tb=$('<div class="toolbar"></div>');
-		var $tbul=$('<ul class="nav"></ul>');
-		if(fld.toolbar) {
-			for (var i = 0, max = fld.toolbar.length; i < max; i++) {
-				var ft=fld.toolbar[i];
-				var $a=$('<a href="#">'+(ft.icon?'<i class="icon-'+ft.icon+'"></i>':'')+(ft.label?ft.label:'')+'</a>');
-				if(ft.click) {
-					$a.bind('click',function(){
-						return ft.click.call(fld);
-					});
-				}
-				var $ft=$('<li></li>').append($a);
-				$tbul.append($ft);
-			}
+		var $tbul=$('<ul class="nav" _target="toolbar"></ul>');
+		for (var i = 0, max = fld.items.length; i < max; i++) {
+			var ft=fld.items[i];
+			if(ft.target!=='toolbar') continue;
+			var $a=$('<a id="'+ft.id+'" href="#">'+(ft.icon?'<i class="icon-'+ft.icon+'"></i>':'')+(ft.label?ft.label:'')+'</a>');
+//			if(ft.click) {
+//				$a.bind('click',function(){
+//					return ft.click.call(fld);
+//				});
+//			}
+			var $ft=$('<li></li>').append($a);
+			$tbul.append($ft);
 		}
 		var $collapselnk=$('<li><a class="accordion-toggle minimize-box" data-toggle="collapse" href="#'+fld.id+'Body">'
 						+'<i class="icon-chevron-up"></i>'+'</a></li>');
@@ -768,7 +800,11 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		var $box=$('<div class="box dark" id="'+fld.id+'"></div>');
 		return $($box).append(
 						$('<header></header>').append('<h5>'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+''+(fld.label?fld.label:'')+'</h5>',toolbar)
-						);
+					);
+	}
+	,renderToolbarButton: function(fld) {
+		var $a=$('<a id="'+fld.id+'" href="#">'+(fld.icon?'<i class="icon-'+fld.icon+'"></i>':'')+(fld.label?fld.label:'')+'</a>');
+		return $a;
 	}
 	,renderBoxContent : function(fld){
 		var $body=$('<div id="'+fld.id+'Body" class="accordion-body collapse in body"></div>');
@@ -857,7 +893,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderAccordionItemHead: function(fld){
 		return $('<div class="panel-heading"></div>').append(
 						$('<h4 class="panel-title"></h4>')
-						.append('<a data-toggle="collapse" data-parent="#'+fld.parent.id+'" href="#'+fld.id+'">'+fld.label+'</a>'));
+						.append('<a _target="label" data-toggle="collapse" data-parent="#'+fld.parent.id+'" href="#'+fld.id+'">'+fld.label+'</a>'));
 	}
 	,renderAccordionItemContent: function(fld){
 		return $('<div id="'+fld.id+'" class="panel-collapse collapse'+(fld.index===0?' in':'')+'">');
@@ -1023,7 +1059,7 @@ forms.BaseForm=Class.extend({
 		$(sel).append(this.$jq);
 		this.onafterrender(this);
 	}
-	,change: function(fld,ev){
+	,onchange: function(fld,ev){
 		this.notifyrefs(fld,ev);
 	}
 	,notifyrefs: function(fld,ev){
