@@ -484,7 +484,7 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 	onafterrender : function(fld){
 		this._super(fld);
 		var $inp=fld.$jq;
-		$inp.datepicker({format:'dd/mm/yyyy'});
+		$inp.datepicker({format:fld.format});
 	}
 	,setupvaluechange: function(fld){
 		this._super(fld);
@@ -547,6 +547,13 @@ forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 	}
 	,getRenderFn : function() {
 		return forms.controls.ControlManagerInstance.renderer.renderButton;
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.ToolbarButtonControl=forms.controls.ButtonControl.extend({
+	getRenderFn : function() {
+		return forms.controls.ControlManagerInstance.renderer.renderToolbarButton;
 	}
 });
 ;Package.Register('forms.controls');

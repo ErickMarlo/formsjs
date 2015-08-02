@@ -4,7 +4,7 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 	onafterrender : function(fld){
 		this._super(fld);
 		var $inp=fld.$jq;
-		$inp.datepicker({format:'dd/mm/yyyy'});
+		$inp.datepicker({format:fld.format});
 	}
 	,setupvaluechange: function(fld){
 		this._super(fld);

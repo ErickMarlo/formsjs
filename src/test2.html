@@ -61,6 +61,8 @@ var app=new forms.Application({
 	selector: '#jsforms'
 });
 
+var dateformat='dd/mm/yyyy';
+
 var testdata={
     main: {
         firstname: 'Vardenis'
@@ -117,11 +119,11 @@ var empfrm=forms.BaseForm.extend({
 								,{text: 'Kaunas' , value: '1'}
 								]}
 								,{id:'firstname', type: 'Text', label: 'First name'}
-								,{id: 'dateofbirth', type: 'Date', label: 'Date of birth'}
+								,{id: 'dateofbirth', type: 'Date', label: 'Date of birth', format: dateformat}
 							]}
 							,{type: 'Column', cols: 6, items:[
 								{id: 'lastname', type: 'Text', label: 'Last name'}
-								,{id: 'employmentdate',type: 'Date', label: 'Employment date'}
+								,{id: 'employmentdate',type: 'Date', label: 'Employment date', format: dateformat}
 							]}
 						]}
 						,{type: 'Row', items:[
@@ -169,10 +171,10 @@ var empfrm=forms.BaseForm.extend({
 			,items : [
 				{type : 'Row', items: [
 					{type : 'Column', cols:2 , items: [
-						{id : 'start', type: 'Date', label: 'Start date'}
+						{id : 'start', type: 'Date', label: 'Start date', format: dateformat}
 					]}
 					,{type : 'Column', cols:2 , items: [
-						{id : 'end', type: 'Date', label: 'End date'}
+						{id : 'end', type: 'Date', label: 'End date', format: dateformat}
 					]}
 					,{type : 'Column', cols:2 , items: [
 						{id : 'position', type: 'Select', label: 'Position', options: [

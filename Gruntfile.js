@@ -50,6 +50,7 @@ module.exports = function(grunt) {
 						,"src/js/forms/controls/DateControl.js"
 						,"src/js/forms/controls/SelectControl.js"
 						,"src/js/forms/controls/ButtonControl.js"
+						,"src/js/forms/controls/ToolbarButtonControl.js"
 						,"src/js/forms/controls/AccordionControl.js"
 						,"src/js/forms/controls/AccordionItemControl.js"
 						,"src/js/forms/controls/BreadcrumbControl.js"
