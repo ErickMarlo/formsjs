@@ -48,6 +48,7 @@ module.exports = function(grunt) {
 						,"src/js/forms/controls/TextareaControl.js"
 						,"src/js/forms/controls/InfoControl.js"
 						,"src/js/forms/controls/DateControl.js"
+						,"src/js/forms/controls/CheckboxControl.js"
 						,"src/js/forms/controls/SelectControl.js"
 						,"src/js/forms/controls/ButtonControl.js"
 						,"src/js/forms/controls/ToolbarButtonControl.js"

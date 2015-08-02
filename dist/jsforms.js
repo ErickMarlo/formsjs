@@ -415,12 +415,12 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 			processing : true
 			,serverSide : true
 		};
-		if(fld.click) {
+		if(fld.onclick) {
 			opt.rowCallback=function(row,data){
 				var $row=$(row);
 				$row.bind('click',function(ev){
 					$row.addClass('selected');
-					fld.click(fld,row._DT_RowIndex,data,$row,ev);
+					fld.onclick(fld,row._DT_RowIndex,data,$row,ev);
 				});
 			};
 		};
@@ -496,6 +496,29 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 });
 ;Package.Register('forms.controls');
 
+forms.controls.CheckboxControl=forms.controls.ValueControl.extend({
+	renderField : function(field) {
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderCheckbox(field);
+		this._super(field,$($fld).find('input'));
+		return $fld;
+	}
+	,setupvaluechange: function(fld){
+		var ctx=this;
+		fld.$jq.on('change',function(ev){
+			ctx.onchange(fld,ev);
+		});
+	}
+	,setval : function(fld,val){
+		fld.$jq.prop('checked',val);
+		fld.form.onchange(fld);
+	}
+	,getval : function(fld){
+		var val=fld.$jq.prop('checked');
+		return val;
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.SelectControl=forms.controls.ValueControl.extend({
 	renderField : function(fld) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
@@ -539,8 +562,8 @@ forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 		var $fld=this.getRenderFn()(fld);
 		this._super(fld,$fld);
 		$('body').on('click','#'+fld.id,function(e){
-			if(fld.click) {
-				return fld.click(fld);
+			if(fld.onclick) {
+				return fld.onclick(fld);
 			}
 		});
 		return $fld;
@@ -669,6 +692,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Textarea']=new forms.controls.TextareaControl(this);
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
+		this.idx['Checkbox']=new forms.controls.CheckboxControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
 		this.idx['ToolbarButton']=new forms.controls.ToolbarButtonControl(this);
@@ -829,6 +853,12 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
+	}
+	,renderCheckbox : function(fld) {
+		var $lbl=this._getLabel(fld);
+		var chk='<input type="checkbox" id="'+fld.id+'">';
+		var $cont=$('<div class="checkbox anim-checkbox"></div>');
+		return $cont.append(chk,$lbl);
 	}
 	,renderTextareaField : function(fld){
 		var $fld=this._getLabel(fld)

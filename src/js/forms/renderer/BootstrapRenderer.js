@@ -54,6 +54,12 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
+	,renderCheckbox : function(fld) {
+		var $lbl=this._getLabel(fld);
+		var chk='<input type="checkbox" id="'+fld.id+'">';
+		var $cont=$('<div class="checkbox anim-checkbox"></div>');
+		return $cont.append(chk,$lbl);
+	}
 	,renderTextareaField : function(fld){
 		var $fld=this._getLabel(fld)
 						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><textarea class="form-control" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+'></textarea></div>';
