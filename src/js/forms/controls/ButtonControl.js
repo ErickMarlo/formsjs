@@ -5,8 +5,8 @@ forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 		var $fld=this.getRenderFn()(fld);
 		this._super(fld,$fld);
 		$('body').on('click','#'+fld.id,function(e){
-			if(fld.click) {
-				return fld.click(fld);
+			if(fld.onclick) {
+				return fld.onclick(fld);
 			}
 		});
 		return $fld;

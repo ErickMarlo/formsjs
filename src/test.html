@@ -659,21 +659,21 @@
 				,label: 'Test Form 1'
 				,items : [
 					 {type: 'Box', icon:'gears',items:[
-							 {type: 'Button',label: 'Open form', click: function(){
+							 {type: 'Button',label: 'Open form', onclick: function(){
 									 app.createform({
 										 id: 'testform1'
 										 ,renderer: 'Bootstrap'
 										 ,label: 'Test child form to test nav'
 										 ,items: [
 											 {type: 'Box', items: [
-													 {type: 'Button', label: 'Back', click: function(){
+													 {type: 'Button', label: 'Back', onclick: function(){
 															 app.back();
 															 app.destroyform('testform1');
 													 }}
-												 ,{type: 'Button', label: 'Scatter accordion',click: function(){
+												 ,{type: 'Button', label: 'Scatter accordion',onclick: function(){
 															 this.form.scatter(json);
 													 }}
-												 ,{type: 'Button', label: 'Gather accordion',click: function(){
+												 ,{type: 'Button', label: 'Gather accordion',onclick: function(){
 															 var d=this.form.gather();
 															 console.table(JSON.stringify(this.form.db.value()));
 													 }}
@@ -726,7 +726,7 @@
 												return 'Value must be AZX or QWX';
 											}
 									}, path : '/obj/data/gr2/list/0/f3'}
-									,{type: 'Button', label: 'Validate test',click: function(){
+									,{type: 'Button', label: 'Validate test',onclick: function(){
 											var valid=this.form.validate();
 											valid.show();
 											console.log(valid);
@@ -762,7 +762,7 @@
 													,{id : 'f91',type : 'Text', label : 'Test field91'}
 												]}
 												,{type : 'Tab', label: 'Tab2', items : [
-														{type : 'Table', click:function(fld,idx,data,$row,ev){debugger;}, options : {
+														{type : 'Table', onclick:function(fld,idx,data,$row,ev){debugger;}, options : {
 																ajax : 'json/test.json'
 																,pagingType : 'full_numbers'
 														}, columns : [
@@ -775,7 +775,7 @@
 														]}
 												]}
 												,{type : 'Tab', label: 'Tab3', items : [
-														{type : 'Button', label : 'Test dyna append', click : function(fld){
+														{type : 'Button', label : 'Test dyna append', onclick : function(fld){
 																fld.form.idx.byid.testDynaCol.addItem(
 																	{type:'Box', icon:'book', label:'Dyna',items:[
 																		{id : 'fDyna81',type : 'Text', label : 'Test Dyna field81'}
@@ -795,7 +795,7 @@
 														,{type : 'Text', label : 'Accordion child2'}
 														,{type : 'Text', label : 'Accordion child3'}
 														,{type : 'Column', items : [
-															{type : 'Button', label : 'Add accordion item',click : function(fld){
+															{type : 'Button', label : 'Add accordion item',onclick : function(fld){
 																	fld.form.idx.byid.testAccordion.addItem({
 																		 type : 'AccordionItem'
 																		,label : 'Dyna add accordion item'
@@ -829,7 +829,7 @@
 						]}
 						,{type : 'Row',items : [
 								{type : 'Column', items : [
-										{type : 'Button', label : 'Test gather', click : function(fld){
+										{type : 'Button', label : 'Test gather', onclick : function(fld){
 												fld.form.gather();
 												console.log(JSON.stringify(fld.form.db.value()));
 										}}

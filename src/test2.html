@@ -38,6 +38,7 @@
 						<script src="js/forms/controls/TextareaControl.js"></script>
 						<script src="js/forms/controls/InfoControl.js"></script>
 						<script src="js/forms/controls/DateControl.js"></script>
+						<script src="js/forms/controls/CheckboxControl.js"></script>
 						<script src="js/forms/controls/SelectControl.js"></script>
 						<script src="js/forms/controls/ButtonControl.js"></script>
 						<script src="js/forms/controls/ToolbarButtonControl.js"></script>
@@ -70,6 +71,7 @@ var testdata={
         ,branch: 1
 				,dateofbirth: '01/01/1970'
 				,employmentdate : '06/05/1996'
+				,enabled : true
     }
 		,position: [
 			{start : '06/05/1996'
@@ -128,7 +130,12 @@ var empfrm=forms.BaseForm.extend({
 						]}
 						,{type: 'Row', items:[
 							{type: 'Column', items: [
-								{type: 'Button', label: 'Save', click: function(b){
+								{type: 'Checkbox', id: 'enabled', label: 'Enabled'}
+							]}
+						]}
+						,{type: 'Row', items:[
+							{type: 'Column', items: [
+								{type: 'Button', label: 'Save', onclick: function(b){
 									this.form.save();
 								}}
 							]}
@@ -136,7 +143,7 @@ var empfrm=forms.BaseForm.extend({
 					]}
 					,{type: 'Tab', label: 'Position data', items:[
 						{type: 'Box', icon: 'film', label: '&nbsp;Position data historical records', items: [
-							{type: 'ToolbarButton', target: 'toolbar', icon: 'plus', label: '&nbsp;Add', click: function(){
+							{type: 'ToolbarButton', target: 'toolbar', icon: 'plus', label: '&nbsp;Add', onclick: function(){
 								this.form.db.value().position.push({
 									start : ''
 									,end : ''
@@ -152,8 +159,8 @@ var empfrm=forms.BaseForm.extend({
 							}}
 						]}
 					]}
-					,{type: 'Tab', label: 'Salary', items:[
-					]}
+//					,{type: 'Tab', label: 'Salary', items:[
+//					]}
 				]}
 			]}
 		]}
@@ -191,7 +198,7 @@ var empfrm=forms.BaseForm.extend({
 				]}
 				,{type: 'Row', items: [
 					{type : 'Column', items: [
-						{type: 'Button', label: 'Save', click: function(){
+						{type: 'Button', label: 'Save', onclick: function(){
 							this.form.save();
 						}}
 					]}

@@ -16,12 +16,12 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 			processing : true
 			,serverSide : true
 		};
-		if(fld.click) {
+		if(fld.onclick) {
 			opt.rowCallback=function(row,data){
 				var $row=$(row);
 				$row.bind('click',function(ev){
 					$row.addClass('selected');
-					fld.click(fld,row._DT_RowIndex,data,$row,ev);
+					fld.onclick(fld,row._DT_RowIndex,data,$row,ev);
 				});
 			};
 		};
