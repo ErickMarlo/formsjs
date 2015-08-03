@@ -1,38 +1,16 @@
 Package.Register('forms.controls');
 
-forms.controls.SelectControl=forms.controls.ValueControl.extend({
-	renderField : function(fld) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
-		var select=$($fld).find('select');
-		this._super(fld,select);
-		var ctx=this;
-		fld.load=function(lopt,$jq){
-			ctx.load.call(fld,lopt,$jq);
-		};
-		fld.load(fld.options,select);
-		return $fld;
+forms.controls.SelectControl=forms.controls.BaseListControl.extend({
+	_renderListField : function(fld) {
+		return forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
 	}
-	,load: function(lopt,$jq){
-		if(!$jq) $jq=this.$jq;
-		if(!lopt)return;
-		for(var i=0;i<lopt.length;i++) {
-			var opt=lopt[i];
-			if(opt.options) {
-				var $optgrp=$('<optgroup label="'+opt.text+'"></optgroup>');
-				$optgrp.data('data',opt)
-				$jq.append($optgrp);
-				this.load(opt.options,$optgrp);
-			} else {
-				var $opt=$('<option value="'+opt.value+'">'+opt.text+'</option>');
-				$opt.data('data',opt);
-				$jq.append($opt);
-			}
-		}
+	,_findListControl : function($fld) {
+		return $($fld).find('select');
 	}
-	,setupvaluechange: function(fld){
-		var ctx=this;
-		fld.$jq.on('change',function(ev){
-			ctx.onchange(fld,ev);
-		});
+	,_createGroup : function(opt) {
+		return $('<optgroup label="'+opt.text+'"></optgroup>');
+	}
+	,_createItem : function(opt) {
+		return $('<option value="'+opt.value+'">'+opt.text+'</option>');
 	}
 });

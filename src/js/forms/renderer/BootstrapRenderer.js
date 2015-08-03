@@ -57,8 +57,16 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderCheckbox : function(fld) {
 		var $lbl=this._getLabel(fld);
 		var chk='<input type="checkbox" id="'+fld.id+'">';
-		var $cont=$('<div class="checkbox anim-checkbox"></div>');
+		var $cont=$('<div class="checkbox"></div>');// anim-checkbox
 		return $cont.append(chk,$lbl);
+	}
+	,renderCheckboxesField : function(fld){
+		var l='<label class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+'</label>'
+		var $fld=$('<div class="form-group '+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'">'+l+'</div>');
+		return $fld;
+	}
+	,renderCheckboxesCheckbox : function(opt) {
+		return	$('<label class="checkbox-inline"><input type="checkbox" name="'+opt._fld.id+'" value="'+opt.value+'">'+opt.text+'</label>');
 	}
 	,renderTextareaField : function(fld){
 		var $fld=this._getLabel(fld)
