@@ -2,7 +2,7 @@ Package.Register('forms.controls');
 
 forms.controls.MessageControl=forms.controls.BaseControl.extend({
 	renderField : function(field) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderMessage(field);
+		var $fld=$('<div></div>');
 		$fld.hide();
 		this._super(field,$fld);
 		var ctx=this;
@@ -28,7 +28,8 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 		rend.changeAlertType(fld,type);
 		var ico=rend.renderMessageIcon(type);
 		var msg=$('<div></div>').append(ico,smsg);//<a href="#" class="alert-link">Alert Link</a>
-		fld.$jq.append(msg);
+		var $m=forms.controls.ControlManagerInstance.renderer.renderMessage(fld);
+		fld.$jq.append($m.append(msg));
 		fld.$jq.show();
 	}
 });
