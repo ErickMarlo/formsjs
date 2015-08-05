@@ -123,11 +123,11 @@ var empfrm=forms.BaseForm.extend({
 								 {text: 'Vilnius', value: '0'}
 								,{text: 'Kaunas' , value: '1'}
 								]}
-								,{id:'firstname', type: 'Text', label: 'First name'}
+								,{id:'firstname', type: 'Text', label: 'First name', validate: [{required: true}]}
 								,{id: 'dateofbirth', type: 'Date', label: 'Date of birth', format: dateformat}
 							]}
 							,{type: 'Column', cols: 6, items:[
-								{id: 'lastname', type: 'Text', label: 'Last name'}
+								{id: 'lastname', type: 'Text', label: 'Last name', validate: [{required: true}]}
 								,{id: 'employmentdate',type: 'Date', label: 'Employment date', format: dateformat}
 							]}
 						]}

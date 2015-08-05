@@ -18,6 +18,17 @@ forms.controls.BaseControl=Class.extend({
 		fld.updatelabel=function(label) {
 			fld.$jq.find('[_target="label"]').html(label);
 		};
+		this.preprocessValidators(fld);
+	}
+	,preprocessValidators: function(fld) {
+		if(!fld.validmap)fld.validmap={};
+		if(!fld.validate)return ;
+		for(var i=0;i<fld.validate.length;i++) {
+			var vld=fld.validate[i];
+			for(var k in vld) {
+				fld.validmap[k]=vld[k];
+			}
+		}
 	}
 	,_setuprefnotifications: function(fld){
 		if(fld.ref) {
