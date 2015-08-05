@@ -23,12 +23,12 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 	,clear : function(fld) {
 		fld.$jq.find('div').remove();
 	}
-	,show : function(fld,type,msgs) {
-		forms.controls.ControlManagerInstance.renderer.changeAlertType(fld,type);
-		for (var i = 0, max = msgs.length; i < max; i++) {
-			var msg=$('<div></div>').html(msgs[i]);//<a href="#" class="alert-link">Alert Link</a>
-			fld.$jq.append(msg);
-		}
+	,show : function(fld,type,smsg) {
+		var rend=forms.controls.ControlManagerInstance.renderer;
+		rend.changeAlertType(fld,type);
+		var ico=rend.renderMessageIcon(type);
+		var msg=$('<div></div>').append(ico,smsg);//<a href="#" class="alert-link">Alert Link</a>
+		fld.$jq.append(msg);
 		fld.$jq.show();
 	}
 });

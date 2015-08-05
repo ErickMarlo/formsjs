@@ -173,4 +173,24 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		fld.$jq.removeClass('alert-success alert-info alert-warning alert-danger');
 		fld.$jq.addClass('alert-'+type);
 	}
+	,renderMessageIcon : function(type) {
+		switch (type) {
+			case 'success':
+				var ico='ok-circle';
+				break;
+			case 'warning':
+				var ico='exclamation-sign-sign';
+				break;
+			case 'info':
+				var ico='info-sign';
+				break;
+			case 'danger':
+				var ico='minus-sign';
+				break;
+			default:
+				var ico='comment-alt';
+				break;
+		}
+		return '<i class="fa icon-'+ico+'" style="font-size:2em;"></i>&nbsp;';
+	}
 });
