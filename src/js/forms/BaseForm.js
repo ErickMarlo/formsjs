@@ -122,8 +122,10 @@ forms.BaseForm=Class.extend({
 			result=result.concat(res);
 		}
 		var ctx=this;
-		return {result:result,show: function(){
-				ctx.validationViewer.show(result);
+		return {result:result,count:result.length,show: function(){
+				ctx.validationViewer.show(ctx,result);
+		},clear: function(){
+			ctx.validationViewer.clear(ctx);
 		}};
 	}
 });

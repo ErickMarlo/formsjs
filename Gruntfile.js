@@ -62,6 +62,7 @@ module.exports = function(grunt) {
 						,"src/js/forms/controls/ControlManager.js"
 						,"src/js/forms/valid/Validators.js"
 						,"src/js/forms/valid/ValidationEngineView.js"
+						,"src/js/forms/valid/PopoverEngineView.js"
 						,"src/js/forms/renderer/BaseRenderer.js"
 						,"src/js/forms/renderer/BootstrapRenderer.js"
 						,"src/js/forms/Application.js"

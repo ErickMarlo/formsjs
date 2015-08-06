@@ -17,6 +17,27 @@
     <!--[if lt IE 9]>
       <script src="../dist/jsformsIE.js"></script>
     <![endif]-->
+		<style>
+			.error-popover {
+				border-width: 1px;
+				border-color: red;
+				font-size: 0.8em;
+				line-height: 1.2;
+				background-color: #FFCCCC;
+			}
+			.error-popover-content {
+				padding: 3px;
+				background-color: #FFCCCC;
+			}
+			.error-popover-arrow:after {
+				border-top-color: #FFCCCC !important;
+				/*border-width: 1px;*/
+				/*color: red;*/
+			}
+/*.popover.bottom .arrow:after {
+    border-bottom-color: tomato;
+}		*/
+		</style>
 </head>
 <body>
 	<div id="jsforms" >
@@ -52,6 +73,7 @@
 						<script src="js/forms/controls/ControlManager.js"></script>
 						<script src="js/forms/valid/Validators.js"></script>
 						<script src="js/forms/valid/ValidationEngineView.js"></script>
+						<script src="js/forms/valid/PopoverView.js"></script>
 						<script src="js/forms/renderer/BaseRenderer.js"></script>
 						<script src="js/forms/renderer/BootstrapRenderer.js"></script>
 						<script src="js/forms/Application.js"></script>
@@ -98,6 +120,7 @@ var testdata={
 var empfrm=forms.BaseForm.extend({
 	 id: 'empfrmid'
 	,renderer : 'Bootstrap'
+	,validationViewer: 'Popover'
 	,label: 'Employee data'
 	,items : [
 		{type: 'Box', label: '&nbsp;Employee data', icon: 'user', items: [
@@ -123,7 +146,7 @@ var empfrm=forms.BaseForm.extend({
 								 {text: 'Vilnius', value: '0'}
 								,{text: 'Kaunas' , value: '1'}
 								]}
-								,{id:'firstname', type: 'Text', label: 'First name', validate: [{required: true}]}
+								,{id:'firstname', type: 'Text', label: 'First name', validate: [{required: true},{minlen:2}]}
 								,{id: 'dateofbirth', type: 'Date', label: 'Date of birth', format: dateformat}
 							]}
 							,{type: 'Column', cols: 6, items:[
@@ -227,6 +250,12 @@ var empfrm=forms.BaseForm.extend({
 		this.scatter(testdata);
 	}
 	,save : function() {
+		var error=this.validate();
+		error.clear();
+		if(error.count) {
+			error.show();
+			return ;
+		}
 		this.gather();
 		console.log(JSON.stringify(this.db.value()));
 		var msg=this.idx.byid.gddatamsg;

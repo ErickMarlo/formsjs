@@ -2,7 +2,7 @@ Package.Register('forms.valid');
 Package.Register('forms.valid.temp');
 
 forms.valid.ValidationEngineView=Class.extend({
-	show: function(res) {
+	show: function(ctx,res) {
 		for (var i = 0; i < res.length; i++) {
 			var r=res[i]
 			var $jq=r.source.$jq;
