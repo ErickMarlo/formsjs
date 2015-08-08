@@ -30,7 +30,7 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 		var rend=forms.controls.ControlManagerInstance.renderer;
 //		rend.changeAlertType(fld,type);
 		var ico=rend.renderMessageIcon(fld);
-		var icotd=$('<td></td>').append(ico);
+		var icotd=$('<td style="vertical-align:top;"></td>').append(ico);
 		var msgtd=$('<td></td>').append(smsg);
 		var tr=$('<tr></tr>').append(icotd,msgtd);
 		var tbl=$('<table></table>').append(tr);

@@ -10,7 +10,7 @@ forms.valid.PopoverView=Class.extend({
 				e.data.fld.$jq.focus();
 				return false;
 			});
-			msgs.append('<br/>',msg);
+			msgs.append(i==0?'':'<br/>',msg);
 		}
 		var fld=ctx.idx.byid[fldid];
 		fld.show(msgs,'danger',title);
