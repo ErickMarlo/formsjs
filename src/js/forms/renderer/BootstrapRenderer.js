@@ -57,8 +57,8 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderCheckbox : function(fld) {
 		var $lbl=this._getLabel(fld);
 		var chk='<input type="checkbox" id="'+fld.id+'">';
-		var $cont=$('<div class="checkbox"></div>');// anim-checkbox
-		return $cont.append(chk,$lbl);
+		var $cont=$('<div class="checkbox"></div>');
+		return $cont.append($($lbl).prepend(chk));
 	}
 	,renderCheckboxesField : function(fld){
 		var l='<label class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+'</label>'
