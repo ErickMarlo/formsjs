@@ -6,8 +6,8 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 		$fld.hide();
 		this._super(field,$fld);
 		var ctx=this;
-		field.show=function(type,messages) {
-			ctx.show(field,type,messages);
+		field.show=function(messages,kind,title) {
+			ctx.show(field,messages,kind,title);
 		};
 		field.hide=function(){
 			ctx.hide(field);
@@ -23,12 +23,20 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 	,clear : function(fld) {
 		fld.$jq.find('div').remove();
 	}
-	,show : function(fld,type,smsg) {
+	,show : function(fld,smsg,kind,title) {
+		if(kind)fld.kind=kind;
+		if(!fld.kind)fld.kind='success';
+		fld.title=title;
 		var rend=forms.controls.ControlManagerInstance.renderer;
-		rend.changeAlertType(fld,type);
-		var ico=rend.renderMessageIcon(type);
-		var msg=$('<div></div>').append(ico,smsg);//<a href="#" class="alert-link">Alert Link</a>
+//		rend.changeAlertType(fld,type);
+		var ico=rend.renderMessageIcon(fld);
+		var icotd=$('<td></td>').append(ico);
+		var msgtd=$('<td></td>').append(smsg);
+		var tr=$('<tr></tr>').append(icotd,msgtd);
+		var tbl=$('<table></table>').append(tr);
+		var msg=tbl;
 		var $m=forms.controls.ControlManagerInstance.renderer.renderMessage(fld);
+		fld.$jq.html('');
 		fld.$jq.append($m.append(msg));
 		fld.$jq.show();
 	}

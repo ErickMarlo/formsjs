@@ -90,8 +90,8 @@ var dateformat='dd/mm/yyyy';
 
 var testdata={
     main: {
-        firstname: 'Vardenis'
-        ,lastname: 'Pavardenis'
+        firstname: ''
+        ,lastname: ''
         ,branch: 1
 				,dateofbirth: '01/01/1970'
 				,employmentdate : '06/05/1996'
@@ -139,7 +139,7 @@ var empfrm=forms.BaseForm.extend({
 			{type: 'Column', cols: 12, items: [
 				{type: 'Tabs', items:[
 					{type: 'Tab', label: 'General data', path: '/main', items:[
-						{id: 'gddatamsg', type: 'Message'}
+						{id: 'gddatamsg', /*title: 'Form errors summary', */type: 'Message'}
 						,{type: 'Row', items: [
 							{type: 'Column', cols: 6, items: [
 								{id: 'branch', type: 'Select', label: 'Branch', options:[
@@ -254,13 +254,13 @@ var empfrm=forms.BaseForm.extend({
 		error.clear();
 		if(error.count) {
 			error.show();
+			error.showsummary('gddatamsg','The form contains errors, Check the fields bellow:');
 			return ;
 		}
 		this.gather();
 		console.log(JSON.stringify(this.db.value()));
 		var msg=this.idx.byid.gddatamsg;
-		msg.clear();
-		msg.show('success','The form data was gathered to json object and dumped into console. You can use this object to post it to server.');
+		msg.show('The form data was gathered to json object and dumped into console. You can use this object to post it to server.','success');
 	}
 });
 

@@ -18,6 +18,17 @@ forms.controls.BaseControl=Class.extend({
 		fld.updatelabel=function(label) {
 			fld.$jq.find('[_target="label"]').html(label);
 		};
+		this.preprocessValidators(fld);
+	}
+	,preprocessValidators: function(fld) {
+		if(!fld.validmap)fld.validmap={};
+		if(!fld.validate)return ;
+		for(var i=0;i<fld.validate.length;i++) {
+			var vld=fld.validate[i];
+			for(var k in vld) {
+				fld.validmap[k]=vld[k];
+			}
+		}
 	}
 	,_setuprefnotifications: function(fld){
 		if(fld.ref) {
@@ -329,6 +340,46 @@ forms.controls.ValueControl=forms.controls.BaseControl.extend({
 });
 ;Package.Register('forms.controls');
 
+forms.controls.BaseListControl=forms.controls.ValueControl.extend({
+	renderField : function(fld) {
+		var $fld=this._renderListField(fld);
+		var select=this._findListControl($fld);
+		this._super(fld,select);
+		var ctx=this;
+		fld._baseListControl=this;
+		fld._select=select;
+		fld.load=function(lopt){
+			ctx.load.call(fld,lopt);
+		};
+		fld.load(fld.options);
+		return $fld;
+	}
+	,load: function(lopt){
+		if(!lopt)return;
+		for(var i=0;i<lopt.length;i++) {
+			var opt=lopt[i];
+			opt._fld=this;
+			if(opt.options) {
+				var $optgrp=this._baseListControl._createGroup(opt);
+				$optgrp.data('data',opt)
+				this._select.append($optgrp);
+				this.load(opt.options,$optgrp);
+			} else {
+				var $opt=this._baseListControl._createItem(opt);
+				$opt.data('data',opt);
+				this._select.append($opt);
+			}
+		}
+	}
+	,setupvaluechange: function(fld){
+		var ctx=this;
+		fld.$jq.on('change',function(ev){
+			ctx.onchange(fld,ev);
+		});
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.ColumnControl=forms.controls.BaseContainerControl.extend({
 	renderField : function(field) {
 		return this._super(field,forms.controls.ControlManagerInstance.renderer.renderColumn);
@@ -519,40 +570,48 @@ forms.controls.CheckboxControl=forms.controls.ValueControl.extend({
 });
 ;Package.Register('forms.controls');
 
-forms.controls.SelectControl=forms.controls.ValueControl.extend({
-	renderField : function(fld) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
-		var select=$($fld).find('select');
-		this._super(fld,select);
-		var ctx=this;
-		fld.load=function(lopt,$jq){
-			ctx.load.call(fld,lopt,$jq);
-		};
-		fld.load(fld.options,select);
+forms.controls.CheckboxesControl=forms.controls.BaseListControl.extend({
+	_renderListField : function(fld) {
+		return forms.controls.ControlManagerInstance.renderer.renderCheckboxesField(fld);
+	}
+	,_findListControl : function($fld) {
 		return $fld;
 	}
-	,load: function(lopt,$jq){
-		if(!$jq) $jq=this.$jq;
-		if(!lopt)return;
-		for(var i=0;i<lopt.length;i++) {
-			var opt=lopt[i];
-			if(opt.options) {
-				var $optgrp=$('<optgroup label="'+opt.text+'"></optgroup>');
-				$optgrp.data('data',opt)
-				$jq.append($optgrp);
-				this.load(opt.options,$optgrp);
-			} else {
-				var $opt=$('<option value="'+opt.value+'">'+opt.text+'</option>');
-				$opt.data('data',opt);
-				$jq.append($opt);
-			}
-		}
+	,_createGroup : function(opt) {
+		return $('');
 	}
-	,setupvaluechange: function(fld){
-		var ctx=this;
-		fld.$jq.on('change',function(ev){
-			ctx.onchange(fld,ev);
+	,_createItem : function(opt) {
+		return forms.controls.ControlManagerInstance.renderer.renderCheckboxesCheckbox(opt);
+	}
+	,setval : function(fld,val){
+		for(var i=0;i<val.length;i++) {
+			var v=val[i];
+			fld.$jq.find(':checkbox[value="'+v+'"]').prop('checked',true);
+		}
+		fld.form.onchange(fld);
+	}
+	,getval : function(fld){
+		var vv=[];
+		fld.$jq.find(':checkbox:checked').each(function(i,o){
+			vv.push($(o).val());
 		});
+		return vv;
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.SelectControl=forms.controls.BaseListControl.extend({
+	_renderListField : function(fld) {
+		return forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
+	}
+	,_findListControl : function($fld) {
+		return $($fld).find('select');
+	}
+	,_createGroup : function(opt) {
+		return $('<optgroup label="'+opt.text+'"></optgroup>');
+	}
+	,_createItem : function(opt) {
+		return $('<option value="'+opt.value+'">'+opt.text+'</option>');
 	}
 });
 ;Package.Register('forms.controls');
@@ -650,7 +709,7 @@ forms.controls.BreadcrumbItemControl=forms.controls.BaseContainerControl.extend(
 
 forms.controls.MessageControl=forms.controls.BaseControl.extend({
 	renderField : function(field) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderMessage(field);
+		var $fld=$('<div></div>');
 		$fld.hide();
 		this._super(field,$fld);
 		var ctx=this;
@@ -671,12 +730,13 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 	,clear : function(fld) {
 		fld.$jq.find('div').remove();
 	}
-	,show : function(fld,type,msgs) {
-		forms.controls.ControlManagerInstance.renderer.changeAlertType(fld,type);
-		for (var i = 0, max = msgs.length; i < max; i++) {
-			var msg=$('<div></div>').html(msgs[i]);//<a href="#" class="alert-link">Alert Link</a>
-			fld.$jq.append(msg);
-		}
+	,show : function(fld,type,smsg) {
+		var rend=forms.controls.ControlManagerInstance.renderer;
+		rend.changeAlertType(fld,type);
+		var ico=rend.renderMessageIcon(type);
+		var msg=$('<div></div>').append(ico,smsg);//<a href="#" class="alert-link">Alert Link</a>
+		var $m=forms.controls.ControlManagerInstance.renderer.renderMessage(fld);
+		fld.$jq.append($m.append(msg));
 		fld.$jq.show();
 	}
 });
@@ -693,6 +753,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
 		this.idx['Checkbox']=new forms.controls.CheckboxControl(this);
+		this.idx['Checkboxes']=new forms.controls.CheckboxesControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
 		this.idx['ToolbarButton']=new forms.controls.ToolbarButtonControl(this);
@@ -758,7 +819,7 @@ forms.valid.ValidatorsInstance=new forms.valid.Validators();
 Package.Register('forms.valid.temp');
 
 forms.valid.ValidationEngineView=Class.extend({
-	show: function(res) {
+	show: function(ctx,res) {
 		for (var i = 0; i < res.length; i++) {
 			var r=res[i]
 			var $jq=r.source.$jq;
@@ -857,8 +918,16 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,renderCheckbox : function(fld) {
 		var $lbl=this._getLabel(fld);
 		var chk='<input type="checkbox" id="'+fld.id+'">';
-		var $cont=$('<div class="checkbox anim-checkbox"></div>');
+		var $cont=$('<div class="checkbox"></div>');// anim-checkbox
 		return $cont.append(chk,$lbl);
+	}
+	,renderCheckboxesField : function(fld){
+		var l='<label class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+'</label>'
+		var $fld=$('<div class="form-group '+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'">'+l+'</div>');
+		return $fld;
+	}
+	,renderCheckboxesCheckbox : function(opt) {
+		return	$('<label class="checkbox-inline"><input type="checkbox" name="'+opt._fld.id+'" value="'+opt.value+'">'+opt.text+'</label>');
 	}
 	,renderTextareaField : function(fld){
 		var $fld=this._getLabel(fld)
@@ -873,7 +942,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $grp;
 	}
 	,_getLabel: function(fld){
-		return '<label for="'+fld.id+'" class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+'</label>';
+		return '<label for="'+fld.id+'" class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+(fld.validmap.required===true?' *':'')+'</label>';
 	}
 	,renderSelectField : function(fld){
 		var $fld=this._getLabel(fld)
@@ -964,6 +1033,26 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 	,changeAlertType : function(fld,type) {
 		fld.$jq.removeClass('alert-success alert-info alert-warning alert-danger');
 		fld.$jq.addClass('alert-'+type);
+	}
+	,renderMessageIcon : function(type) {
+		switch (type) {
+			case 'success':
+				var ico='ok-circle';
+				break;
+			case 'warning':
+				var ico='exclamation-sign-sign';
+				break;
+			case 'info':
+				var ico='info-sign';
+				break;
+			case 'danger':
+				var ico='minus-sign';
+				break;
+			default:
+				var ico='comment-alt';
+				break;
+		}
+		return '<i class="fa icon-'+ico+'" style="font-size:2em;"></i>&nbsp;';
 	}
 });
 
@@ -1193,8 +1282,10 @@ forms.BaseForm=Class.extend({
 			result=result.concat(res);
 		}
 		var ctx=this;
-		return {result:result,show: function(){
-				ctx.validationViewer.show(result);
+		return {result:result,count:result.length,show: function(){
+				ctx.validationViewer.show(ctx,result);
+		},clear: function(){
+			ctx.validationViewer.clear(ctx);
 		}};
 	}
 });

@@ -90,7 +90,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $grp;
 	}
 	,renderButton : function(fld){
-		var fld=$('<button id="'+fld.id+'" class="btn btn-primary btn-lg" data-toggle="modal">'+fld.label+'</button>');
+		var fld=$('<button type="button" id="'+fld.id+'" class="btn btn-primary btn-lg" data-toggle="modal">'+fld.label+'</button>');
 		return fld;
 	}
 	,renderTabsRoot : function(fld){
@@ -164,17 +164,13 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		}
 	}
 	,renderMessage : function (fld) {
-		var $msgdiv=$('<div class="alert alert-success alert-dismissable"></div>');
+		var $msgdiv=$('<div class="alert alert-'+fld.kind+' alert-dismissable"></div>');
 		var $dismissbtn=$('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>');
-		$msgdiv.append($dismissbtn);
+		$msgdiv.append(fld.title?fld.title:'',$dismissbtn);
 		return $msgdiv;
 	}
-	,changeAlertType : function(fld,type) {
-		fld.$jq.removeClass('alert-success alert-info alert-warning alert-danger');
-		fld.$jq.addClass('alert-'+type);
-	}
-	,renderMessageIcon : function(type) {
-		switch (type) {
+	,renderMessageIcon : function(fld) {
+		switch (fld.kind) {
 			case 'success':
 				var ico='ok-circle';
 				break;

@@ -1,9 +1,21 @@
 Package.Register('forms.valid');
-Package.Register('forms.valid.temp');
 
 forms.valid.PopoverView=Class.extend({
-	show: function(ctx,res) {
-		this.clear(ctx);
+	showsummary: function (ctx,fldid,res,title) {
+		var msgs=$('<span></span>');
+		for (var i = 0; i < res.length; i++) {
+			var r=res[i]
+			var msg=$('<a href="#" class="alert-link">'+r.message+'</a>')
+			.bind('click',{fld:r.source},function(e) {
+				e.data.fld.$jq.focus();
+				return false;
+			});
+			msgs.append('<br/>',msg);
+		}
+		var fld=ctx.idx.byid[fldid];
+		fld.show(msgs,'danger',title);
+	}
+	,show: function(ctx,res) {
 		var grp={};
 		for (var i = 0; i < res.length; i++) {
 			var r=res[i]
@@ -27,17 +39,45 @@ forms.valid.PopoverView=Class.extend({
 			$jq.removeData('bs.popover');
 			var pp=$jq.popover({
 				content: msg
-				,animation: true
+//				,animation: true
 				,placement: 'top'
 				,selector: '#'+fld.id
 				,html: true
 //				,title: '<a href="#" data-toggle="dismiss" class="close">&times;</a>'
+			})
+			.on('show.bs.popover',function() {
+				var ppo=$(this).data('bs.popover');
+				var old=ppo.getCalculatedOffset;
+				ppo.getCalculatedOffset=function(a, b, c, d){
+					var rr=old(a,b,c,d);
+					if(rr.calc) {
+						return rr;
+					}
+//					var txttop=ppo.$element.position().top;
+//					var txtlef=ppo.$element.position().left;
+					var txtwdt=ppo.$element.width();
+					var txthgh=ppo.$element.height();
+					var ppohgh=ppo.$tip.height();
+					var ppowdt=ppo.$tip.width();
+//					ppo.$tip.css('top',txttop-ppohgh);
+//					ppo.$tip.css('left',txtlef+txtwdt-ppowdt);
+//					console.log('rr.left'+rr.left);
+//					console.log('txtwdt'+txtwdt);
+//					console.log('ppowdt'+ppowdt);
+					rr.left=rr.left+(txtwdt/2)-(ppowdt/2);
+					rr.top=rr.top+ppohgh-(txthgh/2);
+//					console.log('res rr.left'+rr.left);
+//					debugger;
+					rr.calc=true;
+					return rr;
+				};
+			})
+			.on('shown.bs.popover',function() {
 			}).popover('show');
 			var p=$jq.parent().parent()
 			p.find('.popover').addClass('error-popover');
 			p.find('.arrow').addClass('error-popover-arrow');
 			p.find('.popover-content').addClass('error-popover-content');
-			;
 		}
 	}
 	,clear: function(ctx) {

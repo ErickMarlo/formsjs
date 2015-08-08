@@ -126,6 +126,8 @@ forms.BaseForm=Class.extend({
 				ctx.validationViewer.show(ctx,result);
 		},clear: function(){
 			ctx.validationViewer.clear(ctx);
+		},showsummary: function(fldid,title) {
+			ctx.validationViewer.showsummary(ctx,fldid,result,title);	
 		}};
 	}
 });
