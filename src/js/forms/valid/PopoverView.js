@@ -83,11 +83,11 @@ forms.valid.PopoverView=Class.extend({
 			while(src) {
 				if(src.type=='Tab') {
 					var a=src.$title.find('a');
-					var lbl=a.find('span.label-danger');
+					var lbl=a.find('span.container-error');
 					if(!lbl.length) {
 						lbl=rend.renderContainerError();
 						lbl.tooltip();
-						a.append('&nbsp;',lbl);
+						a.append(lbl);
 					}
 					var cnt=lbl.html();
 					if(!cnt) cnt=0;

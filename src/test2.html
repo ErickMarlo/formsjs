@@ -18,6 +18,9 @@
       <script src="../dist/jsformsIE.js"></script>
     <![endif]-->
 		<style>
+			.container-error {
+				margin-left: 0.3em;
+			}
 			.error-popover {
 				border-width: 1px;
 				border-color: red;
@@ -98,6 +101,8 @@ var testdata={
 				,employmentdate : '06/05/1996'
 				,isenabled : true
 				,roles : [699,999]
+				,password : ''
+				,retypepassword : ''
     }
 		,position: [
 			{start : '06/05/1996'
@@ -273,9 +278,11 @@ var empfrm=forms.BaseForm.extend({
 	,save : function() {
 		var error=this.validate();
 		error.clear();
+		error.unmarkcontainers();
 		if(error.count) {
 			error.show();
 			error.showsummary('gddatamsg','The form contains errors, Check the fields bellow:');
+			error.markcontainers();
 			return ;
 		}
 		this.gather();
