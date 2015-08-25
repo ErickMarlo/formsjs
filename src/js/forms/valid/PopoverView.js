@@ -39,11 +39,9 @@ forms.valid.PopoverView=Class.extend({
 			$jq.removeData('bs.popover');
 			var pp=$jq.popover({
 				content: msg
-//				,animation: true
 				,placement: 'top'
 				,selector: '#'+fld.id
 				,html: true
-//				,title: '<a href="#" data-toggle="dismiss" class="close">&times;</a>'
 			})
 			.on('show.bs.popover',function() {
 				var ppo=$(this).data('bs.popover');
@@ -53,21 +51,12 @@ forms.valid.PopoverView=Class.extend({
 					if(rr.calc) {
 						return rr;
 					}
-//					var txttop=ppo.$element.position().top;
-//					var txtlef=ppo.$element.position().left;
 					var txtwdt=ppo.$element.width();
 					var txthgh=ppo.$element.height();
 					var ppohgh=ppo.$tip.height();
 					var ppowdt=ppo.$tip.width();
-//					ppo.$tip.css('top',txttop-ppohgh);
-//					ppo.$tip.css('left',txtlef+txtwdt-ppowdt);
-//					console.log('rr.left'+rr.left);
-//					console.log('txtwdt'+txtwdt);
-//					console.log('ppowdt'+ppowdt);
 					rr.left=rr.left+(txtwdt/2)-(ppowdt/2);
 					rr.top=rr.top+ppohgh-(txthgh/2);
-//					console.log('res rr.left'+rr.left);
-//					debugger;
 					rr.calc=true;
 					return rr;
 				};
