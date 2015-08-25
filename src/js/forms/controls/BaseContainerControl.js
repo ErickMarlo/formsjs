@@ -43,6 +43,9 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		if(!fld.items) return ;
 		for(var i=0;i<fld.items.length;i++) {
 			var ci=forms.controls.ControlManagerInstance.idx[fld.items[i].type];
+			if(!ci) {
+				throw 'No control of type: '+fld.items[i].type;
+			}
 			ci.preprocess(fld.items[i],fld);
 		}
 	}

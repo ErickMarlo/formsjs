@@ -48,9 +48,9 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 			var v=fld.validate[i];
 		}
 	}
-	,renderTextField : function(fld){
+	,renderTextField : function(fld,type){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="'+type+'" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}

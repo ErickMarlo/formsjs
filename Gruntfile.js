@@ -46,6 +46,7 @@ module.exports = function(grunt) {
 						,"src/js/forms/controls/TabControl.js"
 						,"src/js/forms/controls/TableControl.js"
 						,"src/js/forms/controls/TextControl.js"
+						,"src/js/forms/controls/PasswordControl.js"
 						,"src/js/forms/controls/TextareaControl.js"
 						,"src/js/forms/controls/InfoControl.js"
 						,"src/js/forms/controls/DateControl.js"

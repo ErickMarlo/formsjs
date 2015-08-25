@@ -57,6 +57,7 @@
 						<script src="js/forms/controls/TabControl.js"></script>
 						<script src="js/forms/controls/TableControl.js"></script>
 						<script src="js/forms/controls/TextControl.js"></script>
+						<script src="js/forms/controls/PasswordControl.js"></script>
 						<script src="js/forms/controls/TextareaControl.js"></script>
 						<script src="js/forms/controls/InfoControl.js"></script>
 						<script src="js/forms/controls/DateControl.js"></script>
@@ -175,8 +176,28 @@ var empfrm=forms.BaseForm.extend({
 							]}
 						]}
 						,{type: 'Row', items:[
-							{type: 'Column', items: [
+							{type: 'Column', cols:2, items: [
 								{type: 'Checkbox', id: 'isenabled', label: 'Enabled'}
+							]}
+						]}
+						,{type: 'Row', items: [
+							{type: 'Column', cols:2, items: [
+								{type: 'Password', id: 'password', label: 'Password', validate: [{required:true}]}
+							]}
+							,{type: 'Column', cols:2, items: [
+								{type: 'Password', id: 'retypepassword', label: 'Retype password', validate: function(){
+									if(this.form.idx.byid.password.val()!=this.val()) {
+										return 'Retyped password does not match password entered.';
+									}
+//									if(this.val()!=this.form.idx)
+								}}
+							]}
+						]}
+						,{type: 'Row', items: [
+							{type: 'Column', items: [
+								{type: 'Button', label: 'Save', onclick: function(b){
+									this.form.save();
+								}}
 							]}
 						]}
 					]}
