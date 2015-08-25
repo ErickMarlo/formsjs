@@ -72,4 +72,31 @@ forms.valid.PopoverView=Class.extend({
 	,clear: function(ctx) {
 		ctx.$jq.find('.error-popover').popover('destroy').removeData('bs.popover').remove();
 	}
+	,unmarkcontainers: function(ctx,res){
+		ctx.$jq.find('.container-error').remove();
+	}
+	,markcontainers: function(ctx,res){
+		var rend=forms.controls.ControlManagerInstance.renderer;
+		for (var i = 0; i < res.length; i++) {
+			var r=res[i];
+			var src=r.source;
+			while(src) {
+				if(src.type=='Tab') {
+					var a=src.$title.find('a');
+					var lbl=a.find('span.label-danger');
+					if(!lbl.length) {
+						lbl=rend.renderContainerError();
+						lbl.tooltip();
+						a.append('&nbsp;',lbl);
+					}
+					var cnt=lbl.html();
+					if(!cnt) cnt=0;
+					cnt++;
+					lbl.html(''+cnt);
+					
+				}
+				src=src.parent;
+			}
+		}
+	}
 });

@@ -189,4 +189,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		}
 		return '<i class="fa icon-'+ico+'" style="font-size:2em;"></i>&nbsp;';
 	}
+	,renderContainerError: function(){
+		return $('<span class="container-error label label-danger" data-toggle="tooltip" title="There is errors in fields of this container!"></span>');
+	}
 });

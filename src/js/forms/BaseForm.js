@@ -126,8 +126,12 @@ forms.BaseForm=Class.extend({
 				ctx.validationViewer.show(ctx,result);
 		},clear: function(){
 			ctx.validationViewer.clear(ctx);
+		},unmarkcontainers: function() {
+			ctx.validationViewer.unmarkcontainers(ctx);	
+		},markcontainers: function() {
+			ctx.validationViewer.markcontainers(ctx,result);	
 		},showsummary: function(fldid,title) {
-			ctx.validationViewer.showsummary(ctx,fldid,result,title);	
+			ctx.validationViewer.showsummary(ctx,fldid,result,title);
 		}};
 	}
 });

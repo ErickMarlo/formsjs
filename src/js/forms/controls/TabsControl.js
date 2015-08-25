@@ -24,6 +24,7 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 	,_addItem : function(fld,tab,$th,$tb,active){
 		var rend=forms.controls.ControlManagerInstance.renderer;
 		var $tt=rend.renderTabTitle(tab,active);
+		tab.$title=$tt;
 		$th.append($tt);
 		var $tc=rend.renderTabContent(tab,active);
 		$tb.append($tc);
@@ -36,5 +37,10 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 			fld.items=[];
 		}
 		fld.items.push(tab);
+	}
+	,validate : function(fld){
+		var r=this._super(fld);
+		debugger;
+		return r;
 	}
 });
