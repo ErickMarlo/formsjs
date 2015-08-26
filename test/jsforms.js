@@ -18,6 +18,17 @@ forms.controls.BaseControl=Class.extend({
 		fld.updatelabel=function(label) {
 			fld.$jq.find('[_target="label"]').html(label);
 		};
+		this.preprocessValidators(fld);
+	}
+	,preprocessValidators: function(fld) {
+		if(!fld.validmap)fld.validmap={};
+		if(!fld.validate)return ;
+		for(var i=0;i<fld.validate.length;i++) {
+			var vld=fld.validate[i];
+			for(var k in vld) {
+				fld.validmap[k]=vld[k];
+			}
+		}
 	}
 	,_setuprefnotifications: function(fld){
 		if(fld.ref) {
@@ -150,6 +161,9 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		if(!fld.items) return ;
 		for(var i=0;i<fld.items.length;i++) {
 			var ci=forms.controls.ControlManagerInstance.idx[fld.items[i].type];
+			if(!ci) {
+				throw 'No control of type: '+fld.items[i].type;
+			}
 			ci.preprocess(fld.items[i],fld);
 		}
 	}
@@ -329,6 +343,46 @@ forms.controls.ValueControl=forms.controls.BaseControl.extend({
 });
 ;Package.Register('forms.controls');
 
+forms.controls.BaseListControl=forms.controls.ValueControl.extend({
+	renderField : function(fld) {
+		var $fld=this._renderListField(fld);
+		var select=this._findListControl($fld,fld);
+		this._super(fld,select);
+		var ctx=this;
+		fld._baseListControl=this;
+		fld._select=select;
+		fld.load=function(lopt){
+			ctx.load.call(fld,lopt);
+		};
+		fld.load(fld.options);
+		return $fld;
+	}
+	,load: function(lopt){
+		if(!lopt)return;
+		for(var i=0;i<lopt.length;i++) {
+			var opt=lopt[i];
+			opt._fld=this;
+			if(opt.options) {
+				var $optgrp=this._baseListControl._createGroup(opt);
+				$optgrp.data('data',opt)
+				this._select.append($optgrp);
+				this.load(opt.options,$optgrp);
+			} else {
+				var $opt=this._baseListControl._createItem(opt);
+				$opt.data('data',opt);
+				this._select.append($opt);
+			}
+		}
+	}
+	,setupvaluechange: function(fld){
+		var ctx=this;
+		fld.$jq.on('change',function(ev){
+			ctx.onchange(fld,ev);
+		});
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.ColumnControl=forms.controls.BaseContainerControl.extend({
 	renderField : function(field) {
 		return this._super(field,forms.controls.ControlManagerInstance.renderer.renderColumn);
@@ -377,6 +431,7 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 	,_addItem : function(fld,tab,$th,$tb,active){
 		var rend=forms.controls.ControlManagerInstance.renderer;
 		var $tt=rend.renderTabTitle(tab,active);
+		tab.$title=$tt;
 		$th.append($tt);
 		var $tc=rend.renderTabContent(tab,active);
 		$tb.append($tc);
@@ -390,12 +445,15 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 		}
 		fld.items.push(tab);
 	}
+	,validate : function(fld){
+		var r=this._super(fld);
+		debugger;
+		return r;
+	}
 });
 ;Package.Register('forms.controls');
 
 forms.controls.TabControl=forms.controls.BaseContainerControl.extend({
-//		renderField : function(fld) {
-//		}
 });
 ;Package.Register('forms.controls');
 
@@ -415,12 +473,12 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 			processing : true
 			,serverSide : true
 		};
-		if(fld.click) {
+		if(fld.onclick) {
 			opt.rowCallback=function(row,data){
 				var $row=$(row);
 				$row.bind('click',function(ev){
 					$row.addClass('selected');
-					fld.click(fld,row._DT_RowIndex,data,$row,ev);
+					fld.onclick(fld,row._DT_RowIndex,data,$row,ev);
 				});
 			};
 		};
@@ -437,8 +495,9 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 ;Package.Register('forms.controls');
 
 forms.controls.TextControl=forms.controls.ValueControl.extend({
-	renderField : function(field) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextField(field);
+	renderField : function(field,type) {
+		if(!type) type='text';
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextField(field,type);
 		this._super(field,$($fld).find('input'));
 		return $fld;
 	}
@@ -447,6 +506,13 @@ forms.controls.TextControl=forms.controls.ValueControl.extend({
 		fld.$jq.on('keyup blur',function(ev){
 			ctx.onchange(fld,ev);
 		});
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.PasswordControl=forms.controls.TextControl.extend({
+	renderField : function(field) {
+		return this._super(field,'password');
 	}
 });
 ;Package.Register('forms.controls');
@@ -484,7 +550,7 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 	onafterrender : function(fld){
 		this._super(fld);
 		var $inp=fld.$jq;
-		$inp.datepicker({format:'dd/mm/yyyy'});
+		$inp.datepicker({format:fld.format});
 	}
 	,setupvaluechange: function(fld){
 		this._super(fld);
@@ -496,40 +562,71 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 });
 ;Package.Register('forms.controls');
 
-forms.controls.SelectControl=forms.controls.ValueControl.extend({
-	renderField : function(fld) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
-		var select=$($fld).find('select');
-		this._super(fld,select);
-		var ctx=this;
-		fld.load=function(lopt,$jq){
-			ctx.load.call(fld,lopt,$jq);
-		};
-		fld.load(fld.options,select);
+forms.controls.CheckboxControl=forms.controls.ValueControl.extend({
+	renderField : function(field) {
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderCheckbox(field);
+		this._super(field,$($fld).find('input'));
 		return $fld;
-	}
-	,load: function(lopt,$jq){
-		if(!$jq) $jq=this.$jq;
-		if(!lopt)return;
-		for(var i=0;i<lopt.length;i++) {
-			var opt=lopt[i];
-			if(opt.options) {
-				var $optgrp=$('<optgroup label="'+opt.text+'"></optgroup>');
-				$optgrp.data('data',opt)
-				$jq.append($optgrp);
-				this.load(opt.options,$optgrp);
-			} else {
-				var $opt=$('<option value="'+opt.value+'">'+opt.text+'</option>');
-				$opt.data('data',opt);
-				$jq.append($opt);
-			}
-		}
 	}
 	,setupvaluechange: function(fld){
 		var ctx=this;
 		fld.$jq.on('change',function(ev){
 			ctx.onchange(fld,ev);
 		});
+	}
+	,setval : function(fld,val){
+		fld.$jq.prop('checked',val);
+		fld.form.onchange(fld);
+	}
+	,getval : function(fld){
+		var val=fld.$jq.prop('checked');
+		return val;
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.CheckboxesControl=forms.controls.BaseListControl.extend({
+	_renderListField : function(fld) {
+		return forms.controls.ControlManagerInstance.renderer.renderCheckboxesField(fld);
+	}
+	,_findListControl : function($fld) {
+		return $fld;
+	}
+	,_createGroup : function(opt) {
+		return $('');
+	}
+	,_createItem : function(opt) {
+		return forms.controls.ControlManagerInstance.renderer.renderCheckboxesCheckbox(opt);
+	}
+	,setval : function(fld,val){
+		for(var i=0;i<val.length;i++) {
+			var v=val[i];
+			fld.$jq.find(':checkbox[value="'+v+'"]').prop('checked',true);
+		}
+		fld.form.onchange(fld);
+	}
+	,getval : function(fld){
+		var vv=[];
+		fld.$jq.find(':checkbox:checked').each(function(i,o){
+			vv.push($(o).val());
+		});
+		return vv;
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.SelectControl=forms.controls.BaseListControl.extend({
+	_renderListField : function(fld) {
+		return forms.controls.ControlManagerInstance.renderer.renderSelectField(fld);
+	}
+	,_findListControl : function($fld) {
+		return $($fld).find('select');
+	}
+	,_createGroup : function(opt) {
+		return $('<optgroup label="'+opt.text+'"></optgroup>');
+	}
+	,_createItem : function(opt) {
+		return $('<option value="'+opt.value+'">'+opt.text+'</option>');
 	}
 });
 ;Package.Register('forms.controls');
@@ -539,8 +636,8 @@ forms.controls.ButtonControl=forms.controls.BaseControl.extend({
 		var $fld=this.getRenderFn()(fld);
 		this._super(fld,$fld);
 		$('body').on('click','#'+fld.id,function(e){
-			if(fld.click) {
-				return fld.click(fld);
+			if(fld.onclick) {
+				return fld.onclick(fld);
 			}
 		});
 		return $fld;
@@ -627,12 +724,12 @@ forms.controls.BreadcrumbItemControl=forms.controls.BaseContainerControl.extend(
 
 forms.controls.MessageControl=forms.controls.BaseControl.extend({
 	renderField : function(field) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderMessage(field);
+		var $fld=$('<div></div>');
 		$fld.hide();
 		this._super(field,$fld);
 		var ctx=this;
-		field.show=function(type,messages) {
-			ctx.show(field,type,messages);
+		field.show=function(messages,kind,title) {
+			ctx.show(field,messages,kind,title);
 		};
 		field.hide=function(){
 			ctx.hide(field);
@@ -648,12 +745,21 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 	,clear : function(fld) {
 		fld.$jq.find('div').remove();
 	}
-	,show : function(fld,type,msgs) {
-		forms.controls.ControlManagerInstance.renderer.changeAlertType(fld,type);
-		for (var i = 0, max = msgs.length; i < max; i++) {
-			var msg=$('<div></div>').html(msgs[i]);//<a href="#" class="alert-link">Alert Link</a>
-			fld.$jq.append(msg);
-		}
+	,show : function(fld,smsg,kind,title) {
+		if(kind)fld.kind=kind;
+		if(!fld.kind)fld.kind='success';
+		fld.title=title;
+		var rend=forms.controls.ControlManagerInstance.renderer;
+//		rend.changeAlertType(fld,type);
+		var ico=rend.renderMessageIcon(fld);
+		var icotd=$('<td style="vertical-align:top;"></td>').append(ico);
+		var msgtd=$('<td></td>').append(smsg);
+		var tr=$('<tr></tr>').append(icotd,msgtd);
+		var tbl=$('<table></table>').append(tr);
+		var msg=tbl;
+		var $m=forms.controls.ControlManagerInstance.renderer.renderMessage(fld);
+		fld.$jq.html('');
+		fld.$jq.append($m.append(msg));
 		fld.$jq.show();
 	}
 });
@@ -666,9 +772,12 @@ forms.controls.ControlManager=Class.extend({
 	,init : function(){
 		this.idx['Custom']=new forms.controls.CustomControl(this);
 		this.idx['Text']=new forms.controls.TextControl(this);
+		this.idx['Password']=new forms.controls.PasswordControl(this);
 		this.idx['Textarea']=new forms.controls.TextareaControl(this);
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
+		this.idx['Checkbox']=new forms.controls.CheckboxControl(this);
+		this.idx['Checkboxes']=new forms.controls.CheckboxesControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
 		this.idx['ToolbarButton']=new forms.controls.ToolbarButtonControl(this);
@@ -681,6 +790,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Table']=new forms.controls.TableControl(this);
 		this.idx['Accordion']=new forms.controls.AccordionControl(this);
 		this.idx['AccordionItem']=new forms.controls.AccordionItemControl(this);
+		this.idx['Duallist']=new forms.controls.DuallistControl(this);
 	}
 });
 
@@ -734,7 +844,7 @@ forms.valid.ValidatorsInstance=new forms.valid.Validators();
 Package.Register('forms.valid.temp');
 
 forms.valid.ValidationEngineView=Class.extend({
-	show: function(res) {
+	show: function(ctx,res) {
 		for (var i = 0; i < res.length; i++) {
 			var r=res[i]
 			var $jq=r.source.$jq;
@@ -824,11 +934,25 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 			var v=fld.validate[i];
 		}
 	}
-	,renderTextField : function(fld){
+	,renderTextField : function(fld,type){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="'+type+'" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
+	}
+	,renderCheckbox : function(fld) {
+		var $lbl=this._getLabel(fld);
+		var chk='<input type="checkbox" id="'+fld.id+'">';
+		var $cont=$('<div class="checkbox"></div>');
+		return $cont.append($($lbl).prepend(chk));
+	}
+	,renderCheckboxesField : function(fld){
+		var l='<label class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+'</label>'
+		var $fld=$('<div class="form-group '+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'">'+l+'</div>');
+		return $fld;
+	}
+	,renderCheckboxesCheckbox : function(opt) {
+		return	$('<label class="checkbox-inline"><input type="checkbox" name="'+opt._fld.id+'" value="'+opt.value+'">'+opt.text+'</label>');
 	}
 	,renderTextareaField : function(fld){
 		var $fld=this._getLabel(fld)
@@ -843,7 +967,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $grp;
 	}
 	,_getLabel: function(fld){
-		return '<label for="'+fld.id+'" class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+'</label>';
+		return '<label for="'+fld.id+'" class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+(fld.validmap.required===true?' *':'')+'</label>';
 	}
 	,renderSelectField : function(fld){
 		var $fld=this._getLabel(fld)
@@ -852,7 +976,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $grp;
 	}
 	,renderButton : function(fld){
-		var fld=$('<button id="'+fld.id+'" class="btn btn-primary btn-lg" data-toggle="modal">'+fld.label+'</button>');
+		var fld=$('<button type="button" id="'+fld.id+'" class="btn btn-primary btn-lg" data-toggle="modal">'+fld.label+'</button>');
 		return fld;
 	}
 	,renderTabsRoot : function(fld){
@@ -926,14 +1050,93 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		}
 	}
 	,renderMessage : function (fld) {
-		var $msgdiv=$('<div class="alert alert-success alert-dismissable"></div>');
+		var $msgdiv=$('<div class="alert alert-'+fld.kind+' alert-dismissable"></div>');
 		var $dismissbtn=$('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>');
-		$msgdiv.append($dismissbtn);
+		$msgdiv.append(fld.title?fld.title:'',$dismissbtn);
 		return $msgdiv;
 	}
-	,changeAlertType : function(fld,type) {
-		fld.$jq.removeClass('alert-success alert-info alert-warning alert-danger');
-		fld.$jq.addClass('alert-'+type);
+	,renderMessageIcon : function(fld) {
+		switch (fld.kind) {
+			case 'success':
+				var ico='ok-circle';
+				break;
+			case 'warning':
+				var ico='exclamation-sign-sign';
+				break;
+			case 'info':
+				var ico='info-sign';
+				break;
+			case 'danger':
+				var ico='minus-sign';
+				break;
+			default:
+				var ico='comment-alt';
+				break;
+		}
+		return '<i class="fa icon-'+ico+'" style="font-size:2em;"></i>&nbsp;';
+	}
+	,renderContainerError: function(){
+		return $('<span class="container-error label label-danger" data-toggle="tooltip" title="There is errors in fields of this container!"></span>');
+	}
+	,renderDuallist: function(fld){
+		var h='<div class="row">'
+                    +'<div class="col-lg-5">'
+                        +'<div class="form-group">'
+                            +'<div class="input-group">'
+                                +'<input id="'+fld.id+'1Filter" type="text" placeholder="Filter" class="form-control">'
+                                +'<span class="input-group-btn">'
+                                    +'<button id="'+fld.id+'1Clear" class="btn btn-warning" type="button">x</button>'
+                                +'</span>'
+                            +'</div>'
+                        +'</div>'
+                        +'<div class="form-group">'
+                            +'<select id="'+fld.id+'1View" multiple="multiple" class="form-control" size="16"></select>'
+                            +'<hr>'
+                            +'<div class="alert alert-block">'
+                                +'<span id="'+fld.id+'1Counter" class="countLabel">Showing 16 of 16</span>'
+                                +'<select id="'+fld.id+'1Storage" class="form-control" style="display: none;"></select>'
+                            +'</div>'
+                        +'</div>'
+                    +'</div>'
+
+                    +'<div class="col-lg-1">'
+                        +'<div class="btn-group btn-group-vertical" style="white-space: normal;">'
+                            +'<button id="'+fld.id+'to2" type="button" class="btn btn-primary">'
+                                +'<i class="icon-chevron-right"></i>'
+                            +'</button>'
+                            +'<button id="'+fld.id+'allTo2" type="button" class="btn btn-primary">'
+                                +'<i class="icon-forward"></i>'
+                            +'</button>'
+                            +'<button id="'+fld.id+'allTo1" type="button" class="btn btn-danger">'
+                                +'<i class="icon-backward"></i>'
+                            +'</button>'
+                            +'<button id="'+fld.id+'to1" type="button" class="btn btn-danger">'
+                                +'<i class=" icon-chevron-left icon-white"></i>'
+                            +'</button>'
+                        +'</div>'
+                    +'</div>'
+
+                    +'<div class="col-lg-5">'
+                        +'<div class="form-group">'
+                            +'<div class="input-group">'
+                                +'<input id="'+fld.id+'2Filter" type="text" placeholder="Filter" class="form-control">'
+                                +'<span class="input-group-btn">'
+                                    +'<button id="'+fld.id+'2Clear" class="btn btn-warning" type="button">x</button>'
+                                +'</span>'
+                            +'</div>'
+                        +'</div>'
+                        +'<div class="form-group">'
+                            +'<select id="'+fld.id+'2View" multiple="multiple" class="form-control" size="16"></select>'
+                        +'</div>'
+                        +'<hr>'
+
+                        +'<div class="alert alert-block">'
+                            +'<span id="'+fld.id+'2Counter" class="countLabel">Showing 0 of 0</span>'
+                            +'<select id="'+fld.id+'2Storage" class="form-control" style="display: none;"> </select>'
+                        +'</div>'
+                    +'</div>'
+                +'</div>		';
+				return $(h);
 	}
 });
 
@@ -1163,8 +1366,16 @@ forms.BaseForm=Class.extend({
 			result=result.concat(res);
 		}
 		var ctx=this;
-		return {result:result,show: function(){
-				ctx.validationViewer.show(result);
+		return {result:result,count:result.length,show: function(){
+				ctx.validationViewer.show(ctx,result);
+		},clear: function(){
+			ctx.validationViewer.clear(ctx);
+		},unmarkcontainers: function() {
+			ctx.validationViewer.unmarkcontainers(ctx);	
+		},markcontainers: function() {
+			ctx.validationViewer.markcontainers(ctx,result);	
+		},showsummary: function(fldid,title) {
+			ctx.validationViewer.showsummary(ctx,fldid,result,title);
 		}};
 	}
 });
