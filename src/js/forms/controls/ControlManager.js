@@ -25,6 +25,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Table']=new forms.controls.TableControl(this);
 		this.idx['Accordion']=new forms.controls.AccordionControl(this);
 		this.idx['AccordionItem']=new forms.controls.AccordionItemControl(this);
+		this.idx['Duallist']=new forms.controls.DuallistControl(this);
 	}
 });
 

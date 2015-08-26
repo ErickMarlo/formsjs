@@ -161,6 +161,9 @@ forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
 		if(!fld.items) return ;
 		for(var i=0;i<fld.items.length;i++) {
 			var ci=forms.controls.ControlManagerInstance.idx[fld.items[i].type];
+			if(!ci) {
+				throw 'No control of type: '+fld.items[i].type;
+			}
 			ci.preprocess(fld.items[i],fld);
 		}
 	}
@@ -343,7 +346,7 @@ forms.controls.ValueControl=forms.controls.BaseControl.extend({
 forms.controls.BaseListControl=forms.controls.ValueControl.extend({
 	renderField : function(fld) {
 		var $fld=this._renderListField(fld);
-		var select=this._findListControl($fld);
+		var select=this._findListControl($fld,fld);
 		this._super(fld,select);
 		var ctx=this;
 		fld._baseListControl=this;
@@ -428,6 +431,7 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 	,_addItem : function(fld,tab,$th,$tb,active){
 		var rend=forms.controls.ControlManagerInstance.renderer;
 		var $tt=rend.renderTabTitle(tab,active);
+		tab.$title=$tt;
 		$th.append($tt);
 		var $tc=rend.renderTabContent(tab,active);
 		$tb.append($tc);
@@ -441,12 +445,15 @@ forms.controls.TabsControl=forms.controls.BaseContainerControl.extend({
 		}
 		fld.items.push(tab);
 	}
+	,validate : function(fld){
+		var r=this._super(fld);
+		debugger;
+		return r;
+	}
 });
 ;Package.Register('forms.controls');
 
 forms.controls.TabControl=forms.controls.BaseContainerControl.extend({
-//		renderField : function(fld) {
-//		}
 });
 ;Package.Register('forms.controls');
 
@@ -488,8 +495,9 @@ forms.controls.TableControl=forms.controls.BaseControl.extend({
 ;Package.Register('forms.controls');
 
 forms.controls.TextControl=forms.controls.ValueControl.extend({
-	renderField : function(field) {
-		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextField(field);
+	renderField : function(field,type) {
+		if(!type) type='text';
+		var $fld=forms.controls.ControlManagerInstance.renderer.renderTextField(field,type);
 		this._super(field,$($fld).find('input'));
 		return $fld;
 	}
@@ -498,6 +506,13 @@ forms.controls.TextControl=forms.controls.ValueControl.extend({
 		fld.$jq.on('keyup blur',function(ev){
 			ctx.onchange(fld,ev);
 		});
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.PasswordControl=forms.controls.TextControl.extend({
+	renderField : function(field) {
+		return this._super(field,'password');
 	}
 });
 ;Package.Register('forms.controls');
@@ -713,8 +728,8 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 		$fld.hide();
 		this._super(field,$fld);
 		var ctx=this;
-		field.show=function(type,messages) {
-			ctx.show(field,type,messages);
+		field.show=function(messages,kind,title) {
+			ctx.show(field,messages,kind,title);
 		};
 		field.hide=function(){
 			ctx.hide(field);
@@ -730,12 +745,20 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 	,clear : function(fld) {
 		fld.$jq.find('div').remove();
 	}
-	,show : function(fld,type,smsg) {
+	,show : function(fld,smsg,kind,title) {
+		if(kind)fld.kind=kind;
+		if(!fld.kind)fld.kind='success';
+		fld.title=title;
 		var rend=forms.controls.ControlManagerInstance.renderer;
-		rend.changeAlertType(fld,type);
-		var ico=rend.renderMessageIcon(type);
-		var msg=$('<div></div>').append(ico,smsg);//<a href="#" class="alert-link">Alert Link</a>
+//		rend.changeAlertType(fld,type);
+		var ico=rend.renderMessageIcon(fld);
+		var icotd=$('<td style="vertical-align:top;"></td>').append(ico);
+		var msgtd=$('<td></td>').append(smsg);
+		var tr=$('<tr></tr>').append(icotd,msgtd);
+		var tbl=$('<table></table>').append(tr);
+		var msg=tbl;
 		var $m=forms.controls.ControlManagerInstance.renderer.renderMessage(fld);
+		fld.$jq.html('');
 		fld.$jq.append($m.append(msg));
 		fld.$jq.show();
 	}
@@ -749,6 +772,7 @@ forms.controls.ControlManager=Class.extend({
 	,init : function(){
 		this.idx['Custom']=new forms.controls.CustomControl(this);
 		this.idx['Text']=new forms.controls.TextControl(this);
+		this.idx['Password']=new forms.controls.PasswordControl(this);
 		this.idx['Textarea']=new forms.controls.TextareaControl(this);
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
@@ -766,6 +790,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Table']=new forms.controls.TableControl(this);
 		this.idx['Accordion']=new forms.controls.AccordionControl(this);
 		this.idx['AccordionItem']=new forms.controls.AccordionItemControl(this);
+		this.idx['Duallist']=new forms.controls.DuallistControl(this);
 	}
 });
 
@@ -909,17 +934,17 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 			var v=fld.validate[i];
 		}
 	}
-	,renderTextField : function(fld){
+	,renderTextField : function(fld,type){
 		var $fld=this._getLabel(fld)
-						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="text" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+						+'<div class="'+(fld.controlcols?'col-lg-'+fld.controlcols:'')+'"><input class="form-control" type="'+type+'" id="'+fld.id+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
 		var $grp=$('<div class=""></div>').append($fld);
 		return $grp;
 	}
 	,renderCheckbox : function(fld) {
 		var $lbl=this._getLabel(fld);
 		var chk='<input type="checkbox" id="'+fld.id+'">';
-		var $cont=$('<div class="checkbox"></div>');// anim-checkbox
-		return $cont.append(chk,$lbl);
+		var $cont=$('<div class="checkbox"></div>');
+		return $cont.append($($lbl).prepend(chk));
 	}
 	,renderCheckboxesField : function(fld){
 		var l='<label class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+'</label>'
@@ -951,7 +976,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $grp;
 	}
 	,renderButton : function(fld){
-		var fld=$('<button id="'+fld.id+'" class="btn btn-primary btn-lg" data-toggle="modal">'+fld.label+'</button>');
+		var fld=$('<button type="button" id="'+fld.id+'" class="btn btn-primary btn-lg" data-toggle="modal">'+fld.label+'</button>');
 		return fld;
 	}
 	,renderTabsRoot : function(fld){
@@ -1025,17 +1050,13 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		}
 	}
 	,renderMessage : function (fld) {
-		var $msgdiv=$('<div class="alert alert-success alert-dismissable"></div>');
+		var $msgdiv=$('<div class="alert alert-'+fld.kind+' alert-dismissable"></div>');
 		var $dismissbtn=$('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>');
-		$msgdiv.append($dismissbtn);
+		$msgdiv.append(fld.title?fld.title:'',$dismissbtn);
 		return $msgdiv;
 	}
-	,changeAlertType : function(fld,type) {
-		fld.$jq.removeClass('alert-success alert-info alert-warning alert-danger');
-		fld.$jq.addClass('alert-'+type);
-	}
-	,renderMessageIcon : function(type) {
-		switch (type) {
+	,renderMessageIcon : function(fld) {
+		switch (fld.kind) {
 			case 'success':
 				var ico='ok-circle';
 				break;
@@ -1053,6 +1074,69 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 				break;
 		}
 		return '<i class="fa icon-'+ico+'" style="font-size:2em;"></i>&nbsp;';
+	}
+	,renderContainerError: function(){
+		return $('<span class="container-error label label-danger" data-toggle="tooltip" title="There is errors in fields of this container!"></span>');
+	}
+	,renderDuallist: function(fld){
+		var h='<div class="row">'
+                    +'<div class="col-lg-5">'
+                        +'<div class="form-group">'
+                            +'<div class="input-group">'
+                                +'<input id="'+fld.id+'1Filter" type="text" placeholder="Filter" class="form-control">'
+                                +'<span class="input-group-btn">'
+                                    +'<button id="'+fld.id+'1Clear" class="btn btn-warning" type="button">x</button>'
+                                +'</span>'
+                            +'</div>'
+                        +'</div>'
+                        +'<div class="form-group">'
+                            +'<select id="'+fld.id+'1View" multiple="multiple" class="form-control" size="16"></select>'
+                            +'<hr>'
+                            +'<div class="alert alert-block">'
+                                +'<span id="'+fld.id+'1Counter" class="countLabel">Showing 16 of 16</span>'
+                                +'<select id="'+fld.id+'1Storage" class="form-control" style="display: none;"></select>'
+                            +'</div>'
+                        +'</div>'
+                    +'</div>'
+
+                    +'<div class="col-lg-1">'
+                        +'<div class="btn-group btn-group-vertical" style="white-space: normal;">'
+                            +'<button id="'+fld.id+'to2" type="button" class="btn btn-primary">'
+                                +'<i class="icon-chevron-right"></i>'
+                            +'</button>'
+                            +'<button id="'+fld.id+'allTo2" type="button" class="btn btn-primary">'
+                                +'<i class="icon-forward"></i>'
+                            +'</button>'
+                            +'<button id="'+fld.id+'allTo1" type="button" class="btn btn-danger">'
+                                +'<i class="icon-backward"></i>'
+                            +'</button>'
+                            +'<button id="'+fld.id+'to1" type="button" class="btn btn-danger">'
+                                +'<i class=" icon-chevron-left icon-white"></i>'
+                            +'</button>'
+                        +'</div>'
+                    +'</div>'
+
+                    +'<div class="col-lg-5">'
+                        +'<div class="form-group">'
+                            +'<div class="input-group">'
+                                +'<input id="'+fld.id+'2Filter" type="text" placeholder="Filter" class="form-control">'
+                                +'<span class="input-group-btn">'
+                                    +'<button id="'+fld.id+'2Clear" class="btn btn-warning" type="button">x</button>'
+                                +'</span>'
+                            +'</div>'
+                        +'</div>'
+                        +'<div class="form-group">'
+                            +'<select id="'+fld.id+'2View" multiple="multiple" class="form-control" size="16"></select>'
+                        +'</div>'
+                        +'<hr>'
+
+                        +'<div class="alert alert-block">'
+                            +'<span id="'+fld.id+'2Counter" class="countLabel">Showing 0 of 0</span>'
+                            +'<select id="'+fld.id+'2Storage" class="form-control" style="display: none;"> </select>'
+                        +'</div>'
+                    +'</div>'
+                +'</div>		';
+				return $(h);
 	}
 });
 
@@ -1286,6 +1370,12 @@ forms.BaseForm=Class.extend({
 				ctx.validationViewer.show(ctx,result);
 		},clear: function(){
 			ctx.validationViewer.clear(ctx);
+		},unmarkcontainers: function() {
+			ctx.validationViewer.unmarkcontainers(ctx);	
+		},markcontainers: function() {
+			ctx.validationViewer.markcontainers(ctx,result);	
+		},showsummary: function(fldid,title) {
+			ctx.validationViewer.showsummary(ctx,fldid,result,title);
 		}};
 	}
 });

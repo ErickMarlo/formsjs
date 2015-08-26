@@ -3,7 +3,7 @@ Package.Register('forms.controls');
 forms.controls.BaseListControl=forms.controls.ValueControl.extend({
 	renderField : function(fld) {
 		var $fld=this._renderListField(fld);
-		var select=this._findListControl($fld);
+		var select=this._findListControl($fld,fld);
 		this._super(fld,select);
 		var ctx=this;
 		fld._baseListControl=this;

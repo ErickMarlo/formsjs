@@ -74,6 +74,7 @@
 						<script src="js/forms/controls/BreadcrumbControl.js"></script>
 						<script src="js/forms/controls/BreadcrumbItemControl.js"></script>
 						<script src="js/forms/controls/MessageControl.js"></script>
+						<script src="js/forms/controls/DuallistControl.js"></script>
 						<script src="js/forms/controls/ControlManager.js"></script>
 						<script src="js/forms/valid/Validators.js"></script>
 						<script src="js/forms/valid/ValidationEngineView.js"></script>
@@ -171,13 +172,20 @@ var empfrm=forms.BaseForm.extend({
 					,{type: 'Tab', label: 'Account', path: '/main', items: [
 						{type: 'Row', items: [
 							{type: 'Column', items: [
-								{id: 'roles', type: 'Checkboxes', label: 'Roles&nbsp;',options: [
+									{id: 'roles', type: 'Duallist', label: 'Roles', options: [
 									 {text: 'Admin', value: 999}
 									,{text: 'Accountant', value: 899}
 									,{text: 'Manager', value: 799}
 									,{text: 'Developer', value: 699}
 									,{text: 'Architect', value: 599}
-								]}
+									]}
+//								{id: 'roles', type: 'Checkboxes', label: 'Roles&nbsp;',options: [
+//									 {text: 'Admin', value: 999}
+//									,{text: 'Accountant', value: 899}
+//									,{text: 'Manager', value: 799}
+//									,{text: 'Developer', value: 699}
+//									,{text: 'Architect', value: 599}
+//								]}
 							]}
 						]}
 						,{type: 'Row', items:[
