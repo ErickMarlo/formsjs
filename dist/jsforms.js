@@ -765,6 +765,61 @@ forms.controls.MessageControl=forms.controls.BaseControl.extend({
 });
 ;Package.Register('forms.controls');
 
+forms.controls.DuallistControl=forms.controls.BaseListControl.extend({
+	_renderListField : function(fld) {
+		var h=forms.controls.ControlManagerInstance.renderer.renderDuallist(fld);
+		fld.$destination=h.find('#'+fld.id+'2View');
+		return h;
+	}
+	,_findListControl : function($fld,fld) {
+		return $($fld).find('#'+fld.id+'1View');
+	}
+	,_createGroup : function(opt) {
+		return $('<optgroup label="'+opt.text+'"></optgroup>');
+	}
+	,_createItem : function(opt) {
+		return $('<option value="'+opt.value+'">'+opt.text+'</option>');
+	}
+	,onafterrender : function(fld){
+		$.configureBoxes({
+			box1View : fld.id+'1View'
+			,box1Storage: fld.id+'1Storage'
+			,box1Filter: fld.id+'1Filter'
+			,box1Clear: fld.id+'1Clear'
+			,box1Counter: fld.id+'1Counter'
+			,box2View: fld.id+'2View'
+			,box2Storage: fld.id+'2Storage'
+			,box2Filter: fld.id+'2Filter'
+			,box2Clear: fld.id+'2Clear'
+			,box2Counter: fld.id+'2Counter'
+			,to1: fld.id+'to1'
+			,allTo1: fld.id+'allTo1'
+			,to2: fld.id+'to2'
+			,allTo2: fld.id+'allTo2'
+			,transferMode: 'move'
+			,sortBy: 'text'
+			,useFilters: true
+			,useCounters: true
+			,useSorting: true
+			,selectOnSubmit: true
+		});
+	}
+	,setval : function(fld,val){
+		for(var i=0;i<val.length;i++) {
+			var opt=$('#'+fld.id+'1View option[value="'+val[i]+'"]').remove();
+			$('#'+fld.id+'2View').append(opt);
+		}
+	}
+	,getval : function(fld){
+		var ids=[];
+		$('#'+fld.id+'2View option').each(function(i,o){
+			ids.push($(o).prop('value'));
+		});
+		return ids;
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.ControlManager=Class.extend({
 	idx:{}
 	,instanceCounter : 0
@@ -858,6 +913,108 @@ forms.valid.ValidationEngineView=Class.extend({
 		}
 		if(res.length) {
 			res[0].source.form.$jq.validationEngine('validate');
+		}
+	}
+});
+;Package.Register('forms.valid');
+
+forms.valid.PopoverView=Class.extend({
+	showsummary: function (ctx,fldid,res,title) {
+		var msgs=$('<span></span>');
+		for (var i = 0; i < res.length; i++) {
+			var r=res[i]
+			var msg=$('<a href="#" class="alert-link">'+r.message+'</a>')
+			.bind('click',{fld:r.source},function(e) {
+				e.data.fld.$jq.focus();
+				return false;
+			});
+			msgs.append(i==0?'':'<br/>',msg);
+		}
+		var fld=ctx.idx.byid[fldid];
+		fld.show(msgs,'danger',title);
+	}
+	,show: function(ctx,res) {
+		var grp={};
+		for (var i = 0; i < res.length; i++) {
+			var r=res[i]
+			var ff=grp[r.source.id];
+			if(!ff) {
+				ff={};
+				ff.fld=r.source;
+			}
+			var msg=ff.message;
+			if(!msg) {
+				msg='';
+			}
+			msg+=r.message+'<br/>';
+			ff.message=msg;
+			grp[r.source.id]=ff;
+		}
+		for(var f in grp) {
+			var fld=grp[f].fld;
+			var msg=grp[f].message;
+			var $jq=fld.$jq;
+			$jq.removeData('bs.popover');
+			var pp=$jq.popover({
+				content: msg
+				,placement: 'top'
+				,selector: '#'+fld.id
+				,html: true
+			})
+			.on('show.bs.popover',function() {
+				var ppo=$(this).data('bs.popover');
+				var old=ppo.getCalculatedOffset;
+				ppo.getCalculatedOffset=function(a, b, c, d){
+					var rr=old(a,b,c,d);
+					if(rr.calc) {
+						return rr;
+					}
+					var txtwdt=ppo.$element.width();
+					var txthgh=ppo.$element.height();
+					var ppohgh=ppo.$tip.height();
+					var ppowdt=ppo.$tip.width();
+					rr.left=rr.left+(txtwdt/2)-(ppowdt/2);
+					rr.top=rr.top+ppohgh-(txthgh/2);
+					rr.calc=true;
+					return rr;
+				};
+			})
+			.on('shown.bs.popover',function() {
+			}).popover('show');
+			var p=$jq.parent().parent()
+			p.find('.popover').addClass('error-popover');
+			p.find('.arrow').addClass('error-popover-arrow');
+			p.find('.popover-content').addClass('error-popover-content');
+		}
+	}
+	,clear: function(ctx) {
+		ctx.$jq.find('.error-popover').popover('destroy').removeData('bs.popover').remove();
+	}
+	,unmarkcontainers: function(ctx,res){
+		ctx.$jq.find('.container-error').remove();
+	}
+	,markcontainers: function(ctx,res){
+		var rend=forms.controls.ControlManagerInstance.renderer;
+		for (var i = 0; i < res.length; i++) {
+			var r=res[i];
+			var src=r.source;
+			while(src) {
+				if(src.type=='Tab') {
+					var a=src.$title.find('a');
+					var lbl=a.find('span.container-error');
+					if(!lbl.length) {
+						lbl=rend.renderContainerError();
+						lbl.tooltip();
+						a.append(lbl);
+					}
+					var cnt=lbl.html();
+					if(!cnt) cnt=0;
+					cnt++;
+					lbl.html(''+cnt);
+					
+				}
+				src=src.parent;
+			}
 		}
 	}
 });
