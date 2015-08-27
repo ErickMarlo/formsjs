@@ -181,13 +181,6 @@ var empfrm=forms.BaseForm.extend({
 									,{text: 'Developer', value: 699}
 									,{text: 'Architect', value: 599}
 									]}
-//								{id: 'roles', type: 'Checkboxes', label: 'Roles&nbsp;',options: [
-//									 {text: 'Admin', value: 999}
-//									,{text: 'Accountant', value: 899}
-//									,{text: 'Manager', value: 799}
-//									,{text: 'Developer', value: 699}
-//									,{text: 'Architect', value: 599}
-//								]}
 							]}
 						]}
 						,{type: 'Row', items:[
@@ -204,7 +197,6 @@ var empfrm=forms.BaseForm.extend({
 									if(this.form.idx.byid.password.val()!=this.val()) {
 										return 'Retyped password does not match password entered.';
 									}
-//									if(this.val()!=this.form.idx)
 								}}
 							]}
 						]}
@@ -234,8 +226,6 @@ var empfrm=forms.BaseForm.extend({
 							}}
 						]}
 					]}
-//					,{type: 'Tab', label: 'Salary', items:[
-//					]}
 				]}
 			]}
 		]}
@@ -258,9 +248,6 @@ var empfrm=forms.BaseForm.extend({
 					{type : 'Column', items: [
 						{id : 'job_date', type: 'Daterange', labelcols: 1, label: 'Position period', startsuffix: '_start', endsuffix: '_end', formatter: dateformatter}
 					]}
-//					,{type : 'Column', cols:2 , items: [
-//						{id : 'end', type: 'Date', label: 'End date', format: dateformat}
-//					]}
 					,{type : 'Column' , items: [
 						{id : 'position', type: 'Select', labelcols: 1, controlcols:2, label: 'Position', options: [
 							{text: 'Junior programmer', value: 'JUNIOR'}
