@@ -64,6 +64,7 @@
 						<script src="js/forms/controls/TextareaControl.js"></script>
 						<script src="js/forms/controls/InfoControl.js"></script>
 						<script src="js/forms/controls/DateControl.js"></script>
+						<script src="js/forms/controls/DaterangeControl.js"></script>
 						<script src="js/forms/controls/CheckboxControl.js"></script>
 						<script src="js/forms/controls/CheckboxesControl.js"></script>
 						<script src="js/forms/controls/SelectControl.js"></script>
@@ -106,18 +107,18 @@ var testdata={
 				,retypepassword : ''
     }
 		,position: [
-			{start : '06/05/1996'
-				,end : '25/08/1998'
+			{job_date_start : '06/05/1996'
+				,job_date_end : '25/08/1998'
 				,position : 'JUNIOR'
 				,notes : ''
 			}
-			,{start : '25/08/1998'
-				,end : '03/11/2000'
+			,{job_date_start : '25/08/1998'
+				,job_date_end : '03/11/2000'
 				,position : 'PROGRAMMER'
 				,notes : ''
 			}
-			,{start : '03/11/2000'
-				,end : '06/01/2005'
+			,{job_date_start : '03/11/2000'
+				,job_date_end : '06/01/2005'
 				,position : 'SENIOR'
 				,notes : ''
 			}
@@ -242,22 +243,22 @@ var empfrm=forms.BaseForm.extend({
 		return {
 			type: 'AccordionItem'
 			,id: 'positionAccordionItem'+(i+1)
-			,label : (i+1)+'. Position data from: '+(o.start?o.start:'-')+' to '+(o.end?o.end:'-')
+			,label : (i+1)+'. Position data from: '+(o.job_date_start?o.job_date_start:'-')+' to '+(o.job_date_end?o.job_date_end:'-')
 			,onchange : function(fld,ev) {
-				var start=this.find('start').val();
-				var end=this.find('end').val();
+				var start=this.find('job_date_start').val();
+				var end=this.find('job_date_end').val();
 				this.updatelabel((this.index+1)+'. Position data from: '+(start?start:'-')+' to '+(end?end:'-'));
 			}
 			,items : [
 				{type : 'Row', items: [
-					{type : 'Column', cols:2 , items: [
-						{id : 'start', type: 'Date', label: 'Start date', format: dateformat}
+					{type : 'Column', items: [
+						{id : 'job_date', type: 'Daterange', labelcols: 1, label: 'Position period', startsuffix: '_start', endsuffix: '_end', format: dateformat}
 					]}
-					,{type : 'Column', cols:2 , items: [
-						{id : 'end', type: 'Date', label: 'End date', format: dateformat}
-					]}
-					,{type : 'Column', cols:2 , items: [
-						{id : 'position', type: 'Select', label: 'Position', options: [
+//					,{type : 'Column', cols:2 , items: [
+//						{id : 'end', type: 'Date', label: 'End date', format: dateformat}
+//					]}
+					,{type : 'Column' , items: [
+						{id : 'position', type: 'Select', labelcols: 1, controlcols:2, label: 'Position', options: [
 							{text: 'Junior programmer', value: 'JUNIOR'}
 							,{text: 'Programmer', value: 'PROGRAMMER'}
 							,{text: 'Senior programmer', value: 'SENIOR'}

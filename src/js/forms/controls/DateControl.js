@@ -13,4 +13,11 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 			ctx.onchange(fld,ev);
 		});
 	}
+	,setval : function(fld,val){
+		this._super(fld,val);
+		fld.$jq.datepicker('setValue',val);
+	}
+	,getval : function(fld){
+		return this._super(fld);
+	}
 });

@@ -81,6 +81,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $grp;
 	}
 	,_getLabel: function(fld){
+		if(!fld.label) return '';
 		return '<label for="'+fld.id+'" class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+(fld.validmap.required===true?' *':'')+'</label>';
 	}
 	,renderSelectField : function(fld){
@@ -251,5 +252,15 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
                     +'</div>'
                 +'</div>		';
 				return $(h);
+	}
+	,renderInline: function(fld){
+		return 	$('<div class="form-inline"></div>');
+	}
+	,renderDaterange: function(fld){
+		var $fld=this._getLabel(fld)
+						+'<div><input class="form-control col-lg-2" type="text" id="'+fld.id+fld.startsuffix+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $fld1='<div><input class="form-control col-lg-2" type="text" id="'+fld.id+fld.endsuffix+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $grp=$('<div class="form-inline"></div>').append($fld,$fld1);
+		return $grp;
 	}
 });

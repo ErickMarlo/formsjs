@@ -24,11 +24,12 @@ module.exports = function(grunt) {
              'src/assets/plugins/jquery-2.0.3.min.js'
             ,'src/assets/plugins/bootstrap/js/bootstrap.min.js'
             ,'src/assets/plugins/modernizr-2.6.2-respond-1.1.0.min.js'
+						,'src/assets/plugins/daterangepicker/moment.js'
             ,'src/assets/plugins/dataTables/jquery.dataTables.js'
             ,'src/assets/plugins/dataTables/dataTables.bootstrap.js'
             ,'src/assets/plugins/datepicker/js/bootstrap-datepicker.js'
-            ,'src/assets/plugins/validationengine/js/jquery.validationEngine.js'
-            ,'src/assets/plugins/validationengine/js/languages/jquery.validationEngine-en.js'
+//            ,'src/assets/plugins/validationengine/js/jquery.validationEngine.js'
+//            ,'src/assets/plugins/validationengine/js/languages/jquery.validationEngine-en.js'
             ,'src/assets/plugins/autosize/jquery.autosize.min.js'
 						,'src/assets/plugins/jquery.dualListbox-1.3/jQuery.dualListBox-1.3.js'
 	  				,'src/js/core/spahql.js'
@@ -93,7 +94,7 @@ module.exports = function(grunt) {
                 ,'src/assets/plugins/timeline/timeline.css'
                 ,'src/assets/plugins/dataTables/dataTables.bootstrap.css'
                 ,'src/assets/plugins/datepicker/css/datepicker.css'
-                ,'src/assets/plugins/validationengine/css/validationEngine.jquery.css'
+//                ,'src/assets/plugins/validationengine/css/validationEngine.jquery.css'
               ]
           }
       

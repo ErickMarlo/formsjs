@@ -44,6 +44,7 @@ forms.controls.DuallistControl=forms.controls.BaseListControl.extend({
 			var opt=$('#'+fld.id+'1View option[value="'+val[i]+'"]').remove();
 			$('#'+fld.id+'2View').append(opt);
 		}
+		fld.form.onchange(fld);
 	}
 	,getval : function(fld){
 		var ids=[];

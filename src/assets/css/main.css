@@ -671,7 +671,7 @@ font-weight: bolder;
 
 .inner .row {
   margin-right: -15px;
-  margin-left: -15px;
+  /*margin-left: -15px;*/
 }
 
 /* END CONTENT STYLES */

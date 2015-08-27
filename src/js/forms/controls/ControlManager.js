@@ -11,6 +11,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Textarea']=new forms.controls.TextareaControl(this);
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
+		this.idx['Daterange']=new forms.controls.DaterangeControl(this);
 		this.idx['Checkbox']=new forms.controls.CheckboxControl(this);
 		this.idx['Checkboxes']=new forms.controls.CheckboxesControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);

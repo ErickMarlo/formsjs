@@ -559,6 +559,13 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 			ctx.onchange(fld,ev);
 		});
 	}
+	,setval : function(fld,val){
+		this._super(fld,val);
+		fld.$jq.datepicker('setValue',val);
+	}
+	,getval : function(fld){
+		return this._super(fld);
+	}
 });
 ;Package.Register('forms.controls');
 
@@ -809,6 +816,7 @@ forms.controls.DuallistControl=forms.controls.BaseListControl.extend({
 			var opt=$('#'+fld.id+'1View option[value="'+val[i]+'"]').remove();
 			$('#'+fld.id+'2View').append(opt);
 		}
+		fld.form.onchange(fld);
 	}
 	,getval : function(fld){
 		var ids=[];
@@ -831,6 +839,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Textarea']=new forms.controls.TextareaControl(this);
 		this.idx['Info']=new forms.controls.InfoControl(this);
 		this.idx['Date']=new forms.controls.DateControl(this);
+		this.idx['Daterange']=new forms.controls.DaterangeControl(this);
 		this.idx['Checkbox']=new forms.controls.CheckboxControl(this);
 		this.idx['Checkboxes']=new forms.controls.CheckboxesControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
@@ -1124,6 +1133,7 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
 		return $grp;
 	}
 	,_getLabel: function(fld){
+		if(!fld.label) return '';
 		return '<label for="'+fld.id+'" class="control-label '+(fld.labelcols?'col-lg-'+fld.labelcols:'')+'">'+fld.label+(fld.validmap.required===true?' *':'')+'</label>';
 	}
 	,renderSelectField : function(fld){
@@ -1294,6 +1304,16 @@ forms.renderer.BootstrapRenderer=forms.renderer.BaseRenderer.extend({
                     +'</div>'
                 +'</div>		';
 				return $(h);
+	}
+	,renderInline: function(fld){
+		return 	$('<div class="form-inline"></div>');
+	}
+	,renderDaterange: function(fld){
+		var $fld=this._getLabel(fld)
+						+'<div><input class="form-control col-lg-2" type="text" id="'+fld.id+fld.startsuffix+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $fld1='<div><input class="form-control col-lg-2" type="text" id="'+fld.id+fld.endsuffix+'" '+(fld.placeholder?'placeholder="'+fld.placeholder+'"':'')+' value=""></div>';
+		var $grp=$('<div class="form-inline"></div>').append($fld,$fld1);
+		return $grp;
 	}
 });
 
