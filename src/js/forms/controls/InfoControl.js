@@ -7,6 +7,9 @@ forms.controls.InfoControl=forms.controls.ValueControl.extend({
 		return $fld;
 	}
 	,setval : function(fld,val){
+		if(fld.formatter) {
+			val=fld.formatter.format(val);
+		}
 		fld.$jq.val(val);
 	}
 	,getval : function(fld){

@@ -37,6 +37,7 @@ module.exports = function(grunt) {
 				  ]
           ,'dist/<%= pkg.name %>.js' : [
 						"src/js/forms/controls/BaseControl.js"
+						"src/js/forms/utils/DateFormatter.js"
 						,"src/js/forms/controls/BaseContainerControl.js"
 						,"src/js/forms/controls/CustomControl.js"
 						,"src/js/forms/controls/ValueControl.js"

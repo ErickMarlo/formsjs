@@ -4,7 +4,7 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 	onafterrender : function(fld){
 		this._super(fld);
 		var $inp=fld.$jq;
-		$inp.datepicker({format:fld.format});
+		$inp.datepicker({format:fld.formatter.toDatepickerFormat()});
 	}
 	,setupvaluechange: function(fld){
 		this._super(fld);
@@ -14,10 +14,17 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 		});
 	}
 	,setval : function(fld,val){
-		this._super(fld,val);
-		fld.$jq.datepicker('setValue',val);
+		var fval=fld.formatter.format(val);
+		this._super(fld,fval);
+		fld.$jq.datepicker('setValue',fval);
 	}
 	,getval : function(fld){
-		return this._super(fld);
+		var ufval=this._super(fld);
+		var mm=moment(ufval,fld.formatter.dateformat);
+		if(!mm.isValid()) {
+			return undefined;
+		}
+		var val=mm.format(fld.formatter.getDTOFormat());
+		return val;
 	}
 });

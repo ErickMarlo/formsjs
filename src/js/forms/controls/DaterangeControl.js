@@ -10,11 +10,13 @@ forms.controls.DaterangeControl=forms.controls.BaseContainerControl.extend({
 			,controlcols: 2
 			,label: fld.label
 			,labelcols:1
+			,formatter: fld.formatter
 		});
 		fld.addItem({
 			type: 'Date'
 			,id: fld.id+fld.endsuffix
 			,controlcols: 2
+			,formatter: fld.formatter
 		});
 		return $cont;
 	}

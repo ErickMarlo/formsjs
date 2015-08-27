@@ -48,7 +48,8 @@
     <script src="../dist/dependencies.js"></script>
 		
 		
-		<script src="js/forms/controls/BaseControl.js"></script>
+						<script src="js/forms/controls/BaseControl.js"></script>
+						<script src="js/forms/utils/DateFormatter.js"></script>
 						<script src="js/forms/controls/BaseContainerControl.js"></script>
 						<script src="js/forms/controls/ValueControl.js"></script>
 						<script src="js/forms/controls/BaseListControl.js"></script>
@@ -92,33 +93,33 @@ var app=new forms.Application({
 	selector: '#jsforms'
 });
 
-var dateformat='dd/mm/yyyy';
+var dateformatter=new forms.utils.DateFormatter('DD/MM/YYYY');//Moment js format as baseformat
 
 var testdata={
     main: {
         firstname: ''
         ,lastname: ''
         ,branch: 1
-				,dateofbirth: '01/01/1970'
-				,employmentdate : '06/05/1996'
+				,dateofbirth: '1970-01-01T00:00:00'
+				,employmentdate : '1996-06-05T00:00:00'
 				,isenabled : true
 				,roles : [699,999]
 				,password : ''
 				,retypepassword : ''
     }
 		,position: [
-			{job_date_start : '06/05/1996'
-				,job_date_end : '25/08/1998'
+			{job_date_start : '1996-06-05T00:00:00'
+				,job_date_end : '1998-08-25T00:00:00'
 				,position : 'JUNIOR'
 				,notes : ''
 			}
-			,{job_date_start : '25/08/1998'
-				,job_date_end : '03/11/2000'
+			,{job_date_start : '1998-08-25T00:00:00'
+				,job_date_end : '2000-03-11T00:00:00'
 				,position : 'PROGRAMMER'
 				,notes : ''
 			}
-			,{job_date_start : '03/11/2000'
-				,job_date_end : '06/01/2005'
+			,{job_date_start : '2000-03-11T00:00:00'
+				,job_date_end : '2005-06-01T00:00:00'
 				,position : 'SENIOR'
 				,notes : ''
 			}
@@ -135,11 +136,11 @@ var empfrm=forms.BaseForm.extend({
 			{type: 'Row', items: [
 				{type: 'Column', cols: 6, items: [
 					{type: 'Info', label: 'First name', ref: 'firstname'}
-					,{type: 'Info', label: 'Date of birth', ref: 'dateofbirth'}
+					,{type: 'Info', label: 'Date of birth', ref: 'dateofbirth', formatter: dateformatter}
 				]}
 				,{type: 'Column', cols: 6, items:[
 					{type: 'Info', label: 'Last name', ref: 'lastname'}
-					,{type: 'Info', label: 'Employment date', ref: 'employmentdate'}
+					,{type: 'Info', label: 'Employment date', ref: 'employmentdate', formatter: dateformatter}
 				]}
 			]}
 		]}
@@ -155,11 +156,11 @@ var empfrm=forms.BaseForm.extend({
 								,{text: 'Kaunas' , value: '1'}
 								]}
 								,{id:'firstname', type: 'Text', label: 'First name', validate: [{required: true},{minlen:2}]}
-								,{id: 'dateofbirth', type: 'Date', label: 'Date of birth', format: dateformat}
+								,{id: 'dateofbirth', type: 'Date', label: 'Date of birth', formatter: dateformatter}
 							]}
 							,{type: 'Column', cols: 6, items:[
 								{id: 'lastname', type: 'Text', label: 'Last name', validate: [{required: true}]}
-								,{id: 'employmentdate',type: 'Date', label: 'Employment date', format: dateformat}
+								,{id: 'employmentdate',type: 'Date', label: 'Employment date', formatter: dateformatter}
 							]}
 						]}
 						,{type: 'Row', items:[
@@ -240,19 +241,22 @@ var empfrm=forms.BaseForm.extend({
 		]}
 	]
 	,createPositionAccordionItem : function(i,o) {
+		var fmt=function(i,start,end){
+			return (i+1)+'. Position data from: '+(start?dateformatter.format(start):'-')+' to '+(end?dateformatter.format(end):'-');
+		}
 		return {
 			type: 'AccordionItem'
 			,id: 'positionAccordionItem'+(i+1)
-			,label : (i+1)+'. Position data from: '+(o.job_date_start?o.job_date_start:'-')+' to '+(o.job_date_end?o.job_date_end:'-')
+			,label : fmt(i,o.job_date_start,o.job_date_end)
 			,onchange : function(fld,ev) {
 				var start=this.find('job_date_start').val();
 				var end=this.find('job_date_end').val();
-				this.updatelabel((this.index+1)+'. Position data from: '+(start?start:'-')+' to '+(end?end:'-'));
+				this.updatelabel(fmt(this.index,start,end));
 			}
 			,items : [
 				{type : 'Row', items: [
 					{type : 'Column', items: [
-						{id : 'job_date', type: 'Daterange', labelcols: 1, label: 'Position period', startsuffix: '_start', endsuffix: '_end', format: dateformat}
+						{id : 'job_date', type: 'Daterange', labelcols: 1, label: 'Position period', startsuffix: '_start', endsuffix: '_end', formatter: dateformatter}
 					]}
 //					,{type : 'Column', cols:2 , items: [
 //						{id : 'end', type: 'Date', label: 'End date', format: dateformat}
