@@ -116,6 +116,22 @@ forms.controls.BaseControl=Class.extend({
 		fld.form.onchange(fld,ev);
 	}
 });
+;Package.Register('forms.utils');
+
+forms.utils.DateFormatter=Class.extend({
+	init: function(dateformat){
+		this.dateformat=dateformat;
+	}
+	,getDTOFormat: function(){
+		return 'YYYY-MM-DDTHH:mm:ss';
+	}
+	,toDatepickerFormat: function(){
+		return this.dateformat.toLowerCase();
+	}
+	,format: function(val){
+		return moment(val).format(this.dateformat);
+	}
+});
 ;Package.Register('forms.controls');
 
 forms.controls.BaseContainerControl=forms.controls.BaseControl.extend({
@@ -539,6 +555,9 @@ forms.controls.InfoControl=forms.controls.ValueControl.extend({
 		return $fld;
 	}
 	,setval : function(fld,val){
+		if(fld.formatter) {
+			val=fld.formatter.format(val);
+		}
 		fld.$jq.val(val);
 	}
 	,getval : function(fld){
@@ -550,7 +569,7 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 	onafterrender : function(fld){
 		this._super(fld);
 		var $inp=fld.$jq;
-		$inp.datepicker({format:fld.format});
+		$inp.datepicker({format:fld.formatter.toDatepickerFormat()});
 	}
 	,setupvaluechange: function(fld){
 		this._super(fld);
@@ -560,11 +579,18 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 		});
 	}
 	,setval : function(fld,val){
-		this._super(fld,val);
-		fld.$jq.datepicker('setValue',val);
+		var fval=fld.formatter.format(val);
+		this._super(fld,fval);
+		fld.$jq.datepicker('setValue',fval);
 	}
 	,getval : function(fld){
-		return this._super(fld);
+		var ufval=this._super(fld);
+		var mm=moment(ufval,fld.formatter.dateformat);
+		if(!mm.isValid()) {
+			return undefined;
+		}
+		var val=mm.format(fld.formatter.getDTOFormat());
+		return val;
 	}
 });
 ;Package.Register('forms.controls');
@@ -634,6 +660,22 @@ forms.controls.SelectControl=forms.controls.BaseListControl.extend({
 	}
 	,_createItem : function(opt) {
 		return $('<option value="'+opt.value+'">'+opt.text+'</option>');
+	}
+});
+;Package.Register('forms.controls');
+
+forms.controls.SearchableControl=forms.controls.SelectControl.extend({
+	onafterrender : function(fld){
+		this._super(fld);
+		fld.$jq.addClass('chzn-select').chosen({width:"100%"});
+	}
+	,load: function(opt){
+		this._super(opt);
+		this._select.trigger('chosen:updated');
+	}
+	,setval: function(fld,val){
+		this._super(fld,val);
+		fld.$jq.trigger('chosen:updated');
 	}
 });
 ;Package.Register('forms.controls');
@@ -843,6 +885,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Checkbox']=new forms.controls.CheckboxControl(this);
 		this.idx['Checkboxes']=new forms.controls.CheckboxesControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
+		this.idx['Searchable']=new forms.controls.SearchableControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
 		this.idx['ToolbarButton']=new forms.controls.ToolbarButtonControl(this);
 		this.idx['Column']=new forms.controls.ColumnControl(this);

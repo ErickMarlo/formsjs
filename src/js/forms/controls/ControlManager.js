@@ -15,6 +15,7 @@ forms.controls.ControlManager=Class.extend({
 		this.idx['Checkbox']=new forms.controls.CheckboxControl(this);
 		this.idx['Checkboxes']=new forms.controls.CheckboxesControl(this);
 		this.idx['Select']=new forms.controls.SelectControl(this);
+		this.idx['Searchable']=new forms.controls.SearchableControl(this);
 		this.idx['Button']=new forms.controls.ButtonControl(this);
 		this.idx['ToolbarButton']=new forms.controls.ToolbarButtonControl(this);
 		this.idx['Column']=new forms.controls.ColumnControl(this);

@@ -69,6 +69,7 @@
 						<script src="js/forms/controls/CheckboxControl.js"></script>
 						<script src="js/forms/controls/CheckboxesControl.js"></script>
 						<script src="js/forms/controls/SelectControl.js"></script>
+						<script src="js/forms/controls/SearchableControl.js"></script>
 						<script src="js/forms/controls/ButtonControl.js"></script>
 						<script src="js/forms/controls/ToolbarButtonControl.js"></script>
 						<script src="js/forms/controls/AccordionControl.js"></script>
@@ -249,7 +250,7 @@ var empfrm=forms.BaseForm.extend({
 						{id : 'job_date', type: 'Daterange', labelcols: 1, label: 'Position period', startsuffix: '_start', endsuffix: '_end', formatter: dateformatter}
 					]}
 					,{type : 'Column' , items: [
-						{id : 'position', type: 'Select', labelcols: 1, controlcols:2, label: 'Position', options: [
+						{id : 'position', type: 'Searchable', labelcols: 1, controlcols:2, label: 'Position', options: [
 							{text: 'Junior programmer', value: 'JUNIOR'}
 							,{text: 'Programmer', value: 'PROGRAMMER'}
 							,{text: 'Senior programmer', value: 'SENIOR'}
@@ -263,7 +264,7 @@ var empfrm=forms.BaseForm.extend({
 				]}
 				,{type: 'Row', items: [
 					{type : 'Column', items: [
-						{type: 'Button', label: 'Save', onclick: function(){
+							{type: 'Button', label: 'Save', onclick: function(){
 							this.form.save();
 						}}
 					]}

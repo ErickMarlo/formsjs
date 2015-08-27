@@ -32,12 +32,13 @@ module.exports = function(grunt) {
 //            ,'src/assets/plugins/validationengine/js/languages/jquery.validationEngine-en.js'
             ,'src/assets/plugins/autosize/jquery.autosize.min.js'
 						,'src/assets/plugins/jquery.dualListbox-1.3/jQuery.dualListBox-1.3.js'
+						,'src/assets/plugins/chosen/chosen.jquery.js'
 	  				,'src/js/core/spahql.js'
 		  	  	,'src/js/core/Clazz.js'
 				  ]
           ,'dist/<%= pkg.name %>.js' : [
 						"src/js/forms/controls/BaseControl.js"
-						"src/js/forms/utils/DateFormatter.js"
+						,"src/js/forms/utils/DateFormatter.js"
 						,"src/js/forms/controls/BaseContainerControl.js"
 						,"src/js/forms/controls/CustomControl.js"
 						,"src/js/forms/controls/ValueControl.js"
@@ -56,6 +57,7 @@ module.exports = function(grunt) {
 						,"src/js/forms/controls/CheckboxControl.js"
 						,"src/js/forms/controls/CheckboxesControl.js"
 						,"src/js/forms/controls/SelectControl.js"
+						,"src/js/forms/controls/SearchableControl.js"
 						,"src/js/forms/controls/ButtonControl.js"
 						,"src/js/forms/controls/ToolbarButtonControl.js"
 						,"src/js/forms/controls/AccordionControl.js"
@@ -95,6 +97,7 @@ module.exports = function(grunt) {
                 ,'src/assets/plugins/timeline/timeline.css'
                 ,'src/assets/plugins/dataTables/dataTables.bootstrap.css'
                 ,'src/assets/plugins/datepicker/css/datepicker.css'
+                ,'src/assets/plugins/chosen/chosen.css'
 //                ,'src/assets/plugins/validationengine/css/validationEngine.jquery.css'
               ]
           }
