@@ -101,6 +101,7 @@ var testdata={
         firstname: ''
         ,lastname: ''
         ,branch: 1
+				,branchname: 'Kaunas'
 				,dateofbirth: '1970-01-01T00:00:00'
 				,employmentdate : '1996-06-05T00:00:00'
 				,isenabled : true
@@ -126,6 +127,30 @@ var testdata={
 			}
 		]
 }
+
+var meplstfrm=forms.BaseForm.extend({
+	id: 'emplstfrm'
+	,renderer: 'Bootstrap'
+	,label: 'Employees list'
+	,items: [
+		{type: 'Box', label: 'Employees list', icon: 'users', items: [
+			{type: 'Row', items: [
+				{type: 'Column', items: [
+					{type: 'Table', option: {
+							pagingType : 'full_numbers'
+						}
+						,columns: [
+							{id: 'firstname', label: 'First name'}
+							,{id: 'lastname', label: 'Last name'}
+							,{id: 'branchname', label: 'Branch name'}
+							,{id: 'employmentdate', label: 'Employeement date'}
+						]
+					}
+				]}
+			]}
+		]}
+	]
+});
 
 var empfrm=forms.BaseForm.extend({
 	 id: 'empfrmid'

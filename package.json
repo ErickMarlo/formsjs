@@ -9,6 +9,17 @@
     "grunt-contrib-cssmin": "^0.12.3",
     "grunt-contrib-jshint": "~0.10.0",
     "grunt-contrib-nodeunit": "~0.4.1",
-    "grunt-contrib-uglify": "~0.9.1"
+    "grunt-contrib-uglify": "~0.9.1",
+    "jasmine-matchers": "^0.2.3",
+    "junit": "^0.1.0",
+    "karma-browserifast": "^0.7.0",
+    "karma-growl": "^0.1.0",
+    "karma-html-reporter": "^0.2.6",
+    "karma-jasmine": "^0.3.6",
+    "karma-jasmine-matchers": "^2.0.0-beta2",
+    "karma-junit-reporter": "^0.3.4",
+    "karma-mocha-reporter": "^1.1.1",
+    "mocha": "^2.3.2",
+    "teamcity": "0.0.7"
   }
 }

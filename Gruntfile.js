@@ -28,8 +28,6 @@ module.exports = function(grunt) {
             ,'src/assets/plugins/dataTables/jquery.dataTables.js'
             ,'src/assets/plugins/dataTables/dataTables.bootstrap.js'
             ,'src/assets/plugins/datepicker/js/bootstrap-datepicker.js'
-//            ,'src/assets/plugins/validationengine/js/jquery.validationEngine.js'
-//            ,'src/assets/plugins/validationengine/js/languages/jquery.validationEngine-en.js'
             ,'src/assets/plugins/autosize/jquery.autosize.min.js'
 						,'src/assets/plugins/jquery.dualListbox-1.3/jQuery.dualListBox-1.3.js'
 						,'src/assets/plugins/chosen/chosen.jquery.js'

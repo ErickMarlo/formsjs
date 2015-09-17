@@ -595,6 +595,29 @@ forms.controls.DateControl=forms.controls.TextControl.extend({
 });
 ;Package.Register('forms.controls');
 
+forms.controls.DaterangeControl=forms.controls.BaseContainerControl.extend({
+	renderField : function(fld) {
+		var $cont=this._super(fld,forms.controls.ControlManagerInstance.renderer.renderInline);
+		fld.$hidden='<input type="hidden">';
+		fld.addItem({
+			type: 'Date'
+			,id: fld.id+fld.startsuffix
+			,controlcols: 2
+			,label: fld.label
+			,labelcols:1
+			,formatter: fld.formatter
+		});
+		fld.addItem({
+			type: 'Date'
+			,id: fld.id+fld.endsuffix
+			,controlcols: 2
+			,formatter: fld.formatter
+		});
+		return $cont;
+	}
+});
+;Package.Register('forms.controls');
+
 forms.controls.CheckboxControl=forms.controls.ValueControl.extend({
 	renderField : function(field) {
 		var $fld=forms.controls.ControlManagerInstance.renderer.renderCheckbox(field);
@@ -1407,6 +1430,11 @@ forms.Application=Class.extend({
 			throw 'Not implemented yet';
 		}
 	}
+	,destroyforms : function(){
+		for(var k in this.forms) {
+			this.destroyform(k);
+		}
+	}
 	,destroyform: function(frmid){
 		if(this.activeform==frmid) this.activeform=null;
 		for(var i=0;i<this.navigation.length;i++) {
@@ -1475,6 +1503,9 @@ forms.BaseForm=Class.extend({
 	}
 	,refmap: {}
 	,init : function(){
+		if(!this.renderer) {
+			throw 'No renderer defined in the form. Define renderer property, for ex.: renderer:"Bootstrap"'
+		}
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
 		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
 		this.preprocess();
@@ -1511,11 +1542,13 @@ forms.BaseForm=Class.extend({
 		}
 	}
 	,preprocess : function(){
+		if(!this.items) throw 'No items defined in the form. Define items : []';
 		for(var i=0;i<this.items.length;i++) {
 			this.preprocessfield(this.items[i]);
 		}
 	}
 	,preprocessfield : function(fld,parent){
+		if(!fld.type) throw 'Field type is required.';
 		fld.form=this;
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
 		ci.preprocess(fld,parent);

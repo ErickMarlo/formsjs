@@ -11,6 +11,9 @@ forms.BaseForm=Class.extend({
 	}
 	,refmap: {}
 	,init : function(){
+		if(!this.renderer) {
+			throw 'No renderer defined in the form. Define renderer property, for ex.: renderer:"Bootstrap"'
+		}
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
 		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
 		this.preprocess();
@@ -47,11 +50,13 @@ forms.BaseForm=Class.extend({
 		}
 	}
 	,preprocess : function(){
+		if(!this.items) throw 'No items defined in the form. Define items : []';
 		for(var i=0;i<this.items.length;i++) {
 			this.preprocessfield(this.items[i]);
 		}
 	}
 	,preprocessfield : function(fld,parent){
+		if(!fld.type) throw 'Field type is required.';
 		fld.form=this;
 		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
 		ci.preprocess(fld,parent);

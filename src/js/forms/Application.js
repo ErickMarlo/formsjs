@@ -45,6 +45,11 @@ forms.Application=Class.extend({
 			throw 'Not implemented yet';
 		}
 	}
+	,destroyforms : function(){
+		for(var k in this.forms) {
+			this.destroyform(k);
+		}
+	}
 	,destroyform: function(frmid){
 		if(this.activeform==frmid) this.activeform=null;
 		for(var i=0;i<this.navigation.length;i++) {
