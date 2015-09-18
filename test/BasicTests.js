@@ -8,7 +8,9 @@ describe("Basic tests suite", function() {
 		var frm=forms.BaseForm.extend({
 			id: 'testform'
 		});
-		expect(function(){app.createform(frm);}).toThrow('No renderer defined in the form. Define renderer property, for ex.: renderer:"Bootstrap"');
+		expect(function(){
+			app.createform(frm);
+		}).toThrow('No renderer defined in the form. Define renderer property, for ex.: renderer:"Bootstrap"');
 	}); 
 
 	it("Require items:[] property", function() {
@@ -55,5 +57,32 @@ describe("Basic tests suite", function() {
 		expect(function(){app.createform(frm);}).not.toThrow();
 	}); 
 
+	it("Form idx duplicated items failure", function() {
+		var app=tests.getapp();
+		var frm=forms.BaseForm.extend({ 
+			id: 'testform'
+			,renderer: 'Bootstrap'
+			,items : [
+				{id : 'name', type: 'Text'}
+				,{id : 'name', type: 'Select'}
+			]
+		});
+		expect(function(){
+			app.createform(frm);
+		}).toThrow('Field with id="name" already exists in idx.');
+	}); 
+
+	it("Form idx", function() {
+		var app=tests.getapp();
+		var frm=forms.BaseForm.extend({ 
+			id: 'testform'
+			,renderer: 'Bootstrap'
+			,items : [
+				{id : 'name', type: 'Text'}
+			]
+		});
+		app.createform(frm);
+		expect(app.forms.testform.idx.name).not.toBeNull();
+	}); 
 
 });

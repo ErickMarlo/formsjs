@@ -6,14 +6,13 @@ forms.BaseForm=Class.extend({
 	,rendererImpl : null
 	,validationViewer: null
 	,$jq : null
-	,idx : {
-		byid : {}
-	}
+	,idx : null
 	,refmap: {}
 	,init : function(){
 		if(!this.renderer) {
 			throw 'No renderer defined in the form. Define renderer property, for ex.: renderer:"Bootstrap"'
 		}
+		this.idx={byid:{}};
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
 		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
 		this.preprocess();

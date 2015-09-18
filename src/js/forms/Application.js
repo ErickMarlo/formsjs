@@ -31,8 +31,8 @@ forms.Application=Class.extend({
 		var ctx=this;
 		var createFn=function(deforclaz){
 			var frm=new (deforclaz)(params);
-			ctx.formsdefs[frm.id]=deforclaz;
 			frm.render(ctx.selector);
+			ctx.formsdefs[frm.id]=deforclaz;
 			ctx.forms[frm.id]=frm;
 		};
 		if(typeof deforclaz=='function') {

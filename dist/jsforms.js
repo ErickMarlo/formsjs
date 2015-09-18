@@ -327,8 +327,26 @@ forms.controls.ValueControl=forms.controls.BaseControl.extend({
 		if(val==undefined)return;
 		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
-		if(sel.length==0) throw 'No json path object found for:'+path;
+		if(sel.length==0) {
+			this.createPath(path,fld.form);
+			sel=fld.form.db.select(path);
+		}
 		sel.replace(val);
+	}
+	,createPath : function(path,frm){
+		var pe=path.split('/');
+		var db=frm.db.value();
+		for(var i=0;i<pe.length;i++) {
+			var p=pe[i];
+			if(!p) continue;
+			if(db[p]) {
+				db=db[p];
+				continue;
+			}
+			db[p]={};
+			db=db[p];
+		}
+		return db;
 	}
 	,scatterPath : function(fld){
 		var val=fld.form.db.select(fld.path).value();
@@ -1416,8 +1434,8 @@ forms.Application=Class.extend({
 		var ctx=this;
 		var createFn=function(deforclaz){
 			var frm=new (deforclaz)(params);
-			ctx.formsdefs[frm.id]=deforclaz;
 			frm.render(ctx.selector);
+			ctx.formsdefs[frm.id]=deforclaz;
 			ctx.forms[frm.id]=frm;
 		};
 		if(typeof deforclaz=='function') {
@@ -1498,14 +1516,13 @@ forms.BaseForm=Class.extend({
 	,rendererImpl : null
 	,validationViewer: null
 	,$jq : null
-	,idx : {
-		byid : {}
-	}
+	,idx : null
 	,refmap: {}
 	,init : function(){
 		if(!this.renderer) {
 			throw 'No renderer defined in the form. Define renderer property, for ex.: renderer:"Bootstrap"'
 		}
+		this.idx={byid:{}};
 		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
 		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
 		this.preprocess();

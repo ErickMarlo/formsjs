@@ -70,8 +70,26 @@ forms.controls.ValueControl=forms.controls.BaseControl.extend({
 		if(val==undefined)return;
 		var path=fld.parentPath+'/'+fld.id.replace(this.indexedseparator,'/');
 		var sel=fld.form.db.select(path);
-		if(sel.length==0) throw 'No json path object found for:'+path;
+		if(sel.length==0) {
+			this.createPath(path,fld.form);
+			sel=fld.form.db.select(path);
+		}
 		sel.replace(val);
+	}
+	,createPath : function(path,frm){
+		var pe=path.split('/');
+		var db=frm.db.value();
+		for(var i=0;i<pe.length;i++) {
+			var p=pe[i];
+			if(!p) continue;
+			if(db[p]) {
+				db=db[p];
+				continue;
+			}
+			db[p]={};
+			db=db[p];
+		}
+		return db;
 	}
 	,scatterPath : function(fld){
 		var val=fld.form.db.select(fld.path).value();
