@@ -1,141 +1,61 @@
-Package.Register('forms');
 
-forms.BaseForm=Class.extend({
-	items : null
-	,db : null
-	,rendererImpl : null
-	,validationViewer: null
-	,$jq : null
-	,idx : null
-	,refmap: {}
-	,init : function(){
-		if(!this.renderer) {
-			throw 'No renderer defined in the form. Define renderer property, for ex.: renderer:"Bootstrap"'
-		}
-		this.idx={byid:{}};
-		this.rendererImpl=eval('new forms.renderer.'+this.renderer+'Renderer()');
-		if(this.validationViewer) this.validationViewer=eval('new forms.valid.'+this.validationViewer+'View()');
-		this.preprocess();
-		this.itemsdb=SpahQL.db(this.items);
-	}
-	,render : function(sel){
-		var rimp=this.rendererImpl;
-		var $rnd=rimp.renderitems(this);
-		var $frm=rimp.renderForm(this);
-		$frm.hide();
-		this.$jq=$frm.append($rnd);
-		$(sel).append(this.$jq);
-		this.onafterrender(this);
-	}
-	,onchange: function(fld,ev){
-		this.notifyrefs(fld,ev);
-	}
-	,notifyrefs: function(fld,ev){
-		var lst=this.refmap[fld.id];
-		if(!lst) return ;
-		for(var i=0;i<lst.length;i++) {
-			var dst=lst[i];
-			var v=fld.val();
-			if(ev && ev.type=='keypress') v+=String.fromCharCode(ev.charCode);
-			dst.val(v);
-		}
-	}
-	,onafterrender : function(it){
-		for(var i=0;i<it.items.length;i++) {
-			var fld=it.items[i];
-			var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-			if(!ci)return ;
-			ci.onafterrender(fld);
-		}
-	}
-	,preprocess : function(){
-		if(!this.items) throw 'No items defined in the form. Define items : []';
-		for(var i=0;i<this.items.length;i++) {
-			this.preprocessfield(this.items[i]);
-		}
-	}
-	,preprocessfield : function(fld,parent){
-		if(!fld.type) throw 'Field type is required.';
-		fld.form=this;
-		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		ci.preprocess(fld,parent);
-	}
-	,destroy: function(){
-		for(var i=0;i<this.items.length;i++) {
-			var it=this.items[i];
-			var ci=forms.controls.ControlManagerInstance.idx[it.type];
-			ci.destroy(it);
-		}
-		this.$jq.remove();
-	}
-	,initDb : function(json){
-		if(!this.db) {
-			if(!json) json={};
-			this.db=SpahQL.db(json);
-		}
-	}
-	,scatter : function(json){
-		this.initDb(json);
-		for(var i=0;i<this.items.length;i++) {
-			this.scatterField(this.items[i]);
-		}
-	}
-	,gather : function(){
-		this.initDb();
-		for(var i=0;i<this.items.length;i++) {
-			this.gatherField(this.items[i]);
-		}
-	}
-	,gatherField : function(fld){
-		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(ci.gather) {
-			ci.gather(fld);
-		}
-		if(!fld.items) {
-			return ;
-		}
-		for(var i=0;i<fld.items.length;i++) {
-			this.gatherField(fld.items[i]);
-		}
-	}
-	,scatterField : function(fld){
-		var ci=forms.controls.ControlManagerInstance.idx[fld.type];
-		if(ci.scatter) {
-			ci.scatter(fld);
-		}
-		if(!fld.items) {
-			return ;
-		}
-		for(var i=0;i<fld.items.length;i++) {
-			this.scatterField(fld.items[i]);
-		}
-	}
-	,show: function(visi){
-		if(visi) {
-			this.$jq.show();
-		} else {
-			this.$jq.hide();
-		}
-	}
-	,validate: function(){
-		var result=[];
-		for(var i=0;i<this.items.length;i++) {
-			var ci=forms.controls.ControlManagerInstance.idx[this.items[i].type];
-			var fld=this.items[i];
-			var res=ci.validate(fld);
-			result=result.concat(res);
-		}
-		var ctx=this;
-		return {result:result,count:result.length,show: function(){
-				ctx.validationViewer.show(ctx,result);
-		},clear: function(){
-			ctx.validationViewer.clear(ctx);
-		},unmarkcontainers: function() {
-			ctx.validationViewer.unmarkcontainers(ctx);	
-		},markcontainers: function() {
-			ctx.validationViewer.markcontainers(ctx,result);	
-		},showsummary: function(fldid,title) {
-			ctx.validationViewer.showsummary(ctx,fldid,result,title);
-		}};
-	}
-});
+//==+==---------------------------------------------------------==+==
+
+function form(title, template, table, id) { // t is table
+
+    $('#modal-form .modal-title').text(title);
+    $('#myModal').modal('show');
+
+    if (!table && !id) {
+        $('#modal-form .modal-body').html(
+            $("#" + template).render({})
+        );
+    }
+
+    setTimeout(function () {
+        $("#modal-form input[name='v1'] ").focus();
+    }, 200);
+
+    if (table && id) {
+        console.log(11);
+        rest('getid', table, function (rows) {
+            console.log(10);
+            $('#modal-form .modal-body').html(
+                $("#" + template).render(rows)
+            );
+        }, id);
+        console.log(12);
+    }
+
+    $('#moreinputs').html('');
+}
+
+//==+==---------------------------------------------------------==+==
+function formSubmit() {
+
+    event.preventDefault();
+    var inputs = $('#modal-form').serialize();
+
+    $.post('ajax.php', inputs, 'json').done(function (data) {
+
+        if (data.status == 'error') {
+
+            $('#myModal').modal('show');
+            $('#myModal .alert-danger').slideToggle();
+            $('#myModal .alert-danger span').html(' <b>' + data.statusd + '</b> Попробуйте еще раз.');
+
+            setTimeout(function () {
+                $('#myModal .alert-danger').slideToggle();
+                $('#myModal .alert-danger span').text('');
+            }, 5000)
+        } else {
+            if (data.statusd == 'Успешный вход') {
+                window.location.href = "/";
+            }
+            if (data.statusd == 'Успешная регистрация') {
+                form('Успешная регистрация. Можете войти', 'login')
+            }
+        }
+
+    });
+}
