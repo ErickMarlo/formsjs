@@ -1,6 +1,4 @@
 
-//==+==---------------------------------------------------------==+==
-
 function form(title, template, table, id) { // t is table
 
     $('#modal-form .modal-title').text(title);
@@ -30,7 +28,7 @@ function form(title, template, table, id) { // t is table
     $('#moreinputs').html('');
 }
 
-//==+==---------------------------------------------------------==+==
+ 
 function formSubmit() {
 
     event.preventDefault();
@@ -55,7 +53,20 @@ function formSubmit() {
             if (data.statusd == 'Успешная регистрация') {
                 form('Успешная регистрация. Можете войти', 'login')
             }
+
+
+            /* Up Page Of Pubs */
+            var v3 = $("input[name='v3']").val();
+            var v7 = $("input[name='v7']").val();
+            console.log(v7);
+            if(typeof( parseInt(v3) )=="number" ){
+                console.log(v7);
+                showPubs(v7); 
+            }
+            /* Up Page Of Pubs */
         }
 
     });
+
+
 }
