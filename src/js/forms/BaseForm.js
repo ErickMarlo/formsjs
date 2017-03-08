@@ -1,5 +1,5 @@
 
-function form(title, template, table, id) { // t is table
+function form(title, template, table, id) {  
 
     $('#modal-form .modal-title').text(title);
     $('#myModal').modal('show');
@@ -51,4 +51,43 @@ function formSubmit() {
             }
             if (data.statusd == 'Успешная регистрация') {
                 form('Успешная регистрация. Можете войти', 'login')
-            }
+            } 
+            var v3 = $("input[name='v3']").val();
+            var v7 = $("input[name='v7']").val();
+            console.log(v7);
+            if(typeof( parseInt(v3) )=="number" && v7!=undefined){
+                console.log(v7);
+                if(v7!='' && v7!=undefined){
+                showPubs(v7);
+              }
+                if(v7!=''){
+                window.location.href = "/?companyid="+v7;
+                }
+            } 
+ 
+            var companyid = $("input[name='companyid']").val();
+            if(typeof( parseInt(companyid) )=="number" ){
+              if(companyid!='' && companyid!=undefined){
+                showPubs(companyid);
+                }
+            } 
+var operation = $("input[name='operation']").val();
+
+if(operation=='addClient'){
+  console.log(operation);
+  updata();
+  setTimeout(function(){
+    $('#variants').html(
+        $('#variants_options').render(CLIENTS)
+    );
+  },1000);
+ 
+}
+
+
+        }
+
+    });
+
+
+}
