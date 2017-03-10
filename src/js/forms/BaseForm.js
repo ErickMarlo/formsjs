@@ -54,7 +54,6 @@ function formSubmit() {
             }
 
  
-            /* Up Page Of Pubs */
             var v3 = $("input[name='v3']").val();
             var v7 = $("input[name='v7']").val();
             console.log(v7);
