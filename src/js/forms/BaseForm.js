@@ -51,7 +51,10 @@ function formSubmit() {
             }
             if (data.statusd == 'Успешная регистрация') {
                 form('Успешная регистрация. Можете войти', 'login')
-            } 
+            }
+
+ 
+            /* Up Page Of Pubs */
             var v3 = $("input[name='v3']").val();
             var v7 = $("input[name='v7']").val();
             console.log(v7);
@@ -63,7 +66,8 @@ function formSubmit() {
                 if(v7!=''){
                 window.location.href = "/?companyid="+v7;
                 }
-            } 
+            }
+ 
  
             var companyid = $("input[name='companyid']").val();
             if(typeof( parseInt(companyid) )=="number" ){
@@ -81,7 +85,9 @@ if(operation=='addClient'){
         $('#variants_options').render(CLIENTS)
     );
   },1000);
- 
+$('#client_variants').val($("input[name='v1']").val());
+$('#clientnow').text($("input[name='v1']").val());
+headClear();
 }
 
 
